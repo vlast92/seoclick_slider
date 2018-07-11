@@ -30,6 +30,8 @@ $images_height = $params->get('images_height', '400');
 $images_space = $params->get('images_space', '0');
 $infinite_mode = $params->get('infinite_mode');
 $show_neighbor_slides = $params->get('neighbor_slides');
+$auto_scroll = $params->get('auto_scroll');
+$auto_scroll_interval = $params->get('auto_scroll_interval','2000');
 
 $moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
 

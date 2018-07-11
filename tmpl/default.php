@@ -73,7 +73,11 @@ $document->addScriptDeclaration('
             imageWidth: '.$images_width.',
             ' . $nav . ',
             desc_block: ' . $desc_block . ',
-            infiniteMode: '.$infinite_mode.'
+            infiniteMode: '.$infinite_mode.',
+            autoScroll: {
+                active: '.$auto_scroll.',
+                interval: '.$auto_scroll_interval.'
+            }
         }),
         desc = $("#' . $id . '").find(".slide-description");
         $("#' . $id . '").find(".slides-description").css("min-height", desc.outerHeight(true)); 

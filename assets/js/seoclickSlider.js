@@ -12,7 +12,8 @@ var SeoClickSlider = function SeoClickSlider(params) {
         arrowNav: params.arrowNav,
         dotNav: params.dotNav,
         desc_block: params.desc_block,
-        infiniteMode: params.infiniteMode
+        infiniteMode: params.infiniteMode,
+        autoScroll: params.autoScroll
     });
 
     function SliderConstructor(arg) {
@@ -49,7 +50,11 @@ var SeoClickSlider = function SeoClickSlider(params) {
             arrowNav: arg.arrowNav,
             dotNav: arg.dotNav,
             desc_block: arg.desc_block,
-            infiniteMode: arg.infiniteMode
+            infiniteMode: arg.infiniteMode,
+            autoScroll: {
+                active: arg.autoScroll.active,
+                interval: arg.autoScroll.interval
+            }
         };
     }
 
@@ -184,14 +189,6 @@ var SeoClickSlider = function SeoClickSlider(params) {
             var extraClass = '';
             if (!self.options.infiniteMode) extraClass = 'disabled';
             var markup = "<div class=\"arrow-nav\">\n                            <div class=\"slider-next\">\n                                <i class=\"fa fa-chevron-right fa-4x\" aria-hidden=\"true\"></i>\n                            </div>\n                            <div class=\"slider-prev " + extraClass + "\">\n                                <i class=\"fa fa-chevron-left fa-4x\" aria-hidden=\"true\"></i>\n                            </div>\n                          </div>";
-            /*let markup = "<div class=\"arrow-nav\">\n" +
-                "            <div class=\"slider-next\">\n" +
-                "                <i class=\"fa fa-chevron-right fa-4x\" aria-hidden=\"true\"></i>\n" +
-                "            </div>\n" +
-                "            <div class=\"slider-prev\">\n" +
-                "                <i class=\"fa fa-chevron-left fa-4x\" aria-hidden=\"true\"></i>\n" +
-                "            </div>\n" +
-                "        </div>";*/
 
             $(self.id).append(markup);
             $(self.id).find(".arrow-nav > div i").click(function () {
@@ -271,6 +268,20 @@ var SeoClickSlider = function SeoClickSlider(params) {
         if (self.options.arrowNav) addArrowNav();
         if (self.options.dotNav) addDotNav();
         if (self.options.desc_block) addSlidesDescData();
+        if (self.options.autoScroll.active) {
+            var isPaused = false;
+
+            window.setInterval(function () {
+                if (!isPaused) slideRight();
+            }, self.options.autoScroll.interval);
+
+            $(self.id).mouseenter(function () {
+                return isPaused = true;
+            });
+            $(self.id).mouseleave(function () {
+                return isPaused = false;
+            });
+        }
 
         mc.on("swipeleft", slideRight);
         mc.on("swiperight", slideLeft);

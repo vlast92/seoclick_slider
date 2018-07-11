@@ -10,7 +10,8 @@ let SeoClickSlider = function (params) {
         arrowNav: params.arrowNav,
         dotNav: params.dotNav,
         desc_block: params.desc_block,
-        infiniteMode: params.infiniteMode
+        infiniteMode: params.infiniteMode,
+        autoScroll: params.autoScroll
     });
 
     function SliderConstructor(arg) {
@@ -47,7 +48,11 @@ let SeoClickSlider = function (params) {
             arrowNav: arg.arrowNav,
             dotNav: arg.dotNav,
             desc_block: arg.desc_block,
-            infiniteMode: arg.infiniteMode
+            infiniteMode: arg.infiniteMode,
+            autoScroll: {
+                active: arg.autoScroll.active,
+                interval: arg.autoScroll.interval
+            }
         };
     }
 
@@ -102,10 +107,10 @@ let SeoClickSlider = function (params) {
 
             let x = self.translateData.value + self.translateData.step;
             if (x >= self.translateData.max) {
-                if(self.options.arrowNav && !self.options.infiniteMode){
-                    if(x === self.translateData.max){
+                if (self.options.arrowNav && !self.options.infiniteMode) {
+                    if (x === self.translateData.max) {
                         $(self.id).find('.slider-next').addClass("disabled");
-                    }else{
+                    } else {
                         $(self.id).find('.slider-next').removeClass("disabled");
                         $(self.id).find('.slider-prev').removeClass("disabled");
                     }
@@ -148,10 +153,10 @@ let SeoClickSlider = function (params) {
 
             let x = self.translateData.value - self.translateData.step;
             if (x <= self.translateData.min) {
-                if(self.options.arrowNav && !self.options.infiniteMode){
-                    if(x === self.translateData.min){
+                if (self.options.arrowNav && !self.options.infiniteMode) {
+                    if (x === self.translateData.min) {
                         $(self.id).find('.slider-prev').addClass("disabled");
-                    }else{
+                    } else {
                         $(self.id).find('.slider-next').removeClass("disabled");
                         $(self.id).find('.slider-prev').removeClass("disabled");
                     }
@@ -194,7 +199,7 @@ let SeoClickSlider = function (params) {
         function addArrowNav() {
             "use strict";
             let extraClass = '';
-            if(!self.options.infiniteMode) extraClass = 'disabled';
+            if (!self.options.infiniteMode) extraClass = 'disabled';
             let markup = `<div class="arrow-nav">
                             <div class="slider-next">
                                 <i class="fa fa-chevron-right fa-4x" aria-hidden="true"></i>
@@ -203,14 +208,6 @@ let SeoClickSlider = function (params) {
                                 <i class="fa fa-chevron-left fa-4x" aria-hidden="true"></i>
                             </div>
                           </div>`;
-            /*let markup = "<div class=\"arrow-nav\">\n" +
-                "            <div class=\"slider-next\">\n" +
-                "                <i class=\"fa fa-chevron-right fa-4x\" aria-hidden=\"true\"></i>\n" +
-                "            </div>\n" +
-                "            <div class=\"slider-prev\">\n" +
-                "                <i class=\"fa fa-chevron-left fa-4x\" aria-hidden=\"true\"></i>\n" +
-                "            </div>\n" +
-                "        </div>";*/
 
             $(self.id).append(markup);
             $(self.id).find(".arrow-nav > div i").click(function () {
@@ -287,6 +284,16 @@ let SeoClickSlider = function (params) {
         if (self.options.arrowNav) addArrowNav();
         if (self.options.dotNav) addDotNav();
         if (self.options.desc_block) addSlidesDescData();
+        if (self.options.autoScroll.active) {
+            let isPaused = false;
+
+            window.setInterval(() => {
+                if (!isPaused) slideRight();
+            }, self.options.autoScroll.interval);
+
+            $(self.id).mouseenter(() => isPaused = true);
+            $(self.id).mouseleave(() => isPaused = false);
+        }
 
         mc.on("swipeleft", slideRight);
         mc.on("swiperight", slideLeft);

@@ -56,6 +56,20 @@
                         label="MOD_SEOCLICK_SLIDER_IMAGES_SPACE_WIDTH"
                         min="0"/>
                 <field
+                        name="auto_scroll"
+                        type="radio"
+                        default="0"
+                        label="MOD_SEOCLICK_SLIDER_AUTO_SCROLL_LABEL"
+                        class="btn-group btn-group-yesno">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field
+                        name="auto_scroll_interval"
+                        type="number"
+                        label="MOD_SEOCLICK_SLIDER_AUTO_SCROLL_INTERVAL_LABEL"
+                        min="0"/>
+                <field
                         name="slides"
                         type="subform"
                         formsource="modules/mod_seoclick_slider/slide_fields.xml"
