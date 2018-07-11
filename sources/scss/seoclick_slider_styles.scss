@@ -1,0 +1,137 @@
+$blue: #48b3fe;
+$buttonColor: #ffce23;
+
+@mixin displayFlex($wrap: wrap, $direction: row) {
+  display: -webkit-box;
+  display: -moz-box;
+  display: box;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-flow: $direction $wrap;
+  -moz-flex-flow: $direction $wrap;
+  flex-flow: $direction $wrap;
+}
+
+@mixin flex($grow: 0, $basis: 0) {
+  -webkit-box-flex: $grow;
+  -moz-box-flex: $grow;
+  box-flex: $grow;
+  -webkit-flex: $grow $basis;
+  -moz-flex: $grow $basis;
+  -ms-flex: $grow $basis;
+  flex: $grow $basis;
+}
+
+@mixin flexProperities($jContent: center, $aContent: center) {
+  justify-content: $jContent;
+  align-items: $aContent;
+}
+
+@mixin transform($property) {
+  -webkit-transform: $property;
+  -moz-transform: $property;
+  -ms-transform: $property;
+  -o-transform: $property;
+  transform: $property;
+}
+
+@mixin transition($property) {
+  -webkit-transition: $property;
+  -moz-transition: $property;
+  -ms-transition: $property;
+  -o-transition: $property;
+  transition: $property;
+}
+
+.seoclick-slider {
+  position: relative;
+  @include displayFlex(wrap, column);
+  @include flexProperities(space-between, stretch);
+
+  &:hover .arrow-nav > div{
+    opacity: 1;
+  }
+  .slides-wrap {
+    @include flex(2);
+    overflow: hidden;
+
+    .slider-view {
+      flex-basis: 100%;
+      position: relative;
+      margin: 0 auto;
+
+      .slides-container {
+        @include displayFlex;
+        left: 50%;
+        @include flexProperities(space-between);
+        position: absolute;
+        margin: 0 auto;
+
+        .image img{
+          width: 100%;
+        }
+      }
+    }
+  }
+  .slides-description {
+    @include flex(1);
+    @include transition(.5s);
+    position: relative;
+
+    .slide-description {
+      @include transition(opacity .25s);
+      position: absolute;
+      opacity: 0;
+      padding: 2.5rem;
+
+      &.active {
+        opacity: 1;
+      }
+    }
+  }
+  .arrow-nav > div {
+    @include transition(.3s);
+    position: absolute;
+    top: 50%;
+    @include transform(translateY(-50%));
+    color: rgba(224, 224, 229, .8);
+    font-size: .7rem;
+    opacity: 0;
+
+    &.disabled{
+      opacity: 0;
+      pointer-events: none;
+    }
+    i {
+      cursor: pointer;
+    }
+    &.slider-next {
+      right: 0;
+    }
+    &.slider-prev {
+      left: 0;
+    }
+  }
+  .dot-nav {
+    flex-basis: 100%;
+    text-align: center;
+    padding: 1.250em 0 3.125em 0;
+    line-height: 1em;
+
+    span {
+      display: inline-block;
+      width: 1rem;
+      height: 1rem;
+      background-color: $blue;
+      border-radius: 50%;
+      cursor: pointer;
+      margin: 0 .125rem;
+
+      &.active {
+        background-color: $buttonColor;
+      }
+    }
+  }
+}

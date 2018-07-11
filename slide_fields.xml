@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form>
+    <fieldset hidden="true" name="slide_fields_modal" repeat="true">
+        <field
+                name="image"
+                label="MOD_SEOCLICK_SLIDER_IMAGE"
+                type="media"/>
+        <field  name="note_description"
+                type="note"
+                label="MOD_SEOCLICK_SLIDER_DESCRIPTION_NOTE"/>
+        <field name="header"
+                type="text"
+                label="MOD_SEOCLICK_SLIDER_HEADER"/>
+        <field name="description"
+                type="textarea"
+                label="MOD_SEOCLICK_SLIDER_DESCRIPTION"
+                rows="10"/>
+    </fieldset>
+</form>

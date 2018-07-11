@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="3.8" client="site" method="upgrade">
+    <name>MOD_SEOCLICK_SLIDER</name>
+    <creationDate>17.06.2018</creationDate>
+    <author>Vlast</author>
+    <authorEmail>vlasteg@mail.ru</authorEmail>
+    <authorUrl>https://seoclick.by</authorUrl>
+    <copyright>A copyright</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <version>1.0</version>
+    <description>MOD_SEOCLICK_SLIDER_XML_DESCRIPTION</description>
+
+    <files>
+        <filename module="mod_seoclick_slider">mod_seoclick_slider.php</filename>
+        <filename>slide_fields.xml</filename>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+        <folder>assets</folder>
+        <filename>mod_seoclick_slider.xml</filename>
+        <filename>helper.php</filename>
+    </files>
+
+    <!-- Update servers -->
+    <updateservers>
+        <server type="extension" priority="1" name="seoclick_slider">https://www.example.com/mod_seoclick_slider.xml
+        </server>
+    </updateservers>
+
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                        name="layout"
+                        type="modulelayout"
+                        label="MOD_SEOCLICK_SLIDER_LAYOUT_LABEL"
+                        description="MOD_SEOCLICK_SLIDER_LAYOUT_DESCRIPTION"/>
+                <field
+                        name="images_width"
+                        type="number"
+                        label="MOD_SEOCLICK_SLIDER_IMAGES_WIDTH"
+                        min="0"/>
+                <field
+                        name="images_height"
+                        type="number"
+                        label="MOD_SEOCLICK_SLIDER_IMAGES_HEIGHT"
+                        min="0"/>
+                <field name="resize_method" type="list" default="none" label="MOD_SEOCLICK_SLIDER_METHOD_LABEL">
+                    <option value="none">MOD_SEOCLICK_SLIDER_METHOD_NONE_LABEL</option>
+                    <option value="crop">MOD_SEOCLICK_SLIDER_METHOD_CROP_LABEL</option>
+                    <option value="resize_ratio">MOD_SEOCLICK_SLIDER_METHOD_RESIZE_WITH_RATIO_LABEL</option>
+                    <option value="resize_no_ratio">MOD_SEOCLICK_SLIDER_METHOD_RESIZE_WITH_NO_RATIO_LABEL</option>
+                </field>
+                <field
+                        name="images_space"
+                        type="number"
+                        label="MOD_SEOCLICK_SLIDER_IMAGES_SPACE_WIDTH"
+                        min="0"/>
+                <field
+                        name="slides"
+                        type="subform"
+                        formsource="modules/mod_seoclick_slider/slide_fields.xml"
+                        min="1"
+                        max="999999"
+                        multiple="true"
+                        layout="joomla.form.field.subform.repeatable"
+                        groupByFieldset="false"
+                        label="MOD_SEOCLICK_SLIDER_SLIDES_LABEL"
+                />
+                <field name="nav_type" type="list" default="" required="true" label="MOD_SEOCLICK_SLIDER_NAVTYPE"
+                       description="">
+                    <option value="">MOD_SEOCLICK_SLIDER_NAVTYPE</option>
+                    <option value="0">MOD_SEOCLICK_SLIDER_NAVTYPE_NONE</option>
+                    <option value="1">MOD_SEOCLICK_SLIDER_NAVTYPE_ARROW</option>
+                    <option value="2">MOD_SEOCLICK_SLIDER_NAVTYPE_DOTTED</option>
+                    <option value="3">MOD_SEOCLICK_SLIDER_NAVTYPE_BOTH</option>
+                </field>
+                <field
+                        name="desc_block"
+                        type="radio"
+                        default="0"
+                        label="MOD_SEOCLICK_SLIDER_DESCBLOCK_LABEL"
+                        description="MOD_SEOCLICK_SLIDER_DESCBLOCK_DESCRIPTION"
+                        class="btn-group btn-group-yesno">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field
+                        name="infinite_mode"
+                        type="radio"
+                        default="1"
+                        label="MOD_SEOCLICK_SLIDER_INFINITE_MODE_LABEL"
+                        description="MOD_SEOCLICK_SLIDER_INFINITE_MODE_DESCRIPTION"
+                        class="btn-group btn-group-yesno">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field
+                        name="neighbor_slides"
+                        type="radio"
+                        default="0"
+                        label="MOD_SEOCLICK_SLIDER_NEIGHBOR_SLIDES_LABEL"
+                        class="btn-group btn-group-yesno">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+            </fieldset>
+            <fieldset
+                    name="advanced">
+                <field
+                        name="moduleclass_sfx"
+                        type="text"
+                        label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
+                        description="COM_MODULES_FIELD_MODULECLASS_SFX_DESC"/>
+            </fieldset>
+        </fields>
+    </config>
+</extension>
