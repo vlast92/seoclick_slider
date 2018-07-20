@@ -33,8 +33,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
             object: null,
             count: null,
             viewed: arg.viewed,
-            maxWidth: arg.imageWidth,
-            maxHeight: null
+            maxWidth: arg.imageWidth
         };
         this.spacers = {
             count: null,
@@ -62,7 +61,6 @@ var SeoClickSlider = function SeoClickSlider(params) {
         this.slides.object = $(this.id).find(".slide");
         //Размер слайда
         this.slides.object.outerWidth(this.slides.maxWidth);
-        this.slides.maxHeight = this.slides.object.outerHeight();
         //Кол. слайдов
         this.slides.count = this.slides.object.length;
     };
@@ -74,7 +72,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
     SliderConstructor.prototype.setViewData = function () {
         this.viewWidth = this.slides.maxWidth * this.slides.viewed + this.spacers.width * (this.slides.viewed + 1);
 
-        this.viewHeight = this.slides.maxHeight;
+        this.viewHeight = $(this.id).find('.slides-container').outerHeight(true);
         $(this.id).find(".slider-view").outerWidth(this.viewWidth).outerHeight(this.viewHeight);
     };
     SliderConstructor.prototype.setTranslateData = function () {

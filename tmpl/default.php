@@ -13,10 +13,13 @@ $id = 'seoclick-slider_' . rand(1, 9999999);
 ?>
     <div id="<?= $id ?>" class="seoclick-slider">
         <div class="slides-wrap">
-            <div class="slider-view" <?if(!$show_neighbor_slides):?>style="overflow: hidden"<?endif;?>>
+            <div class="slider-view" <? if (!$show_neighbor_slides): ?>style="overflow: hidden"<? endif; ?>>
                 <div class="slides-container">
 					<?php $counter = 0; ?>
 					<?php foreach ($slides as $index => $slide): ?>
+						<?php if (!empty($slide['url'])): ?>
+                            <a href="<?= $slide['url']; ?>" <?php if ($slide['url_open']): ?>target="_blank"<?php endif; ?> rel="nofollow noopener noreferrer">
+						<?php endif; ?>
                         <div class="slide">
                             <div class="slide-content">
                                 <div class="image">
@@ -24,6 +27,9 @@ $id = 'seoclick-slider_' . rand(1, 9999999);
                                 </div>
                             </div>
                         </div>
+						<?php if (!empty($slide['url'])): ?>
+                            </a>
+						<?php endif; ?>
 					<?php endforeach ?>
                 </div>
             </div>
@@ -33,9 +39,9 @@ $id = 'seoclick-slider_' . rand(1, 9999999);
 				<?php $counter = 0; ?>
 				<?php foreach ($slides as $slide): ?>
                     <div class="<?php if ($counter == 0) echo 'active' ?> slide-description slide-<?= $counter++ ?>">
-                        <div class="heading"><?=jText::_("MOD_SEOCLICK_SLIDER_DESCBLOCK_HEAD_LABEL");?></div>
+                        <div class="heading"><?= jText::_("MOD_SEOCLICK_SLIDER_DESCBLOCK_HEAD_LABEL"); ?></div>
                         <div class="content top"><span class="name"><?= $slide['header'] ?></span></div>
-                        <div class="heading"><?=jText::_("MOD_SEOCLICK_SLIDER_DESCBLOCK_DESCRIPTION_LABEL");?></div>
+                        <div class="heading"><?= jText::_("MOD_SEOCLICK_SLIDER_DESCBLOCK_DESCRIPTION_LABEL"); ?></div>
                         <div class="content bottom">
 							<?= $slide['description'] ?>
                         </div>
@@ -68,15 +74,15 @@ $document->addScriptDeclaration('
     let $ = jQuery,
         slider = new SeoClickSlider({
             id: "#' . $id . '",
-            viewed: 1,
-            spacerWidth: '.$images_space.',
-            imageWidth: '.$images_width.',
+            viewed: ' . $slides_viewed . ',
+            spacerWidth: ' . $images_space . ',
+            imageWidth: ' . $images_width . ',
             ' . $nav . ',
             desc_block: ' . $desc_block . ',
-            infiniteMode: '.$infinite_mode.',
+            infiniteMode: ' . $infinite_mode . ',
             autoScroll: {
-                active: '.$auto_scroll.',
-                interval: '.$auto_scroll_interval.'
+                active: ' . $auto_scroll . ',
+                interval: ' . $auto_scroll_interval . '
             }
         }),
         desc = $("#' . $id . '").find(".slide-description");

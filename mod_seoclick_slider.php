@@ -32,6 +32,7 @@ $infinite_mode = $params->get('infinite_mode');
 $show_neighbor_slides = $params->get('neighbor_slides');
 $auto_scroll = $params->get('auto_scroll');
 $auto_scroll_interval = $params->get('auto_scroll_interval','2000');
+$slides_viewed = $params->get('slides_viewed', 1);
 
 $moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
 

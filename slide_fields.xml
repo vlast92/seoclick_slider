@@ -5,6 +5,19 @@
                 name="image"
                 label="MOD_SEOCLICK_SLIDER_IMAGE"
                 type="media"/>
+        <field
+                name="url"
+                type="text"
+                label="MOD_SEOCLICK_SLIDER_URL_LABEL"/>
+        <field
+                name="url_open"
+                type="radio"
+                default="0"
+                label="MOD_SEOCLICK_SLIDER_URL_OPEN_LABEL"
+                class="btn-group btn-group-yesno">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
         <field  name="note_description"
                 type="note"
                 label="MOD_SEOCLICK_SLIDER_DESCRIPTION_NOTE"/>

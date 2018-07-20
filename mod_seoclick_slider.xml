@@ -56,6 +56,11 @@
                         label="MOD_SEOCLICK_SLIDER_IMAGES_SPACE_WIDTH"
                         min="0"/>
                 <field
+                        name="slides_viewed"
+                        type="number"
+                        min="0"
+                        label="MOD_SEOCLICK_SLIDER_SLIDES_VIEWED"/>
+                <field
                         name="auto_scroll"
                         type="radio"
                         default="0"
@@ -69,17 +74,6 @@
                         type="number"
                         label="MOD_SEOCLICK_SLIDER_AUTO_SCROLL_INTERVAL_LABEL"
                         min="0"/>
-                <field
-                        name="slides"
-                        type="subform"
-                        formsource="modules/mod_seoclick_slider/slide_fields.xml"
-                        min="1"
-                        max="999999"
-                        multiple="true"
-                        layout="joomla.form.field.subform.repeatable"
-                        groupByFieldset="false"
-                        label="MOD_SEOCLICK_SLIDER_SLIDES_LABEL"
-                />
                 <field name="nav_type" type="list" default="" required="true" label="MOD_SEOCLICK_SLIDER_NAVTYPE"
                        description="">
                     <option value="">MOD_SEOCLICK_SLIDER_NAVTYPE</option>
@@ -117,6 +111,17 @@
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
+                <field
+                        name="slides"
+                        type="subform"
+                        formsource="modules/mod_seoclick_slider/slide_fields.xml"
+                        min="1"
+                        max="999999"
+                        multiple="true"
+                        layout="joomla.form.field.subform.repeatable"
+                        groupByFieldset="false"
+                        label="MOD_SEOCLICK_SLIDER_SLIDES_LABEL"
+                />
             </fieldset>
             <fieldset
                     name="advanced">

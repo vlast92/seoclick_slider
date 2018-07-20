@@ -31,8 +31,7 @@ let SeoClickSlider = function (params) {
             object: null,
             count: null,
             viewed: arg.viewed,
-            maxWidth: arg.imageWidth,
-            maxHeight: null
+            maxWidth: arg.imageWidth
         };
         this.spacers = {
             count: null,
@@ -61,7 +60,6 @@ let SeoClickSlider = function (params) {
         //Размер слайда
         this.slides.object
             .outerWidth(this.slides.maxWidth);
-        this.slides.maxHeight = this.slides.object.outerHeight();
         //Кол. слайдов
         this.slides.count = this.slides.object.length;
     };
@@ -77,7 +75,7 @@ let SeoClickSlider = function (params) {
             this.slides.maxWidth * this.slides.viewed +
             this.spacers.width * (this.slides.viewed + 1);
 
-        this.viewHeight = this.slides.maxHeight;
+        this.viewHeight =  $(this.id).find('.slides-container').outerHeight(true);
         $(this.id)
             .find(".slider-view")
             .outerWidth(this.viewWidth)
