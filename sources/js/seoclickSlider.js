@@ -199,11 +199,11 @@ let SeoClickSlider = function (params) {
             let extraClass = '';
             if (!self.options.infiniteMode) extraClass = 'disabled';
             let markup = `<div class="arrow-nav">
-                            <div class="slider-next">
-                                <i class="fa fa-chevron-right fa-4x" aria-hidden="true"></i>
-                            </div>
                             <div class="slider-prev ${extraClass}">
                                 <i class="fa fa-chevron-left fa-4x" aria-hidden="true"></i>
+                            </div>
+                            <div class="slider-next">
+                                <i class="fa fa-chevron-right fa-4x" aria-hidden="true"></i>
                             </div>
                           </div>`;
 

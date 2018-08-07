@@ -186,7 +186,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
             var extraClass = '';
             if (!self.options.infiniteMode) extraClass = 'disabled';
-            var markup = "<div class=\"arrow-nav\">\n                            <div class=\"slider-next\">\n                                <i class=\"fa fa-chevron-right fa-4x\" aria-hidden=\"true\"></i>\n                            </div>\n                            <div class=\"slider-prev " + extraClass + "\">\n                                <i class=\"fa fa-chevron-left fa-4x\" aria-hidden=\"true\"></i>\n                            </div>\n                          </div>";
+            var markup = "<div class=\"arrow-nav\">\n                            <div class=\"slider-prev " + extraClass + "\">\n                                <i class=\"fa fa-chevron-left fa-4x\" aria-hidden=\"true\"></i>\n                            </div>\n                            <div class=\"slider-next\">\n                                <i class=\"fa fa-chevron-right fa-4x\" aria-hidden=\"true\"></i>\n                            </div>\n                          </div>";
 
             $(self.id).append(markup);
             $(self.id).find(".arrow-nav > div i").click(function () {
