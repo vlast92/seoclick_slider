@@ -99,6 +99,104 @@ let SeoClickSlider = function (params) {
             this.translateData.min -
             this.translateData.step * (this.slides.viewed - 1);
     };
+    SliderConstructor.prototype._initListeners = function () {
+        let self = this,
+            desktop = window.matchMedia(
+                "(min-width: " + self.responsiveData.desktop + ")"
+            ),
+            laptop = window.matchMedia(
+                "(max-width: " + self.responsiveData.laptop + ")"
+            ),
+            tablet = window.matchMedia(
+                "(max-width: " + self.responsiveData.tablet + ")"
+            ),
+            phone = window.matchMedia(
+                "(max-width: " + self.responsiveData.phone + ")"
+            );
+
+        let sliderResizer = function () {
+                let sliderWidth = $(self.id).width(),
+                    calcWidth,
+                    initWidth = $(self.id).data("initWidth");
+
+                calcWidth = Math.round((sliderWidth - self.spacers.width * (self.slides.viewed + 1)) / self.slides.viewed);
+
+                if (sliderWidth < self.viewWidth || calcWidth <= initWidth) {
+                    self.updateSlidesSize(calcWidth);
+                } else if (self.slides.maxWidth !== initWidth) {
+                    self.updateSlidesSize(initWidth);
+                }
+            },
+            checkDesktopQuery = function (e) {
+
+                if (e.matches) {
+                    self.updateViewData($(self.id).data("viewed"));
+                }
+            },
+            checkLaptopQuery = function (e) {
+
+                if (e.matches) {
+                    if (self.slides.viewed > 3) {
+                        self.updateViewData(3);
+                    }
+                } else {
+                    if (self.slides.viewed < $(self.id).data("viewed")) {
+                        self.updateViewData($(self.id).data("viewed"));
+                    }
+                }
+            },
+            checkTabletQuery = function (e) {
+
+                if (e.matches) {
+                    if (self.slides.viewed > 2) {
+                        self.updateViewData(2);
+                    }
+                } else {
+                    if (self.slides.viewed < $(self.id).data("viewed")) {
+                        self.updateViewData(3);
+                    }
+                }
+            },
+            checkPhoneQuery = function (e) {
+
+                if (e.matches) {
+                    if (self.slides.viewed > 1) {
+                        self.updateViewData(1);
+                    }
+                } else {
+                    if (self.slides.viewed < $(self.id).data("viewed")) {
+                        self.updateViewData(2);
+                    }
+                }
+            };
+
+        if (phone.matches) {
+            if (self.slides.viewed > 1) {
+                self.updateViewData(1);
+            }
+        }
+        if (tablet.matches) {
+            if (self.slides.viewed > 2) {
+                self.updateViewData(2);
+            }
+        }
+        if (laptop.matches) {
+            if (self.slides.viewed > 3) {
+                self.updateViewData(3);
+            }
+        }
+        if (desktop.matches) {
+            self.updateViewData($(self.id).data("viewed"));
+        }
+
+        phone.addListener(checkPhoneQuery);
+        tablet.addListener(checkTabletQuery);
+        laptop.addListener(checkLaptopQuery);
+        desktop.addListener(checkDesktopQuery);
+
+        sliderResizer();
+        $(window).resize(sliderResizer);
+    };
     SliderConstructor.prototype.addNav = function () {
 
         function slideRight() {
@@ -295,104 +393,6 @@ let SeoClickSlider = function (params) {
 
         mc.on("swipeleft", slideRight);
         mc.on("swiperight", slideLeft);
-    };
-    SliderConstructor.prototype._initListeners = function () {
-        let self = this,
-            desktop = window.matchMedia(
-                "(min-width: " + self.responsiveData.desktop + ")"
-            ),
-            laptop = window.matchMedia(
-                "(max-width: " + self.responsiveData.laptop + ")"
-            ),
-            tablet = window.matchMedia(
-                "(max-width: " + self.responsiveData.tablet + ")"
-            ),
-            phone = window.matchMedia(
-                "(max-width: " + self.responsiveData.phone + ")"
-            );
-
-        let sliderResizer = function () {
-                let sliderWidth = $(self.id).width(),
-                    calcWidth,
-                    initWidth = $(self.id).data("initWidth");
-
-                calcWidth = Math.round((sliderWidth - self.spacers.width * (self.slides.viewed + 1)) / self.slides.viewed);
-
-                if (sliderWidth < self.viewWidth || calcWidth <= initWidth) {
-                    self.updateSlidesSize(calcWidth);
-                } else if (self.slides.maxWidth !== initWidth) {
-                    self.updateSlidesSize(initWidth);
-                }
-            },
-            checkDesktopQuery = function (e) {
-                if (e.matches) {
-                    console.log("desktop");
-                    self.updateViewData($(self.id).data("viewed"));
-                }
-            },
-            checkLaptopQuery = function (e) {
-                console.log("laptop");
-                if (e.matches) {
-                    if (self.slides.viewed > 3) {
-                        self.updateViewData(3);
-                    }
-                } else {
-                    if (self.slides.viewed < $(self.id).data("viewed")) {
-                        self.updateViewData($(self.id).data("viewed"));
-                    }
-                }
-            },
-            checkTabletQuery = function (e) {
-                console.log("tablet");
-                if (e.matches) {
-                    if (self.slides.viewed > 2) {
-                        self.updateViewData(2);
-                    }
-                } else {
-                    if (self.slides.viewed < $(self.id).data("viewed")) {
-                        self.updateViewData(3);
-                    }
-                }
-            },
-            checkPhoneQuery = function (e) {
-                console.log("phone");
-                if (e.matches) {
-                    if (self.slides.viewed > 1) {
-                        self.updateViewData(1);
-                    }
-                } else {
-                    if (self.slides.viewed < $(self.id).data("viewed")) {
-                        self.updateViewData(2);
-                    }
-                }
-            };
-
-        if (phone.matches) {
-            if (self.slides.viewed > 1) {
-                self.updateViewData(1);
-            }
-        }
-        if (tablet.matches) {
-            if (self.slides.viewed > 2) {
-                self.updateViewData(2);
-            }
-        }
-        if (laptop.matches) {
-            if (self.slides.viewed > 3) {
-                self.updateViewData(3);
-            }
-        }
-        if (desktop.matches) {
-            self.updateViewData($(self.id).data("viewed"));
-        }
-
-        phone.addListener(checkPhoneQuery);
-        tablet.addListener(checkTabletQuery);
-        laptop.addListener(checkLaptopQuery);
-        desktop.addListener(checkDesktopQuery);
-
-        sliderResizer();
-        $(window).resize(sliderResizer);
     };
 
     Object.defineProperty(SliderConstructor.prototype, "translate", {
