@@ -1,5 +1,6 @@
 "use strict";
 
+//TODO Исправить точечную навигации при отображении нескольких слайдов
 var SeoClickSlider = function SeoClickSlider(params) {
 
     var $ = jQuery;
@@ -403,10 +404,10 @@ var SeoClickSlider = function SeoClickSlider(params) {
         this.setViewData();
         //Данные смещение контейнера
         this.setTranslateData();
+        //Вешаем обработчики
+        this._initListeners();
         //Навигация
         this.addNav();
-
-        this._initListeners();
     };
     //Изменение количества отображаемых слайдов
     SliderConstructor.prototype.updateViewData = function (viewed) {
