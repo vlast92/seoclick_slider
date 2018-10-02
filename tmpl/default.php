@@ -82,7 +82,8 @@ $document->addScriptDeclaration('
             infiniteMode: ' . $infinite_mode . ',
             autoScroll: {
                 active: ' . $auto_scroll . ',
-                interval: ' . $auto_scroll_interval . '
+                interval: ' . $auto_scroll_interval . ',
+                animation_speed: '.$animation_speed.'
             }
         }),
         desc = $("#' . $id . '").find(".slide-description");

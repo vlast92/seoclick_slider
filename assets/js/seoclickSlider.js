@@ -14,7 +14,8 @@ var SeoClickSlider = function SeoClickSlider(params) {
         dotNav: params.dotNav,
         desc_block: params.desc_block,
         infiniteMode: params.infiniteMode,
-        autoScroll: params.autoScroll
+        autoScroll: params.autoScroll,
+        animation_speed: params.animation_speed
     });
 
     function SliderConstructor(arg) {
@@ -53,7 +54,8 @@ var SeoClickSlider = function SeoClickSlider(params) {
             infiniteMode: arg.infiniteMode,
             autoScroll: {
                 active: arg.autoScroll.active,
-                interval: arg.autoScroll.interval
+                interval: arg.autoScroll.interval,
+                animation_speed: arg.autoScroll.animation_speed
             }
         };
     }
@@ -383,7 +385,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
                 targets: this.id + " " + this.containerClass,
                 translateX: value,
                 easing: "easeInOutQuart",
-                duration: 500
+                duration: this.options.autoScroll.animation_speed
             });
         }
     });

@@ -19,7 +19,7 @@ JHtml::_('jquery.framework');
 $document = &JFactory::getDocument();
 $document->addScript($module_path . '/assets/js/anime.min.js');
 $document->addScript($module_path . '/assets/js/hammer.min.js');
-$document->addScript($module_path . '/assets/js/seoclickSlider.js?v=' . filemtime(dirname(__FILE__) . '/assets/js/seoclickSlider.js'));
+$document->addScript($module_path . '/assets/js/seoclickSlider.min.js?v=' . filemtime(dirname(__FILE__) . '/assets/js/seoclickSlider.min.js'));
 $document->addStyleSheet($module_path . '/assets/css/seoclick_slider_styles.css?v=' . filemtime(dirname(__FILE__) . '/assets/css/seoclick_slider_styles.css'));
 
 $slides = json_decode(json_encode($params->get("slides")), true);
@@ -32,6 +32,7 @@ $infinite_mode = $params->get('infinite_mode');
 $show_neighbor_slides = $params->get('neighbor_slides');
 $auto_scroll = $params->get('auto_scroll');
 $auto_scroll_interval = $params->get('auto_scroll_interval','2000');
+$animation_speed = $params->get('animation_speed', '800');
 $slides_viewed = $params->get('slides_viewed', 1);
 
 $moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));

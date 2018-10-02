@@ -74,6 +74,11 @@
                         type="number"
                         label="MOD_SEOCLICK_SLIDER_AUTO_SCROLL_INTERVAL_LABEL"
                         min="0"/>
+                <field
+                        name="animation_speed"
+                        type="number"
+                        label="MOD_SEOCLICK_SLIDER_ANIMATION_SPEED"
+                        min="0"/>
                 <field name="nav_type" type="list" default="" required="true" label="MOD_SEOCLICK_SLIDER_NAVTYPE"
                        description="">
                     <option value="">MOD_SEOCLICK_SLIDER_NAVTYPE</option>
