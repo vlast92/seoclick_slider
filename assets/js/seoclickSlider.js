@@ -1,6 +1,7 @@
 "use strict";
 
 //TODO Исправить точечную навигации при отображении нескольких слайдов
+//TODO Сделать рефакторинг кода
 var SeoClickSlider = function SeoClickSlider(params) {
 
     var $ = jQuery;
@@ -10,12 +11,14 @@ var SeoClickSlider = function SeoClickSlider(params) {
         viewed: params.viewed,
         spacerWidth: params.spacerWidth,
         imageWidth: params.imageWidth,
+        imageHeight: params.imageHeight,
         arrowNav: params.arrowNav,
         dotNav: params.dotNav,
         desc_block: params.desc_block,
         infiniteMode: params.infiniteMode,
         autoScroll: params.autoScroll,
-        animation_speed: params.animation_speed
+        animation_speed: params.animation_speed,
+        lazy_load: params.lazy_load
     });
 
     function SliderConstructor(arg) {
@@ -35,7 +38,8 @@ var SeoClickSlider = function SeoClickSlider(params) {
             object: null,
             count: null,
             viewed: arg.viewed,
-            maxWidth: arg.imageWidth
+            maxWidth: arg.imageWidth,
+            maxHeight: arg.imageHeight
         };
         this.spacers = {
             count: null,
@@ -53,10 +57,12 @@ var SeoClickSlider = function SeoClickSlider(params) {
             desc_block: arg.desc_block,
             infiniteMode: arg.infiniteMode,
             autoScroll: {
+                handle: null,
                 active: arg.autoScroll.active,
                 interval: arg.autoScroll.interval,
                 animation_speed: arg.autoScroll.animation_speed
-            }
+            },
+            lazy_load: arg.lazy_load
         };
     }
 
@@ -64,6 +70,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
         this.slides.object = $(this.id).find(".slide");
         //Размер слайда
         this.slides.object.outerWidth(this.slides.maxWidth);
+        this.slides.object.outerHeight(this.slides.maxHeight);
         //Кол. слайдов
         this.slides.count = this.slides.object.length;
     };
@@ -74,8 +81,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
     };
     SliderConstructor.prototype.setViewData = function () {
         this.viewWidth = this.slides.maxWidth * this.slides.viewed + this.spacers.width * (this.slides.viewed + 1);
-
-        this.viewHeight = $(this.id).find('.slides-container').outerHeight(true);
+        this.viewHeight = this.container.outerHeight(true);
         $(this.id).find(".slider-view").outerWidth(this.viewWidth).outerHeight(this.viewHeight);
     };
     SliderConstructor.prototype.setTranslateData = function () {
@@ -101,7 +107,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
             if (sliderWidth < self.viewWidth || calcWidth <= initWidth) {
                 self.updateSlidesSize(calcWidth);
-            } else if (self.slides.maxWidth !== initWidth) {
+            } else {
                 self.updateSlidesSize(initWidth);
             }
         },
@@ -172,7 +178,52 @@ var SeoClickSlider = function SeoClickSlider(params) {
         laptop.addListener(checkLaptopQuery);
         desktop.addListener(checkDesktopQuery);
 
-        sliderResizer();
+        if (self.options.lazy_load) {
+            var lazy_flag = true,
+                image_observer_callback = function image_observer_callback(entries, observer) {
+
+                entries.forEach(function (entry) {
+
+                    var isIntersecting = entry.isIntersecting;
+
+                    if (isIntersecting) {
+                        $(entry.target).attr('src', $(entry.target).attr('ref'));
+                        if (lazy_flag) {
+                            $(entry.target).load(function () {
+                                self.slides.maxHeight = self.slides.object.find('img').outerHeight(true);
+                                sliderResizer();
+                            });
+                            lazy_flag = false;
+                        }
+                        observer.disconnect();
+                    }
+                });
+            },
+                slider_observer = new IntersectionObserver(function (entries, observer) {
+
+                entries.forEach(function (entry) {
+
+                    var isIntersecting = entry.isIntersecting;
+                    if (isIntersecting) {
+                        var images = $(self.id).find('.slide img');
+                        $.each(images, function (index, image) {
+
+                            var image_observer = new IntersectionObserver(image_observer_callback, {
+                                root: $(self.id).get(0),
+                                rootMargin: '200px'
+                            });
+                            image_observer.observe(image);
+                        });
+                        observer.disconnect();
+                    }
+                });
+            }, {
+                rootMargin: '200px'
+            });
+            slider_observer.observe(document.getElementById(self.id.slice(1)));
+        } else {
+            sliderResizer();
+        }
         $(window).resize(sliderResizer);
     };
     SliderConstructor.prototype.addNav = function () {
@@ -224,7 +275,6 @@ var SeoClickSlider = function SeoClickSlider(params) {
                 self.translate = self.translateData.min;
             }
         }
-
         function slideLeft() {
 
             var x = self.translateData.value - self.translateData.step;
@@ -273,7 +323,6 @@ var SeoClickSlider = function SeoClickSlider(params) {
                 self.translate = self.translateData.max;
             }
         }
-
         function addArrowNav() {
             "use strict";
 
@@ -291,7 +340,6 @@ var SeoClickSlider = function SeoClickSlider(params) {
                 }
             });
         }
-
         function addDotNav() {
             "use strict";
 
@@ -326,7 +374,6 @@ var SeoClickSlider = function SeoClickSlider(params) {
                 translate_value += self.translateData.step;
             });
         }
-
         function addSlidesDescData() {
             "use strict";
 
@@ -339,7 +386,6 @@ var SeoClickSlider = function SeoClickSlider(params) {
                 translate_value += self.translateData.step;
             });
         }
-
         function activateSlideDesc(number) {
             "use strict";
 
@@ -362,7 +408,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
         if (self.options.autoScroll.active) {
             var isPaused = false;
 
-            window.setInterval(function () {
+            self.options.autoScroll.handle = window.setInterval(function () {
                 if (!isPaused) slideRight();
             }, self.options.autoScroll.interval);
 
@@ -408,8 +454,6 @@ var SeoClickSlider = function SeoClickSlider(params) {
         this.setTranslateData();
         //Вешаем обработчики
         this._initListeners();
-        //Навигация
-        this.addNav();
     };
     //Изменение количества отображаемых слайдов
     SliderConstructor.prototype.updateViewData = function (viewed) {
@@ -433,6 +477,26 @@ var SeoClickSlider = function SeoClickSlider(params) {
         this.setViewData();
         //Данные смещение контейнера
         this.setTranslateData();
+        //Обновление навигации
+        this.updateNav();
+        //Обновление высоты слайдера
+        this.updateSlidesHeight();
+    };
+    //Обновление высоты слайдера
+    SliderConstructor.prototype.updateSlidesHeight = function () {
+        this.slides.maxHeight = this.slides.object.find('> *').outerHeight(true);
+
+        //Данные слайдов
+        this.setSlidesData();
+        //Данные области отображения
+        this.setViewData();
+    };
+    SliderConstructor.prototype.updateNav = function () {
+
+        window.clearInterval(this.options.autoScroll.handle);
+        if (this.options.arrowNav) $(this.id).find('.arrow-nav').remove();
+        if (this.options.dotNav) $(this.id).find('.dot-nav').remove();
+        this.addNav();
     };
 
     slider.initializeSlider();

@@ -16,8 +16,10 @@
         <folder>tmpl</folder>
         <folder>language</folder>
         <folder>assets</folder>
+        <folder>sources</folder>
         <filename>mod_seoclick_slider.xml</filename>
         <filename>helper.php</filename>
+        <filename>index.html</filename>
     </files>
 
     <!-- Update servers -->
@@ -37,11 +39,13 @@
                 <field
                         name="images_width"
                         type="number"
+                        required="true"
                         label="MOD_SEOCLICK_SLIDER_IMAGES_WIDTH"
                         min="0"/>
                 <field
                         name="images_height"
                         type="number"
+                        required="true"
                         label="MOD_SEOCLICK_SLIDER_IMAGES_HEIGHT"
                         min="0"/>
                 <field name="resize_method" type="list" default="none" label="MOD_SEOCLICK_SLIDER_METHOD_LABEL">
@@ -112,6 +116,15 @@
                         type="radio"
                         default="0"
                         label="MOD_SEOCLICK_SLIDER_NEIGHBOR_SLIDES_LABEL"
+                        class="btn-group btn-group-yesno">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field
+                        name="lazy_load"
+                        type="radio"
+                        default="0"
+                        label="MOD_SEOCLICK_SLIDER_LAZY_LOAD_LABEL"
                         class="btn-group btn-group-yesno">
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>

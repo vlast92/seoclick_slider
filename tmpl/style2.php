@@ -24,7 +24,7 @@ $id = 'seoclick-slider_' . rand(1, 9999999);
                             <div class="slide-content">
                                 <?php if($counter%2 == 0):?>
                                 <div class="image">
-                                    <img src="/<?= $slide['image'] ?>" alt="slide_<?= $counter++ ?>"/>
+                                    <img <?php if($lazy_load):?>ref<?php else:?>src<?php endif;?>="/<?= $slide['image'] ?>" alt="slide_<?= $counter++ ?>"/>
                                 </div>
                                     <?php if ($desc_block): ?>
                                     <div class="slide-description">
@@ -99,7 +99,8 @@ $document->addScriptDeclaration('
                 active: ' . $auto_scroll . ',
                 interval: ' . $auto_scroll_interval . ',
                 animation_speed: '.$animation_speed.'
-            }
+            },
+            lazy_load: '.$lazy_load.'
         }),
         desc = $("#' . $id . '").find(".slide-description");
         $("#' . $id . '").find(".slides-description").css("min-height", desc.outerHeight(true)); 

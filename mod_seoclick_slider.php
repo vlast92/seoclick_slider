@@ -34,6 +34,7 @@ $auto_scroll = $params->get('auto_scroll');
 $auto_scroll_interval = $params->get('auto_scroll_interval','2000');
 $animation_speed = $params->get('animation_speed', '800');
 $slides_viewed = $params->get('slides_viewed', 1);
+$lazy_load = $params->get('lazy_load', 0);
 
 $moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
 

@@ -23,7 +23,7 @@ $id = 'seoclick-slider_' . rand(1, 9999999);
                         <div class="slide">
                             <div class="slide-content">
                                 <div class="image">
-                                    <img src="/<?= $slide['image'] ?>" alt="slide_<?= $counter++ ?>"/>
+                                    <img <?php if($lazy_load):?>ref<?php else:?>src<?php endif;?>="/<?= $slide['image'] ?>" alt="slide_<?= $counter++ ?>"/>
                                 </div>
                             </div>
                         </div>
@@ -69,7 +69,7 @@ switch ($nav_type)
 		$nav = 'arrowNav: true, dotNav: true';
 }
 $document->addScriptDeclaration('
-    jQuery(window).load(function() {
+    jQuery(document).ready(function() {
      
     let $ = jQuery,
         slider = new SeoClickSlider({
@@ -77,6 +77,7 @@ $document->addScriptDeclaration('
             viewed: ' . $slides_viewed . ',
             spacerWidth: ' . $images_space . ',
             imageWidth: ' . $images_width . ',
+            imageHeight: '.$images_height.',
             ' . $nav . ',
             desc_block: ' . $desc_block . ',
             infiniteMode: ' . $infinite_mode . ',
@@ -84,7 +85,8 @@ $document->addScriptDeclaration('
                 active: ' . $auto_scroll . ',
                 interval: ' . $auto_scroll_interval . ',
                 animation_speed: '.$animation_speed.'
-            }
+            },
+            lazy_load: '.$lazy_load.'
         }),
         desc = $("#' . $id . '").find(".slide-description");
         $("#' . $id . '").find(".slides-description").css("min-height", desc.outerHeight(true)); 
