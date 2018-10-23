@@ -15,19 +15,17 @@ $id = 'seoclick-slider_' . rand(1, 9999999);
         <div class="slides-wrap">
             <div class="slider-view" <? if (!$show_neighbor_slides): ?>style="overflow: hidden"<? endif; ?>>
                 <div class="slides-container">
-					<?php $counter = 2; ?>
 					<?php foreach ($slides as $index => $slide): ?>
 						<?php if (!empty($slide['url'])): ?>
                             <a href="<?= $slide['url']; ?>" <?php if ($slide['url_open']): ?>target="_blank"<?php endif; ?> rel="nofollow noopener noreferrer">
 						<?php endif; ?>
                         <div class="slide">
                             <div class="slide-content">
-                                <?php if($counter%2 == 0):?>
                                 <div class="image">
                                     <img <?php if($lazy_load):?>ref<?php else:?>src<?php endif;?>="/<?= $slide['image'] ?>" alt="slide_<?= $counter++ ?>"/>
                                 </div>
                                     <?php if ($desc_block): ?>
-                                    <div class="slide-description">
+                                    <div class="slide-description" style="min-height: 60px">
 			                            <?php if(!empty($slide['header'])):?>
                                         <div class="content top"><span class="name"><?= $slide['header'] ?></span></div>
 			                            <?php endif;?>
@@ -38,23 +36,6 @@ $id = 'seoclick-slider_' . rand(1, 9999999);
 				                        <?php endif;?>
                                     </div>
                                     <?php endif;?>
-                                <?php else:?>
-	                                <?php if ($desc_block): ?>
-                                        <div class="slide-description">
-                                            <?php if(!empty($slide['header'])):?>
-                                            <div class="content top"><span class="name"><?= $slide['header'] ?></span></div>
-                                            <?php endif;?>
-			                                <?php if(!empty($slide['description'])):?>
-                                            <div class="content bottom">
-				                                <?= $slide['description'] ?>
-                                            </div>
-			                                <?php endif;?>
-                                        </div>
-	                                <?php endif;?>
-                                    <div class="image">
-                                        <img src="/<?= $slide['image'] ?>" alt="slide_<?= $counter++ ?>"/>
-                                    </div>
-                                <?php endif;?>
                             </div>
                         </div>
 						<?php if (!empty($slide['url'])): ?>
@@ -92,6 +73,7 @@ $document->addScriptDeclaration('
             viewed: ' . $slides_viewed . ',
             spacerWidth: ' . $images_space . ',
             imageWidth: ' . $images_width . ',
+            imageHeight: ' . $images_height . ',
             ' . $nav . ',
             desc_block: false,
             infiniteMode: ' . $infinite_mode . ',

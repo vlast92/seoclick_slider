@@ -38,8 +38,10 @@ var SeoClickSlider = function SeoClickSlider(params) {
             object: null,
             count: null,
             viewed: arg.viewed,
-            maxWidth: arg.imageWidth,
-            maxHeight: arg.imageHeight
+            imageWidth: arg.imageWidth,
+            imageHeight: arg.imageHeight,
+            maxWidth: null,
+            maxHeight: null
         };
         this.spacers = {
             count: null,
@@ -67,10 +69,22 @@ var SeoClickSlider = function SeoClickSlider(params) {
     }
 
     SliderConstructor.prototype.setSlidesData = function () {
+
         this.slides.object = $(this.id).find(".slide");
+
         //Размер слайда
+        this.slides.object.find('img').outerWidth(this.slides.imageWidth);
+        this.slides.object.find('img').outerHeight(this.slides.imageHeight);
+
+        if (this.slides.maxWidth === null) {
+            this.slides.maxWidth = this.slides.object.outerWidth();
+        }
+        this.slides.object.css("height", '');
+        this.slides.maxHeight = this.slides.object.outerHeight();
+
         this.slides.object.outerWidth(this.slides.maxWidth);
         this.slides.object.outerHeight(this.slides.maxHeight);
+
         //Кол. слайдов
         this.slides.count = this.slides.object.length;
     };
@@ -100,15 +114,25 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
         var sliderResizer = function sliderResizer() {
             var sliderWidth = $(self.id).width(),
-                calcWidth = void 0,
-                initWidth = $(self.id).data("initWidth");
+                calcSlideWidth = void 0,
+                calcImageWidth = void 0,
+                calcImageHeight = void 0,
+                initSlideWidth = $(self.id).data("initSlideWidth"),
+                initImageWidth = $(self.id).data("initImageWidth"),
+                initImageHeight = $(self.id).data("initImageHeight");
 
-            calcWidth = Math.round((sliderWidth - self.spacers.width * (self.slides.viewed + 1)) / self.slides.viewed);
+            calcSlideWidth = Math.round((sliderWidth - self.spacers.width * (self.slides.viewed + 1)) / self.slides.viewed);
 
-            if (sliderWidth < self.viewWidth || calcWidth <= initWidth) {
-                self.updateSlidesSize(calcWidth);
+            var difference = initSlideWidth - calcSlideWidth,
+                ratio = initImageWidth / initImageHeight;
+
+            calcImageWidth = initImageWidth - difference;
+            calcImageHeight = initImageHeight - difference / ratio;
+
+            if (sliderWidth < self.viewWidth || calcSlideWidth <= initSlideWidth) {
+                self.updateSlidesSize(calcSlideWidth, calcImageWidth, calcImageHeight);
             } else {
-                self.updateSlidesSize(initWidth);
+                self.updateSlidesSize(initSlideWidth, initImageWidth, initImageHeight);
             }
         },
             checkDesktopQuery = function checkDesktopQuery(e) {
@@ -440,10 +464,14 @@ var SeoClickSlider = function SeoClickSlider(params) {
     SliderConstructor.prototype.initializeSlider = function () {
 
         $(this.id).data("viewed", this.slides.viewed);
-        $(this.id).data("initWidth", this.slides.maxWidth);
 
         //Данные слайдов
         this.setSlidesData();
+
+        $(this.id).data("initSlideWidth", this.slides.maxWidth);
+        $(this.id).data("initImageWidth", this.slides.imageWidth);
+        $(this.id).data("initImageHeight", this.slides.imageHeight);
+
         //Кол. промежутков
         this.spacers.count = this.slides.count - 1;
         //Данные контейнера
@@ -463,9 +491,11 @@ var SeoClickSlider = function SeoClickSlider(params) {
         this.setTranslateData();
     };
     //Изменение размера слайдов
-    SliderConstructor.prototype.updateSlidesSize = function (width) {
+    SliderConstructor.prototype.updateSlidesSize = function (maxSlideWidth, maxImageWidth, maxImageHeight) {
 
-        this.slides.maxWidth = width;
+        this.slides.maxWidth = maxSlideWidth;
+        this.slides.imageWidth = maxImageWidth;
+        this.slides.imageHeight = maxImageHeight;
 
         //Данные слайдов
         this.setSlidesData();
@@ -479,17 +509,6 @@ var SeoClickSlider = function SeoClickSlider(params) {
         this.setTranslateData();
         //Обновление навигации
         this.updateNav();
-        //Обновление высоты слайдера
-        this.updateSlidesHeight();
-    };
-    //Обновление высоты слайдера
-    SliderConstructor.prototype.updateSlidesHeight = function () {
-        this.slides.maxHeight = this.slides.object.find('> *').outerHeight(true);
-
-        //Данные слайдов
-        this.setSlidesData();
-        //Данные области отображения
-        this.setViewData();
     };
     SliderConstructor.prototype.updateNav = function () {
 
