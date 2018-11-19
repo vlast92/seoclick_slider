@@ -69,22 +69,21 @@ let SeoClickSlider = function (params) {
     SliderConstructor.prototype.setSlidesData = function () {
 
         this.slides.object = $(this.id).find(".slide");
+        //Кол. слайдов
+        this.slides.count = this.slides.object.length;
 
         //Размер слайда
         this.slides.object.find('img').outerWidth(this.slides.imageWidth);
         this.slides.object.find('img').outerHeight(this.slides.imageHeight);
 
-        if(this.slides.maxWidth === null){
-            this.slides.maxWidth = this.slides.object.outerWidth();
+        if (this.slides.maxWidth === null) {
+            this.slides.maxWidth = ($(this.id).outerWidth() / this.slides.viewed) - this.spacers.width * 2;
         }
         this.slides.object.css("height", '');
         this.slides.maxHeight = this.slides.object.outerHeight();
 
         this.slides.object.outerWidth(this.slides.maxWidth);
         this.slides.object.outerHeight(this.slides.maxHeight);
-
-        //Кол. слайдов
-        this.slides.count = this.slides.object.length;
     };
     SliderConstructor.prototype.setContainerData = function () {
         this.containerWidth =
@@ -366,10 +365,10 @@ let SeoClickSlider = function (params) {
             if (!self.options.infiniteMode) extraClass = 'disabled';
             let markup = `<div class="arrow-nav">
                             <div class="slider-prev ${extraClass}">
-                                <i class="fa fa-chevron-left fa-4x" aria-hidden="true"></i>
+                                <i class="fa fa-angle-left fa-4x" aria-hidden="true"></i>
                             </div>
                             <div class="slider-next">
-                                <i class="fa fa-chevron-right fa-4x" aria-hidden="true"></i>
+                                <i class="fa fa-angle-right fa-4x" aria-hidden="true"></i>
                             </div>
                           </div>`;
 
@@ -391,7 +390,6 @@ let SeoClickSlider = function (params) {
 
             $.each(self.slides.object, function (index) {
 
-                "use strict";
                 let dot_element = $("<span class='slideControl'></span>");
 
                 if (index === 0) {

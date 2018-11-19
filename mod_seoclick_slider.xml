@@ -77,7 +77,8 @@
                         name="auto_scroll_interval"
                         type="number"
                         label="MOD_SEOCLICK_SLIDER_AUTO_SCROLL_INTERVAL_LABEL"
-                        min="0"/>
+                        min="0"
+                        showon="auto_scroll:1"/>
                 <field
                         name="animation_speed"
                         type="number"

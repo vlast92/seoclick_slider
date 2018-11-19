@@ -71,22 +71,21 @@ var SeoClickSlider = function SeoClickSlider(params) {
     SliderConstructor.prototype.setSlidesData = function () {
 
         this.slides.object = $(this.id).find(".slide");
+        //Кол. слайдов
+        this.slides.count = this.slides.object.length;
 
         //Размер слайда
         this.slides.object.find('img').outerWidth(this.slides.imageWidth);
         this.slides.object.find('img').outerHeight(this.slides.imageHeight);
 
         if (this.slides.maxWidth === null) {
-            this.slides.maxWidth = this.slides.object.outerWidth();
+            this.slides.maxWidth = $(this.id).outerWidth() / this.slides.viewed - this.spacers.width * 2;
         }
         this.slides.object.css("height", '');
         this.slides.maxHeight = this.slides.object.outerHeight();
 
         this.slides.object.outerWidth(this.slides.maxWidth);
         this.slides.object.outerHeight(this.slides.maxHeight);
-
-        //Кол. слайдов
-        this.slides.count = this.slides.object.length;
     };
     SliderConstructor.prototype.setContainerData = function () {
         this.containerWidth = this.slides.maxWidth * this.slides.count + this.spacers.count * this.spacers.width;
@@ -352,7 +351,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
             var extraClass = '';
             if (!self.options.infiniteMode) extraClass = 'disabled';
-            var markup = "<div class=\"arrow-nav\">\n                            <div class=\"slider-prev " + extraClass + "\">\n                                <i class=\"fa fa-chevron-left fa-4x\" aria-hidden=\"true\"></i>\n                            </div>\n                            <div class=\"slider-next\">\n                                <i class=\"fa fa-chevron-right fa-4x\" aria-hidden=\"true\"></i>\n                            </div>\n                          </div>";
+            var markup = "<div class=\"arrow-nav\">\n                            <div class=\"slider-prev " + extraClass + "\">\n                                <i class=\"fa fa-angle-left fa-4x\" aria-hidden=\"true\"></i>\n                            </div>\n                            <div class=\"slider-next\">\n                                <i class=\"fa fa-angle-right fa-4x\" aria-hidden=\"true\"></i>\n                            </div>\n                          </div>";
 
             $(self.id).append(markup);
             $(self.id).find(".arrow-nav > div i").click(function () {
@@ -371,8 +370,6 @@ var SeoClickSlider = function SeoClickSlider(params) {
             $(self.id).append(dotnav_container);
 
             $.each(self.slides.object, function (index) {
-
-                "use strict";
 
                 var dot_element = $("<span class='slideControl'></span>");
 
