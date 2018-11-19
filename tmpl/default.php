@@ -78,6 +78,7 @@ $document->addScriptDeclaration('
             spacerWidth: ' . $images_space . ',
             imageWidth: ' . $images_width . ',
             imageHeight: '.$images_height.',
+            slideWidth: '.$slide_width.',
             ' . $nav . ',
             desc_block: ' . $desc_block . ',
             infiniteMode: ' . $infinite_mode . ',

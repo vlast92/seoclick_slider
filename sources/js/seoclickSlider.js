@@ -10,6 +10,7 @@ let SeoClickSlider = function (params) {
         spacerWidth: params.spacerWidth,
         imageWidth: params.imageWidth,
         imageHeight: params.imageHeight,
+        slideWidth: params.slideWidth,
         arrowNav: params.arrowNav,
         dotNav: params.dotNav,
         desc_block: params.desc_block,
@@ -38,7 +39,7 @@ let SeoClickSlider = function (params) {
             viewed: arg.viewed,
             imageWidth: arg.imageWidth,
             imageHeight: arg.imageHeight,
-            maxWidth: null,
+            maxWidth: arg.slideWidth,
             maxHeight: null
         };
         this.spacers = {
@@ -492,6 +493,8 @@ let SeoClickSlider = function (params) {
         this.setTranslateData();
         //Вешаем обработчики
         this._initListeners();
+        //Обновление навигации
+        this.updateNav();
     };
     //Изменение количества отображаемых слайдов
     SliderConstructor.prototype.updateViewData = function (viewed) {
