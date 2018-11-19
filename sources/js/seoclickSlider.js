@@ -78,7 +78,7 @@ let SeoClickSlider = function (params) {
         this.slides.object.find('img').outerHeight(this.slides.imageHeight);
 
         if (this.slides.maxWidth === null) {
-            this.slides.maxWidth = ($(this.id).outerWidth() / this.slides.viewed) - this.spacers.width * 2;
+            this.slides.maxWidth = this.slides.object.outerWidth();
         }
         this.slides.object.css("height", '');
         this.slides.maxHeight = this.slides.object.outerHeight();
@@ -455,8 +455,12 @@ let SeoClickSlider = function (params) {
             $(self.id).mouseleave(() => isPaused = false);
         }
 
-        mc.on("swipeleft", slideRight);
-        mc.on("swiperight", slideLeft);
+        mc.on("swipeleft", function () {
+            slideRight();
+        });
+        mc.on("swiperight", function () {
+            slideLeft();
+        });
     };
 
     Object.defineProperty(SliderConstructor.prototype, "translate", {
