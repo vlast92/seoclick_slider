@@ -24,6 +24,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
     function SliderConstructor(arg) {
         this.id = arg.id;
+        this.state = null;
         this.container = null;
         this.containerClass = ".slides-container";
         this.containerWidth = null;
@@ -254,7 +255,11 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
         function slideRight() {
 
-            var x = self.translateData.value + self.translateData.step;
+            if (self.state !== null) return 0;
+            self.state = 'animated';
+
+            var x = self.translateData.value + self.translateData.step,
+                dotnav_container = $(self.id).find(".dot-nav");
             if (x >= self.translateData.max) {
                 if (self.options.arrowNav && !self.options.infiniteMode) {
                     if (x === self.translateData.max) {
@@ -301,7 +306,12 @@ var SeoClickSlider = function SeoClickSlider(params) {
         }
         function slideLeft() {
 
-            var x = self.translateData.value - self.translateData.step;
+            if (self.state !== null) return 0;
+            self.state = 'animated';
+
+            var x = self.translateData.value - self.translateData.step,
+                dotnav_container = $(self.id).find(".dot-nav");
+
             if (x <= self.translateData.min) {
                 if (self.options.arrowNav && !self.options.infiniteMode) {
                     if (x === self.translateData.min) {
@@ -355,9 +365,9 @@ var SeoClickSlider = function SeoClickSlider(params) {
             var markup = "<div class=\"arrow-nav\">\n                            <div class=\"slider-prev " + extraClass + "\">\n                                <i class=\"fa fa-angle-left fa-4x\" aria-hidden=\"true\"></i>\n                            </div>\n                            <div class=\"slider-next\">\n                                <i class=\"fa fa-angle-right fa-4x\" aria-hidden=\"true\"></i>\n                            </div>\n                          </div>";
 
             $(self.id).append(markup);
-            $(self.id).find(".arrow-nav > div i").click(function () {
+            $(self.id).find(".arrow-nav > div").click(function () {
 
-                if ($(this).parent().hasClass("slider-next")) {
+                if ($(this).hasClass("slider-next")) {
                     slideRight();
                 } else {
                     slideLeft();
@@ -452,12 +462,18 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
     Object.defineProperty(SliderConstructor.prototype, "translate", {
         set: function set(value) {
-            this.translateData.value = value;
+
+            var self = this;
+
+            self.translateData.value = value;
             anime({
                 targets: this.id + " " + this.containerClass,
                 translateX: value,
                 easing: "easeInOutQuart",
-                duration: this.options.autoScroll.animation_speed
+                duration: this.options.autoScroll.animation_speed,
+                complete: function complete() {
+                    self.state = null;
+                }
             });
         }
     });

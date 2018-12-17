@@ -22,6 +22,7 @@ let SeoClickSlider = function (params) {
 
     function SliderConstructor(arg) {
         this.id = arg.id;
+        this.state = null;
         this.container = null;
         this.containerClass = ".slides-container";
         this.containerWidth = null;
@@ -271,7 +272,11 @@ let SeoClickSlider = function (params) {
 
         function slideRight() {
 
-            let x = self.translateData.value + self.translateData.step;
+            if(self.state !== null) return 0;
+            self.state = 'animated';
+
+            let x = self.translateData.value + self.translateData.step,
+                dotnav_container = $(self.id).find(".dot-nav");
             if (x >= self.translateData.max) {
                 if (self.options.arrowNav && !self.options.infiniteMode) {
                     if (x === self.translateData.max) {
@@ -316,7 +321,12 @@ let SeoClickSlider = function (params) {
         }
         function slideLeft() {
 
-            let x = self.translateData.value - self.translateData.step;
+            if(self.state !== null) return 0;
+            self.state = 'animated';
+
+            let x = self.translateData.value - self.translateData.step,
+                dotnav_container = $(self.id).find(".dot-nav");
+
             if (x <= self.translateData.min) {
                 if (self.options.arrowNav && !self.options.infiniteMode) {
                     if (x === self.translateData.min) {
@@ -374,9 +384,9 @@ let SeoClickSlider = function (params) {
                           </div>`;
 
             $(self.id).append(markup);
-            $(self.id).find(".arrow-nav > div i").click(function () {
+            $(self.id).find(".arrow-nav > div").click(function () {
 
-                if ($(this).parent().hasClass("slider-next")) {
+                if ($(this).hasClass("slider-next")) {
                     slideRight();
                 } else {
                     slideLeft();
@@ -455,22 +465,29 @@ let SeoClickSlider = function (params) {
             $(self.id).mouseleave(() => isPaused = false);
         }
 
-        mc.on("swipeleft", function () {
+        mc.on("swipeleft", function (){
             slideRight();
         });
         mc.on("swiperight", function () {
             slideLeft();
         });
+
     };
 
     Object.defineProperty(SliderConstructor.prototype, "translate", {
         set: function (value) {
-            this.translateData.value = value;
+
+            let self = this;
+
+            self.translateData.value = value;
             anime({
                 targets: this.id + " " + this.containerClass,
                 translateX: value,
                 easing: "easeInOutQuart",
-                duration: this.options.autoScroll.animation_speed
+                duration: this.options.autoScroll.animation_speed,
+                complete: function(){
+                    self.state = null;
+                }
             });
         }
     });
