@@ -42,6 +42,7 @@ $moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
 
 foreach($slides as $key=>$slide ){
 	$image_info = getimagesize($_SERVER['DOCUMENT_ROOT'].'/'.$slide['image']);
+	$slides[$key]['image_orig'] = $slide['image'];
 
 	switch ($params->get('resize_method')){
 		case 'crop':
