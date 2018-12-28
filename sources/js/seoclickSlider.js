@@ -1,5 +1,3 @@
-//TODO Исправить точечную навигации при отображении нескольких слайдов
-//TODO Сделать рефакторинг кода
 let SeoClickSlider = function (params) {
 
     let $ = jQuery;
@@ -116,6 +114,7 @@ let SeoClickSlider = function (params) {
             this.translateData.step * this.spacers.count +
             this.translateData.min -
             this.translateData.step * (this.slides.viewed - 1);
+        this.translateData.step *= this.slides.viewed;
     };
     SliderConstructor.prototype._initListeners = function () {
         let self = this,
@@ -270,13 +269,14 @@ let SeoClickSlider = function (params) {
     };
     SliderConstructor.prototype.addNav = function () {
 
-        function slideRight() {
+        function moveSlidesLeft() {
 
             if(self.state !== null) return 0;
             self.state = 'animated';
 
             let x = self.translateData.value + self.translateData.step,
                 dotnav_container = $(self.id).find(".dot-nav");
+
             if (x >= self.translateData.max) {
                 if (self.options.arrowNav && !self.options.infiniteMode) {
                     if (x === self.translateData.max) {
@@ -319,7 +319,7 @@ let SeoClickSlider = function (params) {
                 self.translate = self.translateData.min;
             }
         }
-        function slideLeft() {
+        function moveSlidesRight() {
 
             if(self.state !== null) return 0;
             self.state = 'animated';
@@ -387,9 +387,9 @@ let SeoClickSlider = function (params) {
             $(self.id).find(".arrow-nav > div").click(function () {
 
                 if ($(this).hasClass("slider-next")) {
-                    slideRight();
+                    moveSlidesLeft();
                 } else {
-                    slideLeft();
+                    moveSlidesRight();
                 }
             });
         }
@@ -400,6 +400,8 @@ let SeoClickSlider = function (params) {
             $(self.id).append(dotnav_container);
 
             $.each(self.slides.object, function (index) {
+
+                if(translate_value < self.translateData.max) return 1;
 
                 let dot_element = $("<span class='slideControl'></span>");
 
@@ -458,7 +460,7 @@ let SeoClickSlider = function (params) {
             let isPaused = false;
 
             self.options.autoScroll.handle = window.setInterval(() => {
-                if (!isPaused) slideRight();
+                if (!isPaused) moveSlidesLeft();
             }, self.options.autoScroll.interval);
 
             $(self.id).mouseenter(() => isPaused = true);
@@ -466,10 +468,10 @@ let SeoClickSlider = function (params) {
         }
 
         mc.on("swipeleft", function (){
-            slideRight();
+            moveSlidesLeft();
         });
         mc.on("swiperight", function () {
-            slideLeft();
+            moveSlidesRight();
         });
 
     };

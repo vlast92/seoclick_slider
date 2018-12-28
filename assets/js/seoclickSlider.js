@@ -1,7 +1,5 @@
 "use strict";
 
-//TODO Исправить точечную навигации при отображении нескольких слайдов
-//TODO Сделать рефакторинг кода
 var SeoClickSlider = function SeoClickSlider(params) {
 
     var $ = jQuery;
@@ -105,6 +103,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
         this.container.css("transform", "translateX(" + this.translateData.value + "px)");
         this.translateData.step = -(this.spacers.width + this.slides.maxWidth);
         this.translateData.max = this.translateData.step * this.spacers.count + this.translateData.min - this.translateData.step * (this.slides.viewed - 1);
+        this.translateData.step *= this.slides.viewed;
     };
     SliderConstructor.prototype._initListeners = function () {
         var self = this,
@@ -253,13 +252,14 @@ var SeoClickSlider = function SeoClickSlider(params) {
     };
     SliderConstructor.prototype.addNav = function () {
 
-        function slideRight() {
+        function moveSlidesLeft() {
 
             if (self.state !== null) return 0;
             self.state = 'animated';
 
             var x = self.translateData.value + self.translateData.step,
                 dotnav_container = $(self.id).find(".dot-nav");
+
             if (x >= self.translateData.max) {
                 if (self.options.arrowNav && !self.options.infiniteMode) {
                     if (x === self.translateData.max) {
@@ -304,7 +304,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
                 self.translate = self.translateData.min;
             }
         }
-        function slideLeft() {
+        function moveSlidesRight() {
 
             if (self.state !== null) return 0;
             self.state = 'animated';
@@ -368,9 +368,9 @@ var SeoClickSlider = function SeoClickSlider(params) {
             $(self.id).find(".arrow-nav > div").click(function () {
 
                 if ($(this).hasClass("slider-next")) {
-                    slideRight();
+                    moveSlidesLeft();
                 } else {
-                    slideLeft();
+                    moveSlidesRight();
                 }
             });
         }
@@ -381,6 +381,8 @@ var SeoClickSlider = function SeoClickSlider(params) {
             $(self.id).append(dotnav_container);
 
             $.each(self.slides.object, function (index) {
+
+                if (translate_value < self.translateData.max) return 1;
 
                 var dot_element = $("<span class='slideControl'></span>");
 
@@ -441,7 +443,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
             var isPaused = false;
 
             self.options.autoScroll.handle = window.setInterval(function () {
-                if (!isPaused) slideRight();
+                if (!isPaused) moveSlidesLeft();
             }, self.options.autoScroll.interval);
 
             $(self.id).mouseenter(function () {
@@ -453,10 +455,10 @@ var SeoClickSlider = function SeoClickSlider(params) {
         }
 
         mc.on("swipeleft", function () {
-            slideRight();
+            moveSlidesLeft();
         });
         mc.on("swiperight", function () {
-            slideLeft();
+            moveSlidesRight();
         });
     };
 
