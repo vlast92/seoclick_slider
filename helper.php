@@ -1,10 +1,11 @@
 <?php
 /**
- * @package     ${NAMESPACE}
- * @subpackage
+ * @package    seoclick_slider
  *
- * @copyright   A copyright
- * @license     A "Slug" license name e.g. GPL2
+ * @author     Vlast <vlasteg@mail.ru>
+ * @copyright  A copyright
+ * @license    GNU General Public License version 2 or later; see LICENSE.txt
+ * @link       https://seoclick.by
  */
 
 class ModSeoclickSliderHelper
@@ -13,13 +14,13 @@ class ModSeoclickSliderHelper
 	{
 		$thumbnail_path = self::returnPathForResizedImages($image);
 
-		if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/' . $thumbnail_path))
+		if (file_exists(JPATH_BASE . '/' . $thumbnail_path))
 		{
-			$image_info = getimagesize($_SERVER['DOCUMENT_ROOT'] . '/' . $thumbnail_path);
+			if(!$image_info = getimagesize(JPATH_BASE . '/' . $thumbnail_path)) throw new \Exception("Error while reading image info;");
 			if ($image_info[0] == $newWidth && $image_info[1] == $newHeight) return $thumbnail_path;
 		}
 
-		if (!is_file($image) && !is_readable($image)) die(jText::sprintf("MOD_SEOCLICK_SLIDER_FILE_READ_ERROR", $image));
+		if (!is_file($image) && !is_readable($image)) throw new \Exception(jText::sprintf("MOD_SEOCLICK_SLIDER_FILE_READ_ERROR", $image));
 
 		if (isset($mimeType))
 		{
@@ -40,28 +41,28 @@ class ModSeoclickSliderHelper
 			case 'jpg':
 			case 'jpe':
 			case 'jpeg':
-				$image_original = imagecreatefromjpeg($image);
+				if(!$image_original = imagecreatefromjpeg($image)) throw new \Exception("Error while creating jpeg image;");
 				break;
 			case 'png':
-				$image_original = imagecreatefrompng($image);
+				if(!$image_original = imagecreatefrompng($image)) throw new \Exception("Error while creating png image;");
 				break;
 			case 'gif':
-				$image_original = imagecreatefromgif($image);
+				if(!$image_original = imagecreatefromgif($image)) throw new \Exception("Error while creating gif image;");
 				break;
 			case 'wbmp':
-				$image_original = imagecreatefromwbmp($image);
+				if(!$image_original = imagecreatefromwbmp($image)) throw new \Exception("Error while creating wbmp image;");
 				break;
 			default:
 				return false;
 		}
 
 		// Создаем миниатюру
-		$image_thumbnail = imagecreatetruecolor($newWidth, $newHeight);
+		if(!$image_thumbnail = imagecreatetruecolor($newWidth, $newHeight)) throw new \Exception("Error while creating image;");
 		if ($mimeType == 'png')
 		{
 			// Сохраняем альфа-канал
-			imagealphablending($image_thumbnail, false);
-			imagesavealpha($image_thumbnail, true);
+			if(!imagealphablending($image_thumbnail, false)) throw new \Exception("Error while setting blending mode;");
+			if(!imagesavealpha($image_thumbnail, true)) throw new \Exception("Error while saving alpha channel");
 		}
 		elseif ($mimeType == 'gif')
 		{
@@ -76,7 +77,7 @@ class ModSeoclickSliderHelper
 					$transparent_color_original['blue']
 				);
 				imagecolortransparent($image_thumbnail, $transparent_index_thumbnail);
-				imagefill($image_thumbnail, 0, 0, $transparent_index_thumbnail);
+				if(!imagefill($image_thumbnail, 0, 0, $transparent_index_thumbnail)) throw new \Exception("Error while filling image;");
 			}
 		}
 		// Вычисляем размер по ширине
@@ -100,7 +101,8 @@ class ModSeoclickSliderHelper
 		$y_original_offset = ($y_indent !== 0) ? -(integer) ($y_indent / 2) : 0;
 
 		// Копируем изображение в миниатюру
-		imagecopyresampled($image_thumbnail, $image_original, 0, 0, $x_original_offset, $y_original_offset, $newWidth, $newHeight, $x_original_new, $y_original_new);
+		if(!imagecopyresampled($image_thumbnail, $image_original, 0, 0, $x_original_offset, $y_original_offset,
+			$newWidth, $newHeight, $x_original_new, $y_original_new)) throw new \Exception("Error while copy resampled image;");
 
 		// Сохраняем миниатюру
 		switch ($mimeType)
@@ -108,16 +110,16 @@ class ModSeoclickSliderHelper
 			case 'jpg':
 			case 'jpe':
 			case 'jpeg':
-				imagejpeg($image_thumbnail, $thumbnail_path, 100);
+				if(!imagejpeg($image_thumbnail, $thumbnail_path, 100)) throw new \Exception("Error while saving image;");
 				break;
 			case 'png':
-				imagepng($image_thumbnail, $thumbnail_path);
+				if(!imagepng($image_thumbnail, $thumbnail_path)) throw new \Exception("Error while saving image;");
 				break;
 			case 'gif':
-				imagegif($image_thumbnail, $thumbnail_path);
+				if(!imagegif($image_thumbnail, $thumbnail_path)) throw new \Exception("Error while saving image;");
 				break;
 			case 'wbmp':
-				imagewbmp($image_thumbnail, $thumbnail_path);
+				if(!imagewbmp($image_thumbnail, $thumbnail_path)) throw new \Exception("Error while saving image;");
 				break;
 		}
 		// Очищаем память
@@ -131,9 +133,10 @@ class ModSeoclickSliderHelper
 	{
 		$data              = array();
 		$resize_image_path = self::returnPathForResizedImages($image);
-		if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/' . $resize_image_path))
+
+		if (file_exists(JPATH_BASE . '/' . $resize_image_path))
 		{
-			$image_info = getimagesize($_SERVER['DOCUMENT_ROOT'] . '/' . $resize_image_path);
+			if(!$image_info = getimagesize(JPATH_BASE . '/' . $resize_image_path)) throw new \Exception("Error while reading image info;");
 			if ($image_info[0] == $newWidth && $image_info[1] == $newHeight) return $resize_image_path;
 		}
 
@@ -175,13 +178,13 @@ class ModSeoclickSliderHelper
 			}*/
 		}
 
-		$imgString = file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/' . $image);
+		if (!$imgString = file_get_contents(JPATH_BASE . '/' . $image)) throw new \Exception("Error while reading image;");
+		if (!$imageFromString = imagecreatefromstring($imgString)) throw new \Exception("Error while creating image from string;");
+		if(!$tmp = imagecreatetruecolor($newWidth, $newHeight)) throw new \Exception("Error while creating image;");
 
-		$imageFromString = imagecreatefromstring($imgString);
-		$tmp             = imagecreatetruecolor($newWidth, $newHeight);
-		imagealphablending($tmp, false);
-		imagesavealpha($tmp, true);
-		imagecopyresampled(
+		if(!imagealphablending($tmp, false)) throw new \Exception("Error while setting blending mode;");
+		if(!imagesavealpha($tmp, true)) throw new \Exception("Error while saving alpha channel;");
+		if(!imagecopyresampled(
 			$tmp,
 			$imageFromString,
 			0,
@@ -192,7 +195,7 @@ class ModSeoclickSliderHelper
 			$newHeight,
 			$imgWidth,
 			$imgHeight
-		);
+		)) throw new \Exception("Error while copping resampled image;");
 
 		$data['newWidth']          = $newWidth;
 		$data['newHeight']         = $newHeight;
@@ -202,13 +205,13 @@ class ModSeoclickSliderHelper
 		{
 			case "image/jpeg":
 			case "image/jpg":
-				imagejpeg($tmp, $_SERVER['DOCUMENT_ROOT'] . '/' . $resize_image_path, 90);
+				if(!imagejpeg($tmp, JPATH_BASE . '/' . $resize_image_path, 90)) throw new \Exception("Error while saving image;");
 				break;
 			case "image/png":
-				imagepng($tmp, $_SERVER['DOCUMENT_ROOT'] . '/' . $resize_image_path, 0);
+				if(!imagepng($tmp, JPATH_BASE . '/' . $resize_image_path, 0)) throw new \Exception("Error while saving image;");
 				break;
 			case "image/gif":
-				imagegif($tmp, $_SERVER['DOCUMENT_ROOT'] . '/' . $resize_image_path);
+				if(!imagegif($tmp, JPATH_BASE . '/' . $resize_image_path)) throw new \Exception("Error while saving image;");
 				break;
 			default:
 				throw new \Exception(" Only jpg, jpeg, png and gif files can be resized ");

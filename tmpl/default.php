@@ -2,10 +2,10 @@
 /**
  * @package    seoclick_slider
  *
- * @author     Vlast <your@email.com>
+ * @author     Vlast <vlasteg@mail.ru>
  * @copyright  A copyright
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
- * @link       http://your.url.com
+ * @link       https://seoclick.by
  */
 
 defined('_JEXEC') or die;

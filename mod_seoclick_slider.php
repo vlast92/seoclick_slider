@@ -2,10 +2,10 @@
 /**
  * @package    seoclick_slider
  *
- * @author     Vlast <your@email.com>
+ * @author     Vlast <vlasteg@mail.ru>
  * @copyright  A copyright
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
- * @link       http://your.url.com
+ * @link       https://seoclick.by
  */
 
 use Joomla\CMS\Helper\ModuleHelper;
@@ -41,28 +41,33 @@ $lazy_load = $params->get('lazy_load', 0);
 $moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
 
 foreach($slides as $key=>$slide ){
-	$image_info = getimagesize($_SERVER['DOCUMENT_ROOT'].'/'.$slide['image']);
+	$image_info = getimagesize(JPATH_BASE . '/' . $slide['image']);
+	$slides[$key]['image_orig'] = $slide['image'];
 
-	switch ($params->get('resize_method')){
-		case 'crop':
-			$slides[$key]['image'] = ModSeoclickSliderHelper::crop($slide['image'], $image_info['mime'], $image_info[0],
-				$image_info[1], $images_width, $images_height);
-			break;
-		case 'resize_ratio':
-			$data = ModSeoclickSliderHelper::resize($slide['image'], $image_info['mime'], $image_info[0],
-				$image_info[1], $images_width, $images_height);
-			if(is_array($data)) $data = $data['resize_image_path'];
-			$slides[$key]['image'] = $data;
-			break;
-		case 'resize_no_ratio':
-			$data = ModSeoclickSliderHelper::resize($slide['image'], $image_info['mime'], $image_info[0],
-				$image_info[1], $images_width, $images_height, false);
-			if(is_array($data)) $data = $data['resize_image_path'];
-			$slides[$key]['image'] = $data;
-			break;
+	try{
+		switch ($params->get('resize_method')){
+			case 'crop':
+				$slides[$key]['image'] = ModSeoclickSliderHelper::crop($slide['image'], $image_info['mime'], $image_info[0],
+					$image_info[1], $images_width, $images_height);
+				break;
+			case 'resize_ratio':
+				$data = ModSeoclickSliderHelper::resize($slide['image'], $image_info['mime'], $image_info[0],
+					$image_info[1], $images_width, $images_height);
+				if(is_array($data)) $data = $data['resize_image_path'];
+				$slides[$key]['image'] = $data;
+				break;
+			case 'resize_no_ratio':
+				$data = ModSeoclickSliderHelper::resize($slide['image'], $image_info['mime'], $image_info[0],
+					$image_info[1], $images_width, $images_height, false);
+				if(is_array($data)) $data = $data['resize_image_path'];
+				$slides[$key]['image'] = $data;
+				break;
+		}
+	}catch (Exception $e){
+		echo "Error while resizing image: ", $e->getMessage(), "<br/>";
 	}
 
-	$slides[$key]['image'] .= '?v='.filemtime($_SERVER['DOCUMENT_ROOT'].'/'.$slides[$key]['image']);
+	$slides[$key]['image'] .= '?v='.filemtime(JPATH_BASE . '/' .$slides[$key]['image']);
 }
 
 require JModuleHelper::getLayoutPath('mod_seoclick_slider', $params->get('layout', 'default'));
