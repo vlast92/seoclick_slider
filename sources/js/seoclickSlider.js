@@ -219,7 +219,9 @@ let SeoClickSlider = function (params) {
         laptop.addListener(checkLaptopQuery);
         desktop.addListener(checkDesktopQuery);
 
-        if(self.options.lazy_load){
+        if(self.options.lazy_load && 'IntersectionObserver' in window &&
+            'IntersectionObserverEntry' in window &&
+            'intersectionRatio' in window.IntersectionObserverEntry.prototype){
             let lazy_flag = true,
                 image_observer_callback = function(entries, observer) {
 
