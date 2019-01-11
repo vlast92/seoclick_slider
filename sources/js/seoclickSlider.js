@@ -264,7 +264,14 @@ let SeoClickSlider = function (params) {
                     rootMargin: '200px'
                 });
             slider_observer.observe(document.getElementById(self.id.slice(1)));
-        }else{
+        }else if(self.options.lazy_load){
+            let images = $(self.id).find('.slide img');
+
+            $.each(images, function (index, image){
+                $(image).attr('src', $(image).attr('ref'));
+            });
+            sliderResizer();
+        } else{
             sliderResizer();
         }
         $(window).resize(sliderResizer);
