@@ -115,6 +115,9 @@ let SeoClickSlider = function (params) {
             this.translateData.min -
             this.translateData.step * (this.slides.viewed - 1);
         this.translateData.step *= this.slides.viewed;
+
+        let slides_remains = this.slides.count % this.slides.viewed;
+        if(slides_remains) this.translateData.max += this.translateData.step / this.slides.viewed;
     };
     SliderConstructor.prototype._initListeners = function () {
         let self = this,
