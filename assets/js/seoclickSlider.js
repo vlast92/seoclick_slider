@@ -406,6 +406,10 @@ var SeoClickSlider = function SeoClickSlider(params) {
                 dot_element.click(function () {
 
                     if ($(this).hasClass("active")) return 0;
+
+                    if (self.state !== null) return 0;
+                    self.state = 'animated';
+
                     dotnav_container.find(".slideControl").removeClass("active");
                     $(this).addClass("active");
 
