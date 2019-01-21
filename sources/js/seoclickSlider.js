@@ -110,14 +110,8 @@ let SeoClickSlider = function (params) {
             "translateX(" + this.translateData.value + "px)"
         );
         this.translateData.step = -(this.spacers.width + this.slides.maxWidth);
-        this.translateData.max =
-            this.translateData.step * this.spacers.count +
-            this.translateData.min -
-            this.translateData.step * (this.slides.viewed - 1);
         this.translateData.step *= this.slides.viewed;
-
-        let slides_remains = this.slides.count % this.slides.viewed;
-        if(slides_remains) this.translateData.max += this.translateData.step / this.slides.viewed;
+        this.translateData.max =  this.translateData.step * Math.ceil(this.slides.count / this.slides.viewed) - this.translateData.min;
     };
     SliderConstructor.prototype._initListeners = function () {
         let self = this,
