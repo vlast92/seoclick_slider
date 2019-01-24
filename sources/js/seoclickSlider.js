@@ -35,15 +35,15 @@ let SeoClickSlider = function (params) {
         this.slides = {
             object: null,
             count: null,
-            viewed: arg.viewed,
-            imageWidth: arg.imageWidth,
-            imageHeight: arg.imageHeight,
-            maxWidth: arg.slideWidth,
+            viewed: + arg.viewed,
+            imageWidth: parseInt(arg.imageWidth, 10),
+            imageHeight: parseInt(arg.imageHeight, 10),
+            maxWidth: parseInt(arg.slideWidth, 10),
             maxHeight: null
         };
         this.spacers = {
             count: null,
-            width: arg.spacerWidth
+            width: parseInt(arg.spacerWidth, 10)
         };
         this.responsiveData = {
             desktop: "75rem",
@@ -59,8 +59,8 @@ let SeoClickSlider = function (params) {
             autoScroll: {
                 handle: null,
                 active: arg.autoScroll.active,
-                interval: arg.autoScroll.interval,
-                animation_speed: arg.autoScroll.animation_speed
+                interval: parseInt(arg.autoScroll.interval, 10),
+                animation_speed: parseInt(arg.autoScroll.animation_speed, 10)
             },
             lazy_load: arg.lazy_load
         };
