@@ -73,17 +73,19 @@ let SeoClickSlider = function (params) {
         this.slides.count = this.slides.object.length;
 
         //Размер слайда
-        this.slides.object.find('img').outerWidth(this.slides.imageWidth);
-        this.slides.object.find('img').outerHeight(this.slides.imageHeight);
+        this.slides.object.find('.image img').outerWidth(this.slides.imageWidth);
+        this.slides.object.find('.image img').outerHeight(this.slides.imageHeight);
 
         if (this.slides.maxWidth === null) {
             this.slides.maxWidth = this.slides.object.outerWidth();
         }
         this.slides.object.css("height", '');
         this.slides.maxHeight = this.slides.object.outerHeight();
+        this.calculateSlideHeight();
 
         this.slides.object.outerWidth(this.slides.maxWidth);
-        this.slides.object.outerHeight(this.slides.maxHeight);
+
+        this.calculateSlideHeight();
     };
     SliderConstructor.prototype.setContainerData = function () {
         this.containerWidth =
@@ -93,7 +95,7 @@ let SeoClickSlider = function (params) {
         this.container.width(this.containerWidth);
     };
     SliderConstructor.prototype.setViewData = function () {
-        this.viewWidth = this.slides.maxWidth * this.slides.viewed + this.spacers.width * (this.slides.viewed + 1);
+        this.viewWidth = this.slides.maxWidth * this.slides.viewed + this.spacers.width * this.slides.viewed;
         this.viewHeight = this.container.outerHeight(true);
         $(this.id).find(".slider-view").outerWidth(this.viewWidth).outerHeight(this.viewHeight);
     };
@@ -111,7 +113,7 @@ let SeoClickSlider = function (params) {
         );
         this.translateData.step = -(this.spacers.width + this.slides.maxWidth);
         this.translateData.step *= this.slides.viewed;
-        this.translateData.max =  this.translateData.step * Math.ceil(this.slides.count / this.slides.viewed) - this.translateData.min;
+        this.translateData.max =  this.translateData.step * Math.ceil(this.slides.count / this.slides.viewed) - this.translateData.min + this.spacers.width;
     };
     SliderConstructor.prototype._initListeners = function () {
         let self = this,
@@ -562,6 +564,17 @@ let SeoClickSlider = function (params) {
         if(this.options.arrowNav) $(this.id).find('.arrow-nav').remove();
         if(this.options.dotNav) $(this.id).find('.dot-nav').remove();
         this.addNav();
+    };
+    //Вычисляем высоту слайдов
+    SliderConstructor.prototype.calculateSlideHeight = function(){
+
+        $.each(this.slides.object, (index, slide) => {
+
+            let height = $(slide).find(".slide-content").outerHeight(true);
+
+            if(height > this.slides.maxHeight) this.slides.maxHeight = height;
+        });
+        this.slides.object.outerHeight(this.slides.maxHeight);
     };
 
     slider.initializeSlider();
