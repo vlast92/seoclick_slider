@@ -82,11 +82,9 @@ var SeoClickSlider = function SeoClickSlider(params) {
             this.slides.maxWidth = this.slides.object.outerWidth();
         }
         this.slides.object.css("height", '');
-        this.slides.maxHeight = this.slides.object.outerHeight();
-        this.calculateSlideHeight();
-
         this.slides.object.outerWidth(this.slides.maxWidth);
 
+        this.slides.maxHeight = this.slides.object.outerHeight();
         this.calculateSlideHeight();
     };
     SliderConstructor.prototype.setContainerData = function () {
@@ -559,6 +557,10 @@ var SeoClickSlider = function SeoClickSlider(params) {
         $.each(this.slides.object, function (index, slide) {
 
             var height = $(slide).find(".slide-content").outerHeight(true);
+
+            var image = $(slide).find(".image").outerHeight(true);
+            var description = $(slide).find(".slide-description").outerHeight(true);
+            var summ = image + description;
 
             if (height > _this.slides.maxHeight) _this.slides.maxHeight = height;
         });

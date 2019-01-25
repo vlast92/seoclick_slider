@@ -80,11 +80,9 @@ let SeoClickSlider = function (params) {
             this.slides.maxWidth = this.slides.object.outerWidth();
         }
         this.slides.object.css("height", '');
-        this.slides.maxHeight = this.slides.object.outerHeight();
-        this.calculateSlideHeight();
-
         this.slides.object.outerWidth(this.slides.maxWidth);
 
+        this.slides.maxHeight = this.slides.object.outerHeight();
         this.calculateSlideHeight();
     };
     SliderConstructor.prototype.setContainerData = function () {
@@ -571,6 +569,10 @@ let SeoClickSlider = function (params) {
         $.each(this.slides.object, (index, slide) => {
 
             let height = $(slide).find(".slide-content").outerHeight(true);
+
+            let image = $(slide).find(".image").outerHeight(true);
+            let description = $(slide).find(".slide-description").outerHeight(true);
+            let summ = image + description;
 
             if(height > this.slides.maxHeight) this.slides.maxHeight = height;
         });
