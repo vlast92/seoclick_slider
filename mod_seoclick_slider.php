@@ -41,6 +41,7 @@ $lazy_load = $params->get('lazy_load', 0);
 $moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
 
 foreach($slides as $key=>$slide ){
+	if(empty($slide['image'])) continue;
 	$image_info = getimagesize(JPATH_BASE . '/' . $slide['image']);
 	$slides[$key]['image_orig'] = $slide['image'];
 
