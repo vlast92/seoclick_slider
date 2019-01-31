@@ -25,7 +25,7 @@ $id = 'seoclick_slider_' . $module->id . '_' . rand(1, 9999999);
                                     <img <?php if($lazy_load):?>ref<?php else:?>src<?php endif;?>="/<?= $slide['image'] ?>" alt="slide_<?= $counter++ ?>"/>
                                 </div>
                                     <?php if ($desc_block): ?>
-                                    <div class="slide-description" style="min-height: 60px">
+                                    <div class="slide-description">
 			                            <?php if(!empty($slide['header'])):?>
                                         <div class="content top"><span class="name"><?= $slide['header'] ?></span></div>
 			                            <?php endif;?>
@@ -84,8 +84,6 @@ $document->addScriptDeclaration('
                 animation_speed: '.$animation_speed.'
             },
             lazy_load: '.$lazy_load.'
-        }),
-        desc = $("#' . $id . '").find(".slide-description");
-        $("#' . $id . '").find(".slides-description").css("min-height", desc.outerHeight(true)); 
+        });
     });
     ');

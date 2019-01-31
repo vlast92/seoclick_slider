@@ -39,18 +39,17 @@
                 <field
                         name="images_width"
                         type="number"
-                        required="true"
                         label="MOD_SEOCLICK_SLIDER_IMAGES_WIDTH"
                         min="0"/>
                 <field
                         name="images_height"
                         type="number"
-                        required="true"
                         label="MOD_SEOCLICK_SLIDER_IMAGES_HEIGHT"
                         min="0"/>
                 <field
                         name="slide_width"
                         type="number"
+                        required="true"
                         label="MOD_SEOCLICK_SLIDER_SLIDE_WIDTH"
                         min="0"/>
                 <field name="resize_method" type="list" default="none" label="MOD_SEOCLICK_SLIDER_METHOD_LABEL">

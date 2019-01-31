@@ -88,8 +88,6 @@ $document->addScriptDeclaration('
                 animation_speed: '.$animation_speed.'
             },
             lazy_load: '.$lazy_load.'
-        }),
-        desc = $("#' . $id . '").find(".slide-description");
-        $("#' . $id . '").find(".slides-description").css("min-height", desc.outerHeight(true)); 
+        }); 
     });
     ');
