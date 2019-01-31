@@ -570,10 +570,6 @@ let SeoClickSlider = function (params) {
 
             let height = $(slide).find(".slide-content").outerHeight(true);
 
-            let image = $(slide).find(".image").outerHeight(true);
-            let description = $(slide).find(".slide-description").outerHeight(true);
-            let summ = image + description;
-
             if(height > this.slides.maxHeight) this.slides.maxHeight = height;
         });
         this.slides.object.outerHeight(this.slides.maxHeight);
