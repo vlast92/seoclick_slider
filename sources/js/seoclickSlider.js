@@ -568,7 +568,7 @@ let SeoClickSlider = function (params) {
 
         $.each(this.slides.object, (index, slide) => {
 
-            let height = $(slide).find(".slide-content").outerHeight(true);
+            let height = $(slide).outerHeight(true);
 
             if(height > this.slides.maxHeight) this.slides.maxHeight = height;
         });
