@@ -66,10 +66,15 @@ switch ($nav_type)
 	default:
 		$nav = 'arrowNav: true, dotNav: true';
 }
+if(!$infinite_mode) $extra_arrow_class = 'disabled';
 $document->addScriptDeclaration('
     jQuery(window).load(function() {
      
-    let $ = jQuery,
+    let $ = jQuery, slider, arrows_markup = {};
+        
+        arrows_markup.left = "<i class=\"fa fa-angle-left fa-4x '.$extra_arrow_class.'\" aria-hidden=\"true\"></i>";
+        arrows_markup.right = "<i class=\"fa fa-angle-right fa-4x\" aria-hidden=\"true\"></i>";
+                          
         slider = new SeoClickSlider({
             id: "#' . $id . '",
             viewed: ' . $slides_viewed . ',
@@ -78,6 +83,7 @@ $document->addScriptDeclaration('
             imageHeight: ' . $images_height . ',
             slideWidth: '.$slide_width.',
             ' . $nav . ',
+            arrowsMarkup: arrows_markup,
             desc_block: false,
             infiniteMode: ' . $infinite_mode . ',
             autoScroll: {

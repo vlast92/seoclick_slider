@@ -13,6 +13,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
         slideWidth: params.slideWidth,
         arrowNav: params.arrowNav,
         dotNav: params.dotNav,
+        arrowsMarkup: params.arrowsMarkup,
         desc_block: params.desc_block,
         infiniteMode: params.infiniteMode,
         autoScroll: params.autoScroll,
@@ -56,6 +57,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
         this.options = {
             arrowNav: arg.arrowNav,
             dotNav: arg.dotNav,
+            arrowsMarkup: arg.arrowsMarkup,
             desc_block: arg.desc_block,
             infiniteMode: arg.infiniteMode,
             autoScroll: {
@@ -367,9 +369,16 @@ var SeoClickSlider = function SeoClickSlider(params) {
         function addArrowNav() {
             "use strict";
 
-            var extraClass = '';
+            var extraClass = '',
+                markup = void 0;
+
             if (!self.options.infiniteMode) extraClass = 'disabled';
-            var markup = "<div class=\"arrow-nav\">\n                            <div class=\"slider-prev " + extraClass + "\">\n                                <i class=\"fa fa-angle-left fa-4x\" aria-hidden=\"true\"></i>\n                            </div>\n                            <div class=\"slider-next\">\n                                <i class=\"fa fa-angle-right fa-4x\" aria-hidden=\"true\"></i>\n                            </div>\n                          </div>";
+
+            if (!self.options.arrowsMarkup) {
+                markup = "<div class=\"arrow-nav\">\n                            <div class=\"slider-prev " + extraClass + "\">\n                                <i class=\"fa fa-angle-left fa-4x\" aria-hidden=\"true\"></i>\n                            </div>\n                            <div class=\"slider-next\">\n                                <i class=\"fa fa-angle-right fa-4x\" aria-hidden=\"true\"></i>\n                            </div>\n                          </div>";
+            } else {
+                markup = "<div class=\"arrow-nav\">\n                            <div class=\"slider-prev " + extraClass + "\">\n                                " + self.options.arrowsMarkup.left + "\n                            </div>\n                            <div class=\"slider-next\">\n                                " + self.options.arrowsMarkup.right + "\n                            </div>\n                          </div>";
+            }
 
             $(self.id).append(markup);
             $(self.id).find(".arrow-nav > div").click(function () {

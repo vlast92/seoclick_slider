@@ -104,7 +104,7 @@ $buttonColor: #ffce23;
       opacity: 0;
       pointer-events: none;
     }
-    i {
+    > * {
       cursor: pointer;
     }
     &.slider-next {

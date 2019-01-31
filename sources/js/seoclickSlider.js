@@ -11,6 +11,7 @@ let SeoClickSlider = function (params) {
         slideWidth: params.slideWidth,
         arrowNav: params.arrowNav,
         dotNav: params.dotNav,
+        arrowsMarkup: params.arrowsMarkup,
         desc_block: params.desc_block,
         infiniteMode: params.infiniteMode,
         autoScroll: params.autoScroll,
@@ -54,6 +55,7 @@ let SeoClickSlider = function (params) {
         this.options = {
             arrowNav: arg.arrowNav,
             dotNav: arg.dotNav,
+            arrowsMarkup: arg.arrowsMarkup,
             desc_block: arg.desc_block,
             infiniteMode: arg.infiniteMode,
             autoScroll: {
@@ -378,9 +380,12 @@ let SeoClickSlider = function (params) {
         }
         function addArrowNav() {
             "use strict";
-            let extraClass = '';
+            let extraClass = '', markup;
+
             if (!self.options.infiniteMode) extraClass = 'disabled';
-            let markup = `<div class="arrow-nav">
+
+            if(!self.options.arrowsMarkup){
+                markup = `<div class="arrow-nav">
                             <div class="slider-prev ${extraClass}">
                                 <i class="fa fa-angle-left fa-4x" aria-hidden="true"></i>
                             </div>
@@ -388,6 +393,17 @@ let SeoClickSlider = function (params) {
                                 <i class="fa fa-angle-right fa-4x" aria-hidden="true"></i>
                             </div>
                           </div>`;
+            }else{
+                markup = `<div class="arrow-nav">
+                            <div class="slider-prev ${extraClass}">
+                                ${self.options.arrowsMarkup.left}
+                            </div>
+                            <div class="slider-next">
+                                ${self.options.arrowsMarkup.right}
+                            </div>
+                          </div>`;
+            }
+
 
             $(self.id).append(markup);
             $(self.id).find(".arrow-nav > div").click(function () {

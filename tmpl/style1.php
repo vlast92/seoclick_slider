@@ -70,19 +70,25 @@ switch ($nav_type)
 	default:
 		$nav = 'arrowNav: true, dotNav: true';
 }
+if(!$infinite_mode) $extra_arrow_class = 'disabled';
 $document->addScriptDeclaration('
-    jQuery(document).ready(function() {
+    jQuery(window).load(function() {
      
-    let $ = jQuery,
+    let $ = jQuery, slider, arrows_markup = {};
+        
+        arrows_markup.left = "<i class=\"fa fa-angle-left fa-4x '.$extra_arrow_class.'\" aria-hidden=\"true\"></i>";
+        arrows_markup.right = "<i class=\"fa fa-angle-right fa-4x\" aria-hidden=\"true\"></i>";
+                          
         slider = new SeoClickSlider({
             id: "#' . $id . '",
             viewed: 1,
             spacerWidth: ' . $images_space . ',
             imageWidth: ' . $images_width . ',
-            imageHeight: '.$images_height.',
+            imageHeight: ' . $images_height . ',
             slideWidth: '.$slide_width.',
             ' . $nav . ',
-            desc_block: ' . $desc_block . ',
+            arrowsMarkup: arrows_markup,
+            desc_block: false,
             infiniteMode: ' . $infinite_mode . ',
             autoScroll: {
                 active: ' . $auto_scroll . ',
@@ -90,6 +96,6 @@ $document->addScriptDeclaration('
                 animation_speed: '.$animation_speed.'
             },
             lazy_load: '.$lazy_load.'
-        }); 
+        });
     });
     ');

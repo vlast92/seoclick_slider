@@ -89,7 +89,7 @@
     .seoclick-slider .arrow-nav > div.disabled {
       opacity: 0;
       pointer-events: none; }
-    .seoclick-slider .arrow-nav > div i {
+    .seoclick-slider .arrow-nav > div > * {
       cursor: pointer; }
     .seoclick-slider .arrow-nav > div.slider-next {
       right: 0; }
