@@ -72,9 +72,9 @@ switch ($nav_type)
 }
 if(!$infinite_mode) $extra_arrow_class = 'disabled';
 $document->addScriptDeclaration('
-    jQuery(window).load(function() {
+    jQuery(function($) {
      
-    let $ = jQuery, slider, arrows_markup = {};
+    let slider, arrows_markup = {};
         
         arrows_markup.left = "<i class=\"fa fa-angle-left fa-4x '.$extra_arrow_class.'\" aria-hidden=\"true\"></i>";
         arrows_markup.right = "<i class=\"fa fa-angle-right fa-4x\" aria-hidden=\"true\"></i>";
