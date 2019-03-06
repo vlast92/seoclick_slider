@@ -64,11 +64,6 @@
                         label="MOD_SEOCLICK_SLIDER_IMAGES_SPACE_WIDTH"
                         min="0"/>
                 <field
-                        name="slides_viewed"
-                        type="number"
-                        min="0"
-                        label="MOD_SEOCLICK_SLIDER_SLIDES_VIEWED"/>
-                <field
                         name="auto_scroll"
                         type="radio"
                         default="0"
@@ -134,6 +129,10 @@
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
+
+            </fieldset>
+            <fieldset
+                    name="slides">
                 <field
                         name="slides"
                         type="subform"
@@ -145,6 +144,60 @@
                         groupByFieldset="false"
                         label="MOD_SEOCLICK_SLIDER_SLIDES_LABEL"
                 />
+            </fieldset>
+            <fieldset
+                    name="slider_adaptive">
+                <field name="note1" type="note" label="MOD_SEOCLICK_SLIDER_DESCTOP_LABEL" />
+                <field
+                        name="desctop_width"
+                        type="number"
+                        label="MOD_SEOCLICK_SLIDER_MIN_QUERY_WIDTH_LABEL"
+                        description="MOD_SEOCLICK_SLIDER_MIN_QUERY_WIDTH_DESCRIPTION"
+                        />
+                <field
+                        name="slides_viewed"
+                        type="number"
+                        min="0"
+                        label="MOD_SEOCLICK_SLIDER_SLIDES_VIEWED"/>
+
+                <field name="note2" type="note" label="MOD_SEOCLICK_SLIDER_LAPTOP_LABEL" />
+                <field
+                        name="laptop_width"
+                        type="number"
+                        label="MOD_SEOCLICK_SLIDER_MAX_QUERY_WIDTH_LABEL"
+                        description="MOD_SEOCLICK_SLIDER_MAX_QUERY_WIDTH_DESCRIPTION"
+                />
+                <field
+                        name="laptop_viewed"
+                        type="number"
+                        min="0"
+                        label="MOD_SEOCLICK_SLIDER_SLIDES_VIEWED"/>
+
+                <field name="note3" type="note" label="MOD_SEOCLICK_SLIDER_TABLET_LABEL" />
+                <field
+                        name="tablet_width"
+                        type="number"
+                        label="MOD_SEOCLICK_SLIDER_MAX_QUERY_WIDTH_LABEL"
+                        description="MOD_SEOCLICK_SLIDER_MAX_QUERY_WIDTH_DESCRIPTION"
+                />
+                <field
+                        name="tablet_viewed"
+                        type="number"
+                        min="0"
+                        label="MOD_SEOCLICK_SLIDER_SLIDES_VIEWED"/>
+
+                <field name="note4" type="note" label="MOD_SEOCLICK_SLIDER_PHONE_LABEL" />
+                <field
+                        name="phone_width"
+                        type="number"
+                        label="MOD_SEOCLICK_SLIDER_MAX_QUERY_WIDTH_LABEL"
+                        description="MOD_SEOCLICK_SLIDER_MAX_QUERY_WIDTH_DESCRIPTION"
+                />
+                <field
+                        name="phone_viewed"
+                        type="number"
+                        min="0"
+                        label="MOD_SEOCLICK_SLIDER_SLIDES_VIEWED"/>
             </fieldset>
             <fieldset
                     name="advanced">

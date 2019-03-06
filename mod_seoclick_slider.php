@@ -38,6 +38,25 @@ $animation_speed = $params->get('animation_speed', '800');
 $slides_viewed = $params->get('slides_viewed', 1);
 $lazy_load = $params->get('lazy_load', 0);
 
+$responsive_data = json_encode(array(
+	'desktop' => array(
+		"width" => $params->get('desctop_width', '1200').'px',
+		"viewed" => $slides_viewed
+	),
+	'laptop' => array(
+		"width" => $params->get('laptop_width', '1199').'px',
+		"viewed" => $params->get('laptop_viewed', 3)
+	),
+	'tablet' => array(
+		"width" => $params->get('tablet_width', '959').'px',
+		"viewed" => $params->get('tablet_viewed', 2)
+	),
+	'phone' => array(
+		"width" => $params->get('phone_width', '767').'px',
+		"viewed" => $params->get('phone_viewed', 1)
+	)
+));
+
 $moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
 
 foreach($slides as $key=>$slide ){

@@ -82,7 +82,7 @@ $document->addScriptDeclaration('
         slider = new SeoClickSlider({
             id: "#' . $id . '",
             viewed: 1,
-            spacerWidth: ' . $images_space . ',
+            spacerMinWidth: ' . $images_space . ',
             imageWidth: ' . $images_width . ',
             imageHeight: ' . $images_height . ',
             slideWidth: '.$slide_width.',
@@ -95,7 +95,8 @@ $document->addScriptDeclaration('
                 interval: ' . $auto_scroll_interval . ',
                 animation_speed: '.$animation_speed.'
             },
-            lazy_load: '.$lazy_load.'
+            lazy_load: '.$lazy_load.',
+            responsiveData: '.$responsive_data.'
         });
     });
     ');

@@ -5,7 +5,7 @@ let SeoClickSlider = function (params) {
     let slider = new SliderConstructor({
         id: params.id,
         viewed: params.viewed,
-        spacerWidth: params.spacerWidth,
+        spacerMinWidth: params.spacerMinWidth,
         imageWidth: params.imageWidth,
         imageHeight: params.imageHeight,
         slideWidth: params.slideWidth,
@@ -16,14 +16,15 @@ let SeoClickSlider = function (params) {
         infiniteMode: params.infiniteMode,
         autoScroll: params.autoScroll,
         animation_speed: params.animation_speed,
-        lazy_load: params.lazy_load
+        lazy_load: params.lazy_load,
+        responsiveData: params.responsiveData,
+        phone : params.phone
     });
 
     function SliderConstructor(arg) {
         this.id = arg.id;
         this.state = null;
         this.container = null;
-        this.containerClass = ".slides-container";
         this.containerWidth = null;
         this.viewWidth = null;
         this.viewHeight = null;
@@ -36,7 +37,7 @@ let SeoClickSlider = function (params) {
         this.slides = {
             object: null,
             count: null,
-            viewed: + arg.viewed,
+            viewed: +arg.viewed,
             imageWidth: parseInt(arg.imageWidth, 10),
             imageHeight: parseInt(arg.imageHeight, 10),
             maxWidth: parseInt(arg.slideWidth, 10),
@@ -44,13 +45,14 @@ let SeoClickSlider = function (params) {
         };
         this.spacers = {
             count: null,
-            width: parseInt(arg.spacerWidth, 10)
+            width: null,
+            min_width: parseInt(arg.spacerMinWidth, 10)
         };
         this.responsiveData = {
-            desktop: "75rem",
-            laptop: "74.938rem",
-            tablet: "59.938rem",
-            phone: "47.938rem"
+            desktop : arg.responsiveData.desktop,
+            laptop : arg.responsiveData.laptop,
+            tablet : arg.responsiveData.tablet,
+            phone : arg.responsiveData.phone
         };
         this.options = {
             arrowNav: arg.arrowNav,
@@ -87,47 +89,55 @@ let SeoClickSlider = function (params) {
         this.slides.maxHeight = this.slides.object.outerHeight();
         this.calculateSlideHeight();
     };
-    SliderConstructor.prototype.setContainerData = function () {
-        this.containerWidth =
-            this.slides.maxWidth * this.slides.count +
-            this.spacers.count * this.spacers.width;
-        this.container = $(this.id).find(this.containerClass);
-        this.container.width(this.containerWidth);
-    };
     SliderConstructor.prototype.setViewData = function () {
-        this.viewWidth = this.slides.maxWidth * this.slides.viewed + this.spacers.width * this.slides.viewed;
-        this.viewHeight = this.container.outerHeight(true);
-        $(this.id).find(".slider-view").outerWidth(this.viewWidth).outerHeight(this.viewHeight);
+        this.viewWidth = $(this.id).find(".slider-view").width();
+        this.viewHeight = this.slides.maxHeight;
+        $(this.id).find(".slider-view").outerHeight(this.viewHeight);
+    };
+    SliderConstructor.prototype.calculateSlidesSpacers = function () {
+        if (this.slides.viewed !== 1) {
+            this.spacers.width = (this.viewWidth - this.slides.maxWidth * this.slides.viewed) / (this.slides.viewed - 1);
+            this.spacers.count = this.slides.count - 1;
+            if (this.spacers.width < 0) this.spacers.width = this.spacers.min_width;
+        } else {
+            this.spacers.width = 0;
+            this.spacers.count = 0;
+        }
+    };
+    SliderConstructor.prototype.setContainerData = function () {
+        this.containerWidth = this.slides.maxWidth * this.slides.count + this.spacers.count * this.spacers.width;
+        this.container = $(this.id).find(".slides-container");
+        this.container.width(this.containerWidth);
+        $.each(this.slides.object, (index, slide) => {
+            if (index !== this.slides.count - 1) {
+                $(slide).css("margin-right", this.spacers.width);
+            }
+        });
     };
     SliderConstructor.prototype.setTranslateData = function () {
-        this.translateData.min = Math.ceil(
-            -(
-                this.slides.maxWidth * this.slides.viewed +
-                this.spacers.width * (this.slides.viewed - 1)
-            ) / 2
-        );
+        this.translateData.min = 0;
         this.translateData.value = this.translateData.min;
-        this.container.css(
-            "transform",
-            "translateX(" + this.translateData.value + "px)"
-        );
-        this.translateData.step = -(this.spacers.width + this.slides.maxWidth);
-        this.translateData.step *= this.slides.viewed;
-        this.translateData.max =  this.translateData.step * Math.ceil(this.slides.count / this.slides.viewed) - this.translateData.min + this.spacers.width;
+        this.container.css("transform", "translateX(" + this.translateData.value + "px)");
+        if (this.slides.viewed === 1) {
+            this.translateData.step = this.viewWidth;
+        } else {
+            this.translateData.step = this.viewWidth + this.spacers.width;
+        }
+        this.translateData.max = (Math.ceil(this.slides.count / this.slides.viewed) - 1) * this.translateData.step;
     };
     SliderConstructor.prototype._initListeners = function () {
         let self = this,
             desktop = window.matchMedia(
-                "(min-width: " + self.responsiveData.desktop + ")"
+                "(min-width: " + self.responsiveData.desktop.width + ")"
             ),
             laptop = window.matchMedia(
-                "(max-width: " + self.responsiveData.laptop + ")"
+                "(max-width: " + self.responsiveData.laptop.width + ")"
             ),
             tablet = window.matchMedia(
-                "(max-width: " + self.responsiveData.tablet + ")"
+                "(max-width: " + self.responsiveData.tablet.width + ")"
             ),
             phone = window.matchMedia(
-                "(max-width: " + self.responsiveData.phone + ")"
+                "(max-width: " + self.responsiveData.phone.width + ")"
             );
 
         let sliderResizer = function () {
@@ -137,18 +147,18 @@ let SeoClickSlider = function (params) {
                     initImageWidth = $(self.id).data("initImageWidth"),
                     initImageHeight = $(self.id).data("initImageHeight");
 
-                calcSlideWidth = Math.round((sliderWidth - self.spacers.width * (self.slides.viewed + 1)) / self.slides.viewed);
+                calcSlideWidth = sliderWidth / self.slides.viewed;
 
                 let difference = initSlideWidth - calcSlideWidth,
                     ratio = initImageWidth / initImageHeight;
 
-                calcImageWidth = initImageWidth - difference;
-                calcImageHeight = initImageHeight - difference / ratio;
-
-                if (sliderWidth < self.viewWidth || calcSlideWidth <= initSlideWidth) {
-                    self.updateSlidesSize(calcSlideWidth, calcImageWidth, calcImageHeight);
+                if (difference < self.spacers.width && difference > 0 && self.spacers.width > self.spacers.min_width) {
+                    self.updateSlidesSize(self.slides.maxWidth, self.slides.imageWidth, self.slides.imageHeight);
                 } else {
-                    self.updateSlidesSize(initSlideWidth, initImageWidth, initImageHeight);
+                    calcImageWidth = initImageWidth - difference;
+                    calcImageHeight = initImageHeight - difference / ratio;
+                    calcSlideWidth = self.slides.viewed > 1 ? calcSlideWidth - self.spacers.min_width : calcSlideWidth;
+                    self.updateSlidesSize(calcSlideWidth, calcImageWidth, calcImageHeight);
                 }
             },
             checkDesktopQuery = function (e) {
@@ -159,79 +169,59 @@ let SeoClickSlider = function (params) {
             },
             checkLaptopQuery = function (e) {
 
-                if (e.matches) {
-                    if (self.slides.viewed > 3) {
-                        self.updateViewData(3);
-                    }
-                } else {
-                    if (self.slides.viewed < $(self.id).data("viewed")) {
-                        self.updateViewData($(self.id).data("viewed"));
-                    }
+                if (e.matches && self.slides.viewed > self.responsiveData.laptop.viewed) {
+                    self.updateViewData(self.responsiveData.laptop.viewed);
+                } else if (self.slides.viewed < $(self.id).data("viewed")) {
+                    self.updateViewData($(self.id).data("viewed"));
                 }
+
             },
             checkTabletQuery = function (e) {
 
-                if (e.matches) {
-                    if (self.slides.viewed > 2) {
-                        self.updateViewData(2);
-                    }
-                } else {
-                    if (self.slides.viewed < $(self.id).data("viewed")) {
-                        self.updateViewData(3);
-                    }
+                if (e.matches && self.slides.viewed > self.responsiveData.tablet.viewed) {
+                    self.updateViewData(self.responsiveData.tablet.viewed);
+                } else if (self.slides.viewed < $(self.id).data("viewed")) {
+                    self.updateViewData(self.responsiveData.laptop.viewed);
                 }
             },
             checkPhoneQuery = function (e) {
 
-                if (e.matches) {
-                    if (self.slides.viewed > 1) {
-                        self.updateViewData(1);
-                    }
-                } else {
-                    if (self.slides.viewed < $(self.id).data("viewed")) {
-                        self.updateViewData(2);
-                    }
+                if (e.matches && self.slides.viewed > self.responsiveData.phone.viewed) {
+                    self.updateViewData(self.responsiveData.phone.viewed);
+                } else if (self.slides.viewed < $(self.id).data("viewed")) {
+                    self.updateViewData(self.responsiveData.tablet.viewed);
                 }
             };
 
-        if (phone.matches) {
-            if (self.slides.viewed > 1) {
-                self.updateViewData(1);
-            }
-        }
-        if (tablet.matches) {
-            if (self.slides.viewed > 2) {
-                self.updateViewData(2);
-            }
-        }
-        if (laptop.matches) {
-            if (self.slides.viewed > 3) {
-                self.updateViewData(3);
-            }
-        }
-        if (desktop.matches) {
+        if (phone.matches && self.slides.viewed > self.responsiveData.phone.viewed) {
+            self.updateViewData(self.responsiveData.phone.viewed);
+        } else if (tablet.matches && self.slides.viewed > self.responsiveData.tablet.viewed) {
+            self.updateViewData(self.responsiveData.tablet.viewed);
+        } else if (laptop.matches && self.slides.viewed > self.responsiveData.laptop.viewed) {
+            self.updateViewData(self.responsiveData.laptop.viewed);
+        } else if (desktop.matches) {
             self.updateViewData($(self.id).data("viewed"));
         }
 
-        phone.addListener(checkPhoneQuery);
-        tablet.addListener(checkTabletQuery);
-        laptop.addListener(checkLaptopQuery);
         desktop.addListener(checkDesktopQuery);
+        laptop.addListener(checkLaptopQuery);
+        tablet.addListener(checkTabletQuery);
+        phone.addListener(checkPhoneQuery);
 
-        if(self.options.lazy_load && 'IntersectionObserver' in window &&
+        if (self.options.lazy_load && 'IntersectionObserver' in window &&
             'IntersectionObserverEntry' in window &&
-            'intersectionRatio' in window.IntersectionObserverEntry.prototype){
+            'intersectionRatio' in window.IntersectionObserverEntry.prototype) {
             let lazy_flag = true,
-                image_observer_callback = function(entries, observer) {
+                image_observer_callback = function (entries, observer) {
 
-                    entries.forEach(function(entry){
+                    entries.forEach(function (entry) {
 
                         let isIntersecting = entry.isIntersecting;
 
                         if (isIntersecting) {
                             $(entry.target).attr('src', $(entry.target).attr('ref'));
-                            if(lazy_flag){
-                                $(entry.target).load(function(){
+                            if (lazy_flag) {
+                                $(entry.target).load(function () {
                                     self.slides.maxHeight = self.slides.object.find('img').outerHeight(true);
                                     sliderResizer();
                                 });
@@ -241,17 +231,17 @@ let SeoClickSlider = function (params) {
                         }
                     });
                 },
-                slider_observer = new IntersectionObserver(function(entries, observer){
+                slider_observer = new IntersectionObserver(function (entries, observer) {
 
-                    entries.forEach(function(entry){
+                    entries.forEach(function (entry) {
 
                         let isIntersecting = entry.isIntersecting;
                         if (isIntersecting) {
                             let images = $(self.id).find('.slide img');
-                            $.each(images, function (index, image){
+                            $.each(images, function (index, image) {
 
                                 let image_observer = new IntersectionObserver(image_observer_callback, {
-                                    root: $(self.id).get( 0 ),
+                                    root: $(self.id).get(0),
                                     rootMargin: '200px'
                                 });
                                 image_observer.observe(image);
@@ -259,33 +249,31 @@ let SeoClickSlider = function (params) {
                             observer.disconnect();
                         }
                     });
-                },{
+                }, {
                     rootMargin: '200px'
                 });
             slider_observer.observe(document.getElementById(self.id.slice(1)));
-        }else if(self.options.lazy_load){
+        } else if (self.options.lazy_load) {
             let images = $(self.id).find('.slide img');
 
-            $.each(images, function (index, image){
+            $.each(images, function (index, image) {
                 $(image).attr('src', $(image).attr('ref'));
             });
-            sliderResizer();
-        } else{
-            sliderResizer();
         }
+        sliderResizer();
         $(window).resize(sliderResizer);
     };
     SliderConstructor.prototype.addNav = function () {
 
         function moveSlidesLeft() {
 
-            if(self.state !== null) return 0;
+            if (self.state !== null) return 0;
             self.state = 'animated';
 
             let x = self.translateData.value + self.translateData.step,
                 dotnav_container = $(self.id).find(".dot-nav");
 
-            if (x >= self.translateData.max) {
+            if (x <= self.translateData.max) {
                 if (self.options.arrowNav && !self.options.infiniteMode) {
                     if (x === self.translateData.max) {
                         $(self.id).find('.slider-next').addClass("disabled");
@@ -327,15 +315,16 @@ let SeoClickSlider = function (params) {
                 self.translate = self.translateData.min;
             }
         }
+
         function moveSlidesRight() {
 
-            if(self.state !== null) return 0;
+            if (self.state !== null) return 0;
             self.state = 'animated';
 
             let x = self.translateData.value - self.translateData.step,
                 dotnav_container = $(self.id).find(".dot-nav");
 
-            if (x <= self.translateData.min) {
+            if (x >= self.translateData.min) {
                 if (self.options.arrowNav && !self.options.infiniteMode) {
                     if (x === self.translateData.min) {
                         $(self.id).find('.slider-prev').addClass("disabled");
@@ -378,13 +367,14 @@ let SeoClickSlider = function (params) {
                 self.translate = self.translateData.max;
             }
         }
+
         function addArrowNav() {
             "use strict";
             let extraClass = '', markup;
 
             if (!self.options.infiniteMode) extraClass = 'disabled';
 
-            if(!self.options.arrowsMarkup){
+            if (!self.options.arrowsMarkup) {
                 markup = `<div class="arrow-nav">
                             <div class="slider-prev ${extraClass}">
                                 <i class="fa fa-angle-left fa-4x" aria-hidden="true"></i>
@@ -393,7 +383,7 @@ let SeoClickSlider = function (params) {
                                 <i class="fa fa-angle-right fa-4x" aria-hidden="true"></i>
                             </div>
                           </div>`;
-            }else{
+            } else {
                 markup = `<div class="arrow-nav">
                             <div class="slider-prev ${extraClass}">
                                 ${self.options.arrowsMarkup.left}
@@ -415,6 +405,7 @@ let SeoClickSlider = function (params) {
                 }
             });
         }
+
         function addDotNav() {
             "use strict";
 
@@ -423,7 +414,7 @@ let SeoClickSlider = function (params) {
 
             $.each(self.slides.object, function (index) {
 
-                if(translate_value < self.translateData.max) return 1;
+                if (translate_value > self.translateData.max) return 1;
 
                 let dot_element = $("<span class='slideControl'></span>");
 
@@ -438,7 +429,7 @@ let SeoClickSlider = function (params) {
 
                     if ($(this).hasClass("active")) return 0;
 
-                    if(self.state !== null) return 0;
+                    if (self.state !== null) return 0;
                     self.state = 'animated';
 
                     dotnav_container.find(".slideControl").removeClass("active");
@@ -453,6 +444,7 @@ let SeoClickSlider = function (params) {
                 translate_value += self.translateData.step;
             });
         }
+
         function addSlidesDescData() {
             "use strict";
             let translate_value = self.translateData.min;
@@ -464,6 +456,7 @@ let SeoClickSlider = function (params) {
                 translate_value += self.translateData.step;
             });
         }
+
         function activateSlideDesc(number) {
             "use strict";
             let descClass = '.slide-' + number;
@@ -493,7 +486,7 @@ let SeoClickSlider = function (params) {
             $(self.id).mouseleave(() => isPaused = false);
         }
 
-        mc.on("swipeleft", function (){
+        mc.on("swipeleft", function () {
             moveSlidesLeft();
         });
         mc.on("swiperight", function () {
@@ -509,11 +502,11 @@ let SeoClickSlider = function (params) {
 
             self.translateData.value = value;
             anime({
-                targets: this.id + " " + this.containerClass,
-                translateX: value,
+                targets: this.id + " .slides-container",
+                translateX: -value,
                 easing: "easeInOutQuart",
                 duration: this.options.autoScroll.animation_speed,
-                complete: function(){
+                complete: function () {
                     self.state = null;
                 }
             });
@@ -522,7 +515,6 @@ let SeoClickSlider = function (params) {
 
     //Полная инициализация слайдера
     SliderConstructor.prototype.initializeSlider = function () {
-
         $(this.id).data("viewed", this.slides.viewed);
 
         //Данные слайдов
@@ -532,12 +524,12 @@ let SeoClickSlider = function (params) {
         $(this.id).data("initImageWidth", this.slides.imageWidth);
         $(this.id).data("initImageHeight", this.slides.imageHeight);
 
-        //Кол. промежутков
-        this.spacers.count = this.slides.count - 1;
-        //Данные контейнера
-        this.setContainerData();
         //Данные области отображения
         this.setViewData();
+        //Расчитываем промежутки мехду слайдами
+        this.calculateSlidesSpacers();
+        //Данные контейнера слайдов
+        this.setContainerData();
         //Данные смещение контейнера
         this.setTranslateData();
         //Вешаем обработчики
@@ -561,32 +553,32 @@ let SeoClickSlider = function (params) {
 
         //Данные слайдов
         this.setSlidesData();
-        //Кол. промежутков
-        this.spacers.count = this.slides.count - 1;
-        //Данные контейнера
-        this.setContainerData();
         //Данные области отображения
         this.setViewData();
+        //Расчитываем промежутки мехду слайдами
+        this.calculateSlidesSpacers();
+        //Данные контейнера
+        this.setContainerData();
         //Данные смещение контейнера
         this.setTranslateData();
         //Обновление навигации
         this.updateNav();
     };
-    SliderConstructor.prototype.updateNav = function(){
+    SliderConstructor.prototype.updateNav = function () {
 
         window.clearInterval(this.options.autoScroll.handle);
-        if(this.options.arrowNav) $(this.id).find('.arrow-nav').remove();
-        if(this.options.dotNav) $(this.id).find('.dot-nav').remove();
+        if (this.options.arrowNav) $(this.id).find('.arrow-nav').remove();
+        if (this.options.dotNav) $(this.id).find('.dot-nav').remove();
         this.addNav();
     };
     //Вычисляем высоту слайдов
-    SliderConstructor.prototype.calculateSlideHeight = function(){
+    SliderConstructor.prototype.calculateSlideHeight = function () {
 
         $.each(this.slides.object, (index, slide) => {
 
             let height = $(slide).outerHeight(true);
 
-            if(height > this.slides.maxHeight) this.slides.maxHeight = height;
+            if (height > this.slides.maxHeight) this.slides.maxHeight = height;
         });
         this.slides.object.outerHeight(this.slides.maxHeight);
     };

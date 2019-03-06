@@ -38,9 +38,7 @@
         -webkit-flex-flow: row wrap;
         -moz-flex-flow: row wrap;
         flex-flow: row wrap;
-        left: 50%;
-        justify-content: space-between;
-        align-items: center;
+        left: 0;
         position: absolute;
         margin: 0 auto; }
         .seoclick-slider .slides-wrap .slider-view .slides-container .image img {
