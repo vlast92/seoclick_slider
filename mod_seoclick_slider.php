@@ -20,7 +20,7 @@ $document = &JFactory::getDocument();
 $document->addScript($module_path . '/assets/js/anime.min.js');
 $document->addScript($module_path . '/assets/js/hammer.min.js');
 $document->addScript($module_path . '/assets/js/seoclickSlider.min.js?v=' . filemtime(dirname(__FILE__) . '/assets/js/seoclickSlider.min.js'));
-$document->addStyleSheet($module_path . '/assets/css/seoclick_slider_styles.css?v=' . filemtime(dirname(__FILE__) . '/assets/css/seoclick_slider_styles.css'));
+$document->addStyleSheet($module_path . '/assets/css/seoclick_slider_styles.min.css?v=' . filemtime(dirname(__FILE__) . '/assets/css/seoclick_slider_styles.min.css'));
 $document->addStyleSheet("https://use.fontawesome.com/releases/v5.6.1/css/all.css");
 
 $slides = json_decode(json_encode($params->get("slides")), true);
