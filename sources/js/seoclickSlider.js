@@ -539,7 +539,7 @@ let SeoClickSlider = function (params) {
     };
     //Изменение количества отображаемых слайдов
     SliderConstructor.prototype.updateViewData = function (viewed) {
-        this.slides.viewed = viewed;
+        this.slides.viewed = parseInt(viewed, 10);
 
         this.setViewData();
         this.setTranslateData();
