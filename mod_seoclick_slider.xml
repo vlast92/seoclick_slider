@@ -40,18 +40,19 @@
                         name="images_width"
                         type="number"
                         label="MOD_SEOCLICK_SLIDER_IMAGES_WIDTH"
-                        min="0"/>
+                        min="1"/>
                 <field
                         name="images_height"
                         type="number"
                         label="MOD_SEOCLICK_SLIDER_IMAGES_HEIGHT"
-                        min="0"/>
+                        min="1"/>
                 <field
                         name="slide_width"
                         type="number"
                         required="true"
                         label="MOD_SEOCLICK_SLIDER_SLIDE_WIDTH"
-                        min="0"/>
+                        default="500"
+                        min="1"/>
                 <field name="resize_method" type="list" default="none" label="MOD_SEOCLICK_SLIDER_METHOD_LABEL">
                     <option value="none">MOD_SEOCLICK_SLIDER_METHOD_NONE_LABEL</option>
                     <option value="crop">MOD_SEOCLICK_SLIDER_METHOD_CROP_LABEL</option>
@@ -76,13 +77,13 @@
                         name="auto_scroll_interval"
                         type="number"
                         label="MOD_SEOCLICK_SLIDER_AUTO_SCROLL_INTERVAL_LABEL"
-                        min="0"
+                        min="1"
                         showon="auto_scroll:1"/>
                 <field
                         name="animation_speed"
                         type="number"
                         label="MOD_SEOCLICK_SLIDER_ANIMATION_SPEED"
-                        min="0"/>
+                        min="1"/>
                 <field name="nav_type" type="list" default="" required="true" label="MOD_SEOCLICK_SLIDER_NAVTYPE"
                        description="">
                     <option value="">MOD_SEOCLICK_SLIDER_NAVTYPE</option>
@@ -157,7 +158,7 @@
                 <field
                         name="slides_viewed"
                         type="number"
-                        min="0"
+                        min="1"
                         label="MOD_SEOCLICK_SLIDER_SLIDES_VIEWED"/>
 
                 <field name="note2" type="note" label="MOD_SEOCLICK_SLIDER_LAPTOP_LABEL" />
@@ -170,7 +171,7 @@
                 <field
                         name="laptop_viewed"
                         type="number"
-                        min="0"
+                        min="1"
                         label="MOD_SEOCLICK_SLIDER_SLIDES_VIEWED"/>
 
                 <field name="note3" type="note" label="MOD_SEOCLICK_SLIDER_TABLET_LABEL" />
@@ -183,7 +184,7 @@
                 <field
                         name="tablet_viewed"
                         type="number"
-                        min="0"
+                        min="1"
                         label="MOD_SEOCLICK_SLIDER_SLIDES_VIEWED"/>
 
                 <field name="note4" type="note" label="MOD_SEOCLICK_SLIDER_PHONE_LABEL" />
@@ -196,7 +197,7 @@
                 <field
                         name="phone_viewed"
                         type="number"
-                        min="0"
+                        min="1"
                         label="MOD_SEOCLICK_SLIDER_SLIDES_VIEWED"/>
             </fieldset>
             <fieldset
