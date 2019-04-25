@@ -86,6 +86,7 @@ let SeoClickSlider = function (params) {
 
                 self.slides.imageWidth = this.naturalWidth;
                 self.slides.imageHeight = this.naturalHeight;
+                $(self.slides.object[0]).addClass('active');
 
                 self.initializeSlider();
             });
@@ -524,16 +525,30 @@ let SeoClickSlider = function (params) {
     Object.defineProperty(SliderConstructor.prototype, "translate", {
         set: function (value) {
 
-            let self = this;
+            let set_active_slide = ()=>{
 
-            self.translateData.value = value;
+                $(this.id).find(".slide.active").removeClass("active");
+
+                $.each($(this.slides.object), function(index, slide){
+
+                    if(slide.getBoundingClientRect().x === 0){
+                        $(slide).addClass('active');
+
+                        return false;
+                    }
+                });
+            };
+
+            this.translateData.value = value;
+
             anime({
                 targets: this.id + " .slides-container",
                 translateX: -value,
                 easing: "easeInOutQuart",
                 duration: this.options.autoScroll.animation_speed,
-                complete: function () {
-                    self.state = null;
+                complete: ()=> {
+                    this.state = null;
+                    set_active_slide();
                 }
             });
         }

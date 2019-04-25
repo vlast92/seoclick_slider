@@ -88,6 +88,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
                 self.slides.imageWidth = this.naturalWidth;
                 self.slides.imageHeight = this.naturalHeight;
+                $(self.slides.object[0]).addClass('active');
 
                 self.initializeSlider();
             });
@@ -514,17 +515,32 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
     Object.defineProperty(SliderConstructor.prototype, "translate", {
         set: function set(value) {
+            var _this2 = this;
 
-            var self = this;
+            var set_active_slide = function set_active_slide() {
 
-            self.translateData.value = value;
+                $(_this2.id).find(".slide.active").removeClass("active");
+
+                $.each($(_this2.slides.object), function (index, slide) {
+
+                    if (slide.getBoundingClientRect().x === 0) {
+                        $(slide).addClass('active');
+
+                        return false;
+                    }
+                });
+            };
+
+            this.translateData.value = value;
+
             anime({
                 targets: this.id + " .slides-container",
                 translateX: -value,
                 easing: "easeInOutQuart",
                 duration: this.options.autoScroll.animation_speed,
                 complete: function complete() {
-                    self.state = null;
+                    _this2.state = null;
+                    set_active_slide();
                 }
             });
         }
@@ -592,13 +608,13 @@ var SeoClickSlider = function SeoClickSlider(params) {
     };
     //Вычисляем высоту слайдов
     SliderConstructor.prototype.calculateSlideHeight = function () {
-        var _this2 = this;
+        var _this3 = this;
 
         $.each(this.slides.object, function (index, slide) {
 
             var height = $(slide).outerHeight(true);
 
-            if (height > _this2.slides.maxHeight) _this2.slides.maxHeight = height;
+            if (height > _this3.slides.maxHeight) _this3.slides.maxHeight = height;
         });
         this.slides.object.outerHeight(this.slides.maxHeight);
     };
