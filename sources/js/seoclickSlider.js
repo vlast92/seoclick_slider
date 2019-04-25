@@ -18,7 +18,7 @@ let SeoClickSlider = function (params) {
         animation_speed: params.animation_speed,
         lazy_load: params.lazy_load,
         responsiveData: params.responsiveData,
-        phone : params.phone
+        phone: params.phone
     });
 
     function SliderConstructor(arg) {
@@ -49,10 +49,10 @@ let SeoClickSlider = function (params) {
             min_width: parseInt(arg.spacerMinWidth, 10)
         };
         this.responsiveData = {
-            desktop : arg.responsiveData.desktop,
-            laptop : arg.responsiveData.laptop,
-            tablet : arg.responsiveData.tablet,
-            phone : arg.responsiveData.phone
+            desktop: arg.responsiveData.desktop,
+            laptop: arg.responsiveData.laptop,
+            tablet: arg.responsiveData.tablet,
+            phone: arg.responsiveData.phone
         };
         this.options = {
             arrowNav: arg.arrowNav,
@@ -77,6 +77,27 @@ let SeoClickSlider = function (params) {
         this.slides.count = this.slides.object.length;
 
         //Размер слайда
+        if (this.slides.object.find('.image img').length && (!this.slides.imageWidth || !this.slides.imageHeight)) {
+
+            let self = this;
+
+            let img = new Image();
+            img.addEventListener("load", function () {
+
+                self.slides.imageWidth = this.naturalWidth;
+                self.slides.imageHeight = this.naturalHeight;
+
+                self.initializeSlider();
+            });
+            if (this.options.lazy_load){
+                img.src = this.slides.object.find('.image img').attr('ref');
+            }else{
+                img.src = this.slides.object.find('.image img').attr('src');
+            }
+
+            return 0
+        }
+
         this.slides.object.find('.image img').outerWidth(this.slides.imageWidth);
         this.slides.object.find('.image img').outerHeight(this.slides.imageHeight);
 
@@ -141,6 +162,7 @@ let SeoClickSlider = function (params) {
             );
 
         let sliderResizer = function () {
+
                 let sliderWidth = $(self.id).width(),
                     calcSlideWidth, calcImageWidth, calcImageHeight,
                     initSlideWidth = $(self.id).data("initSlideWidth"),
@@ -261,6 +283,10 @@ let SeoClickSlider = function (params) {
             });
         }
         sliderResizer();
+        $(window).load(function(){
+
+            sliderResizer();
+        });
         $(window).resize(sliderResizer);
     };
     SliderConstructor.prototype.addNav = function () {
@@ -519,6 +545,8 @@ let SeoClickSlider = function (params) {
 
         //Данные слайдов
         this.setSlidesData();
+
+        if (this.slides.object.find('.image img').length && (!this.slides.imageWidth || !this.slides.imageHeight)) return 0;
 
         $(this.id).data("initSlideWidth", this.slides.maxWidth);
         $(this.id).data("initImageWidth", this.slides.imageWidth);

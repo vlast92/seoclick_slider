@@ -148,6 +148,7 @@
             </fieldset>
             <fieldset
                     name="slider_adaptive">
+
                 <field name="note1" type="note" label="MOD_SEOCLICK_SLIDER_DESCTOP_LABEL" />
                 <field
                         name="desctop_width"
@@ -202,6 +203,15 @@
             </fieldset>
             <fieldset
                     name="advanced">
+                <field
+                        name="debug_mode"
+                        type="radio"
+                        default="0"
+                        label="MOD_SEOCLICK_SLIDER_DEBUG_LABEL"
+                        class="btn-group btn-group-yesno">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
                 <field
                         name="moduleclass_sfx"
                         type="text"

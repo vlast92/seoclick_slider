@@ -9,7 +9,7 @@
  */
 
 defined('_JEXEC') or die;
-$id = 'seoclick_slider_' . $module->id . '_' . rand(1, 9999999);
+$id = 'seoclick_slider_' . $module->id;
 ?>
     <div id="<?= $id ?>" class="seoclick-slider">
         <div class="slides-wrap">

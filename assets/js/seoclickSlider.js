@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 var SeoClickSlider = function SeoClickSlider(params) {
 
@@ -79,6 +79,27 @@ var SeoClickSlider = function SeoClickSlider(params) {
         this.slides.count = this.slides.object.length;
 
         //Размер слайда
+        if (this.slides.object.find('.image img').length && (!this.slides.imageWidth || !this.slides.imageHeight)) {
+
+            var self = this;
+
+            var img = new Image();
+            img.addEventListener("load", function () {
+
+                self.slides.imageWidth = this.naturalWidth;
+                self.slides.imageHeight = this.naturalHeight;
+
+                self.initializeSlider();
+            });
+            if (this.options.lazy_load) {
+                img.src = this.slides.object.find('.image img').attr('ref');
+            } else {
+                img.src = this.slides.object.find('.image img').attr('src');
+            }
+
+            return 0;
+        }
+
         this.slides.object.find('.image img').outerWidth(this.slides.imageWidth);
         this.slides.object.find('.image img').outerHeight(this.slides.imageHeight);
 
@@ -137,6 +158,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
             phone = window.matchMedia("(max-width: " + self.responsiveData.phone.width + ")");
 
         var sliderResizer = function sliderResizer() {
+
             var sliderWidth = $(self.id).width(),
                 calcSlideWidth = void 0,
                 calcImageWidth = void 0,
@@ -256,6 +278,10 @@ var SeoClickSlider = function SeoClickSlider(params) {
             });
         }
         sliderResizer();
+        $(window).load(function () {
+
+            sliderResizer();
+        });
         $(window).resize(sliderResizer);
     };
     SliderConstructor.prototype.addNav = function () {
@@ -376,9 +402,9 @@ var SeoClickSlider = function SeoClickSlider(params) {
             if (!self.options.infiniteMode) extraClass = 'disabled';
 
             if (!self.options.arrowsMarkup) {
-                markup = '<div class="arrow-nav">\n                            <div class="slider-prev ' + extraClass + '">\n                                <i class="fa fa-angle-left fa-4x" aria-hidden="true"></i>\n                            </div>\n                            <div class="slider-next">\n                                <i class="fa fa-angle-right fa-4x" aria-hidden="true"></i>\n                            </div>\n                          </div>';
+                markup = "<div class=\"arrow-nav\">\n                            <div class=\"slider-prev " + extraClass + "\">\n                                <i class=\"fa fa-angle-left fa-4x\" aria-hidden=\"true\"></i>\n                            </div>\n                            <div class=\"slider-next\">\n                                <i class=\"fa fa-angle-right fa-4x\" aria-hidden=\"true\"></i>\n                            </div>\n                          </div>";
             } else {
-                markup = '<div class="arrow-nav">\n                            <div class="slider-prev ' + extraClass + '">\n                                ' + self.options.arrowsMarkup.left + '\n                            </div>\n                            <div class="slider-next">\n                                ' + self.options.arrowsMarkup.right + '\n                            </div>\n                          </div>';
+                markup = "<div class=\"arrow-nav\">\n                            <div class=\"slider-prev " + extraClass + "\">\n                                " + self.options.arrowsMarkup.left + "\n                            </div>\n                            <div class=\"slider-next\">\n                                " + self.options.arrowsMarkup.right + "\n                            </div>\n                          </div>";
             }
 
             $(self.id).append(markup);
@@ -510,6 +536,8 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
         //Данные слайдов
         this.setSlidesData();
+
+        if (this.slides.object.find('.image img').length && (!this.slides.imageWidth || !this.slides.imageHeight)) return 0;
 
         $(this.id).data("initSlideWidth", this.slides.maxWidth);
         $(this.id).data("initImageWidth", this.slides.imageWidth);

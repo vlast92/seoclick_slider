@@ -19,15 +19,20 @@ JHtml::_('jquery.framework');
 $document = &JFactory::getDocument();
 $document->addScript($module_path . '/assets/js/anime.min.js');
 $document->addScript($module_path . '/assets/js/hammer.min.js');
-$document->addScript($module_path . '/assets/js/seoclickSlider.min.js?v=' . filemtime(dirname(__FILE__) . '/assets/js/seoclickSlider.min.js'));
+
+if($params->get("debug_mode")){
+	$document->addScript($module_path . '/assets/js/seoclickSlider.js?v=' . filemtime(dirname(__FILE__) . '/assets/js/seoclickSlider.js'));
+}else{
+	$document->addScript($module_path . '/assets/js/seoclickSlider.min.js?v=' . filemtime(dirname(__FILE__) . '/assets/js/seoclickSlider.min.js'));
+}
 $document->addStyleSheet($module_path . '/assets/css/seoclick_slider_styles.min.css?v=' . filemtime(dirname(__FILE__) . '/assets/css/seoclick_slider_styles.min.css'));
 $document->addStyleSheet("https://use.fontawesome.com/releases/v5.6.1/css/all.css");
 
 $slides = json_decode(json_encode($params->get("slides")), true);
 $nav_type = $params->get('nav_type');
 $desc_block = $params->get('desc_block');
-$images_width = $params->get('images_width', '800');
-$images_height = $params->get('images_height', '400');
+$images_width = $params->get('images_width', 0);
+$images_height = $params->get('images_height', 0);
 $images_space = $params->get('images_space', '0');
 $slide_width = $params->get('slide_width', $images_width);
 $infinite_mode = $params->get('infinite_mode');
