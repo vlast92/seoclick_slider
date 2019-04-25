@@ -62,6 +62,7 @@ let SeoClickSlider = function (params) {
             infiniteMode: arg.infiniteMode,
             autoScroll: {
                 handle: null,
+                counter: 0,
                 active: arg.autoScroll.active,
                 interval: parseInt(arg.autoScroll.interval, 10),
                 animation_speed: parseInt(arg.autoScroll.animation_speed, 10)
@@ -86,7 +87,7 @@ let SeoClickSlider = function (params) {
 
                 self.slides.imageWidth = this.naturalWidth;
                 self.slides.imageHeight = this.naturalHeight;
-                $(self.slides.object[0]).addClass('active');
+                window.setTimeout(()=>$(self.slides.object[0]).addClass('active'), 1000);
 
                 self.initializeSlider();
             });
@@ -503,11 +504,18 @@ let SeoClickSlider = function (params) {
         if (self.options.dotNav) addDotNav();
         if (self.options.desc_block) addSlidesDescData();
         if (self.options.autoScroll.active) {
+
+            if(self.options.autoScroll.handle) window.clearInterval(self.options.autoScroll.handle);
+
             let isPaused = false;
 
             self.options.autoScroll.handle = window.setInterval(() => {
-                if (!isPaused) moveSlidesLeft();
-            }, self.options.autoScroll.interval);
+                if(!isPaused) self.options.autoScroll.counter++;
+                if (self.options.autoScroll.counter === self.options.autoScroll.interval){
+                    moveSlidesLeft();
+                    self.options.autoScroll.counter = null;
+                }
+            }, 1000);
 
             $(self.id).mouseenter(() => isPaused = true);
             $(self.id).mouseleave(() => isPaused = false);
@@ -549,6 +557,7 @@ let SeoClickSlider = function (params) {
                 complete: ()=> {
                     this.state = null;
                     set_active_slide();
+                    this.options.autoScroll.counter = 0;
                 }
             });
         }
@@ -609,7 +618,6 @@ let SeoClickSlider = function (params) {
     };
     SliderConstructor.prototype.updateNav = function () {
 
-        window.clearInterval(this.options.autoScroll.handle);
         if (this.options.arrowNav) $(this.id).find('.arrow-nav').remove();
         if (this.options.dotNav) $(this.id).find('.dot-nav').remove();
         this.addNav();
