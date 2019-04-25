@@ -18,15 +18,28 @@
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
+        <field
+                name="desc_block"
+                type="radio"
+                default="0"
+                label="MOD_SEOCLICK_SLIDER_DESCBLOCK_LABEL"
+                description="MOD_SEOCLICK_SLIDER_DESCBLOCK_DESCRIPTION"
+                class="btn-group btn-group-yesno">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
         <field  name="note_description"
                 type="note"
-                label="MOD_SEOCLICK_SLIDER_DESCRIPTION_NOTE"/>
+                label="MOD_SEOCLICK_SLIDER_DESCRIPTION_NOTE"
+                showon="desc_block:1"/>
         <field name="header"
                 type="text"
-                label="MOD_SEOCLICK_SLIDER_HEADER"/>
+                label="MOD_SEOCLICK_SLIDER_HEADER"
+                showon="desc_block:1"/>
         <field name="description"
                 type="textarea"
                 label="MOD_SEOCLICK_SLIDER_DESCRIPTION"
-                rows="10"/>
+                rows="10"
+                showon="desc_block:1"/>
     </fieldset>
 </form>

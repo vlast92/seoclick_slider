@@ -93,16 +93,6 @@
                     <option value="3">MOD_SEOCLICK_SLIDER_NAVTYPE_BOTH</option>
                 </field>
                 <field
-                        name="desc_block"
-                        type="radio"
-                        default="0"
-                        label="MOD_SEOCLICK_SLIDER_DESCBLOCK_LABEL"
-                        description="MOD_SEOCLICK_SLIDER_DESCBLOCK_DESCRIPTION"
-                        class="btn-group btn-group-yesno">
-                    <option value="1">JYES</option>
-                    <option value="0">JNO</option>
-                </field>
-                <field
                         name="infinite_mode"
                         type="radio"
                         default="1"

@@ -30,7 +30,6 @@ $document->addStyleSheet("https://use.fontawesome.com/releases/v5.6.1/css/all.cs
 
 $slides = json_decode(json_encode($params->get("slides")), true);
 $nav_type = $params->get('nav_type');
-$desc_block = $params->get('desc_block');
 $images_width = $params->get('images_width', 0);
 $images_height = $params->get('images_height', 0);
 $images_space = $params->get('images_space', '0');

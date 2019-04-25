@@ -26,7 +26,7 @@ $id = 'seoclick_slider_' . $module->id;
                                         <img <?php if($lazy_load):?>ref<?php else:?>src<?php endif;?>="/<?= $slide['image'] ?>" alt="slide_<?= $counter++ ?>"/>
                                     </div>
                                 <?php endif; ?>
-                                <?php if ($desc_block): ?>
+                                <?php if ($slide['desc_block']): ?>
                                     <div class="slide-description">
 			                            <?php if(!empty($slide['header'])):?>
                                         <div class="content top"><span class="name"><?= $slide['header'] ?></span></div>
