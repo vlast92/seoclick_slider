@@ -1,5 +1,6 @@
 "use strict";
 
+//TODO протестировать параметр минимального расстояния между слайдами при размерах сладой меньше контейнера
 var SeoClickSlider = function SeoClickSlider(params) {
 
     var $ = jQuery;
@@ -172,6 +173,8 @@ var SeoClickSlider = function SeoClickSlider(params) {
                 initImageHeight = $(self.id).data("initImageHeight");
 
             calcSlideWidth = sliderWidth / self.slides.viewed;
+
+            if (calcSlideWidth > initSlideWidth) calcSlideWidth = initSlideWidth;
 
             var difference = initSlideWidth - calcSlideWidth,
                 ratio = initImageWidth / initImageHeight;
