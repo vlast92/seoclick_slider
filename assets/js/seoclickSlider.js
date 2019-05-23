@@ -121,9 +121,10 @@ var SeoClickSlider = function SeoClickSlider(params) {
         this.calculateSlideHeight();
     };
     SliderConstructor.prototype.setViewData = function () {
-        this.viewWidth = $(this.id).find(".slider-view").width();
+        // this.viewWidth = $(this.id).find(".slider-view").width();
+        this.viewWidth = this.slides.maxWidth * this.slides.viewed;
         this.viewHeight = this.slides.maxHeight;
-        $(this.id).find(".slider-view").outerHeight(this.viewHeight);
+        $(this.id).find(".slider-view").width(this.viewWidth).outerHeight(this.viewHeight);
     };
     SliderConstructor.prototype.calculateSlidesSpacers = function () {
         if (this.slides.viewed !== 1) {
