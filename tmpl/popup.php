@@ -9,7 +9,7 @@
  */
 
 defined('_JEXEC') or die;
-$id = 'seoclick_slider_' . $module->id;
+$id = 'seoclick_slider_' . $module->id . '_' . rand(1,10000);
 $document->addScript($module_path . '/assets/js/lightcase.js');
 $document->addStyleSheet($module_path . '/assets/css/lightcase.css');
 ?>
