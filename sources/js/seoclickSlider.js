@@ -117,10 +117,19 @@ let SeoClickSlider = function (params) {
         this.calculateSlideHeight();
     };
     SliderConstructor.prototype.setViewData = function () {
-        // this.viewWidth = $(this.id).find(".slider-view").width();
-        this.viewWidth = this.slides.maxWidth * this.slides.viewed;
+
+        let sliderView = $(this.id).find(".slider-view");
+
+        sliderView.css("width", '');
+
+        if(this.slides.viewed === 1){
+            this.viewWidth = this.slides.maxWidth;
+        }else{
+            this.viewWidth = sliderView.width();
+        }
+
         this.viewHeight = this.slides.maxHeight;
-        $(this.id).find(".slider-view").width(this.viewWidth).outerHeight(this.viewHeight);
+        sliderView.width(this.viewWidth).outerHeight(this.viewHeight);
     };
     SliderConstructor.prototype.calculateSlidesSpacers = function () {
         if (this.slides.viewed !== 1) {
