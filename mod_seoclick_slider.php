@@ -49,11 +49,11 @@ $responsive_data = json_encode(array(
 	),
 	'laptop' => array(
 		"width" => intval($params->get('laptop_width', 1199)),
-		"viewed" => intval($params->get('laptop_viewed', 3))
+		"viewed" => intval($params->get('laptop_viewed', 1))
 	),
 	'tablet' => array(
 		"width" => intval($params->get('tablet_width', 959)),
-		"viewed" => intval($params->get('tablet_viewed', 2))
+		"viewed" => intval($params->get('tablet_viewed', 1))
 	),
 	'phone' => array(
 		"width" => intval($params->get('phone_width', 767)),
