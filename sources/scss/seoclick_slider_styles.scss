@@ -68,8 +68,27 @@ $buttonColor: #ffce23;
         position: absolute;
         margin: 0 auto;
 
-        .image img{
-          width: 100%;
+        .slide{
+          position: relative;
+
+          .zoom-icon{
+            @include transition(.3s);
+            position: absolute;
+            bottom: .5rem;
+            right: .5rem;
+            opacity: 0;
+            color: rgba(224, 224, 229, .8);
+          }
+          &:hover .zoom-icon{
+            opacity: 1;
+
+            &:hover{
+              color: #fff;
+            }
+          }
+          .image img{
+            width: 100%;
+          }
         }
       }
     }

@@ -117,9 +117,19 @@ let SeoClickSlider = function (params) {
         this.calculateSlideHeight();
     };
     SliderConstructor.prototype.setViewData = function () {
-        this.viewWidth = $(this.id).find(".slider-view").width();
+
+        let sliderView = $(this.id).find(".slider-view");
+
+        sliderView.css("width", '');
+
+        if(this.slides.viewed === 1){
+            this.viewWidth = this.slides.maxWidth;
+        }else{
+            this.viewWidth = sliderView.width();
+        }
+
         this.viewHeight = this.slides.maxHeight;
-        $(this.id).find(".slider-view").outerHeight(this.viewHeight);
+        sliderView.width(this.viewWidth).outerHeight(this.viewHeight);
     };
     SliderConstructor.prototype.calculateSlidesSpacers = function () {
         if (this.slides.viewed !== 1) {
@@ -155,16 +165,16 @@ let SeoClickSlider = function (params) {
     SliderConstructor.prototype._initListeners = function () {
         let self = this,
             desktop = window.matchMedia(
-                "(min-width: " + self.responsiveData.desktop.width + ")"
+                "(min-width: " + self.responsiveData.desktop.width + "px)"
             ),
             laptop = window.matchMedia(
-                "(max-width: " + self.responsiveData.laptop.width + ")"
+                `(max-width: ${self.responsiveData.laptop.width}px) and (min-width: ${self.responsiveData.tablet.width + 1}px)`
             ),
             tablet = window.matchMedia(
-                "(max-width: " + self.responsiveData.tablet.width + ")"
+                `(max-width: ${self.responsiveData.tablet.width}px) and (min-width: ${self.responsiveData.phone.width + 1}px)`
             ),
             phone = window.matchMedia(
-                "(max-width: " + self.responsiveData.phone.width + ")"
+                `(max-width: ${self.responsiveData.phone.width}px)`
             );
 
         let sliderResizer = function () {
@@ -199,27 +209,20 @@ let SeoClickSlider = function (params) {
             },
             checkLaptopQuery = function (e) {
 
-                if (e.matches && self.slides.viewed > self.responsiveData.laptop.viewed) {
+                if (e.matches && (self.slides.viewed !== self.responsiveData.laptop.viewed)) {
                     self.updateViewData(self.responsiveData.laptop.viewed);
-                } else if (self.slides.viewed < $(self.id).data("viewed")) {
-                    self.updateViewData($(self.id).data("viewed"));
                 }
-
             },
             checkTabletQuery = function (e) {
 
-                if (e.matches && self.slides.viewed > self.responsiveData.tablet.viewed) {
+                if (e.matches && (self.slides.viewed !== self.responsiveData.tablet.viewed)) {
                     self.updateViewData(self.responsiveData.tablet.viewed);
-                } else if (self.slides.viewed < $(self.id).data("viewed")) {
-                    self.updateViewData(self.responsiveData.laptop.viewed);
                 }
             },
             checkPhoneQuery = function (e) {
 
-                if (e.matches && self.slides.viewed > self.responsiveData.phone.viewed) {
+                if (e.matches && (self.slides.viewed !== self.responsiveData.phone.viewed)) {
                     self.updateViewData(self.responsiveData.phone.viewed);
-                } else if (self.slides.viewed < $(self.id).data("viewed")) {
-                    self.updateViewData(self.responsiveData.tablet.viewed);
                 }
             };
 
@@ -233,10 +236,10 @@ let SeoClickSlider = function (params) {
             self.updateViewData($(self.id).data("viewed"));
         }
 
-        desktop.addListener(checkDesktopQuery);
-        laptop.addListener(checkLaptopQuery);
-        tablet.addListener(checkTabletQuery);
         phone.addListener(checkPhoneQuery);
+        tablet.addListener(checkTabletQuery);
+        laptop.addListener(checkLaptopQuery);
+        desktop.addListener(checkDesktopQuery);
 
         if (self.options.lazy_load && 'IntersectionObserver' in window &&
             'IntersectionObserverEntry' in window &&
