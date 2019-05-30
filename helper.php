@@ -231,7 +231,7 @@ class ModSeoclickSliderHelper
 
 		if (!file_exists($resized_image_path))
 		{
-			mkdir($resized_image_path);
+			mkdir($resized_image_path, 0777, true);
 		}
 
 		$resized_image_path .= '/' . $filename;
