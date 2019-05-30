@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form>
+    <fieldset hidden="true" name="responsive_images_srcset_modal" repeat="true">
+        <field
+                name="srcset_image_width"
+                type="number"
+                label="MOD_SEOCLICK_SLIDER_RESPONSIVE_IMAGE_WIDTH"/>
+    </fieldset>
+</form>

@@ -9,7 +9,7 @@
  */
 
 defined('_JEXEC') or die;
-$id = 'seoclick_slider_' . $module->id;
+$id = 'seoclick_slider_' . $module->id . '_' . rand(1,10000);
 ?>
     <div id="<?= $id ?>" class="seoclick-slider">
         <div class="slides-wrap">
@@ -24,9 +24,7 @@ $id = 'seoclick_slider_' . $module->id;
                             <div class="slide-content">
 								<?php if ($slide['image']): ?>
                                     <div class="image">
-                                        <img
-											<?php if ($lazy_load): ?>ref<?php else: ?>src<?php endif; ?>="/<?= $slide['image'] ?>"
-                                            alt="slide_<?= $counter++ ?>"/>
+										<?php require JModuleHelper::getLayoutPath('mod_seoclick_slider', 'slide_image');?>
                                     </div>
 								<?php endif; ?>
                             </div>
@@ -39,19 +37,21 @@ $id = 'seoclick_slider_' . $module->id;
             </div>
         </div>
         <div class="slides-description">
-			<?php $counter = 0; ?>
-			<?php foreach ($slides as $slide): ?>
-	            <?php if ($slide['desc_block']): ?>
-                    <div class="<?php if ($counter == 0) echo 'active' ?> slide-description slide-<?= $counter++ ?>">
-                        <div class="heading"><?= jText::_("MOD_SEOCLICK_SLIDER_DESCBLOCK_HEAD_LABEL"); ?></div>
-                        <div class="content top"><span class="name"><?= $slide['header'] ?></span></div>
-                        <div class="heading"><?= jText::_("MOD_SEOCLICK_SLIDER_DESCBLOCK_DESCRIPTION_LABEL"); ?></div>
-                        <div class="content bottom">
-                            <?= $slide['description'] ?>
+            <div class="container">
+	            <?php $counter = 0; ?>
+	            <?php foreach ($slides as $slide): ?>
+		            <?php if ($slide['desc_block']): ?>
+                        <div class="<?php if ($counter == 0) echo 'active' ?> slide-description slide-<?= $counter++ ?>">
+                            <div class="heading"><?= jText::_("MOD_SEOCLICK_SLIDER_DESCBLOCK_HEAD_LABEL"); ?></div>
+                            <div class="content top"><span class="name"><?= $slide['header'] ?></span></div>
+                            <div class="heading"><?= jText::_("MOD_SEOCLICK_SLIDER_DESCBLOCK_DESCRIPTION_LABEL"); ?></div>
+                            <div class="content bottom">
+					            <?= $slide['description'] ?>
+                            </div>
                         </div>
-                    </div>
-                <?php endif; ?>
-			<?php endforeach; ?>
+		            <?php endif; ?>
+	            <?php endforeach; ?>
+            </div>
         </div>
     </div>
 <?php
@@ -98,6 +98,7 @@ $document->addScriptDeclaration('
                 animation_speed: ' . $animation_speed . '
             },
             lazy_load: ' . $lazy_load . ',
+            debug: '.$debug.',
             responsiveData: ' . $responsive_data . '
         });
     });

@@ -9,7 +9,9 @@
  */
 
 defined('_JEXEC') or die;
-$id = 'seoclick_slider_' . $module->id . '_' . rand(1, 10000);
+$id = 'seoclick_slider_' . $module->id . '_' . rand(1,10000);
+$document->addScript($module_path . '/assets/js/lightcase.js');
+$document->addStyleSheet($module_path . '/assets/css/lightcase.css');
 ?>
     <div id="<?= $id ?>" class="seoclick-slider">
         <div class="slides-wrap">
@@ -17,36 +19,33 @@ $id = 'seoclick_slider_' . $module->id . '_' . rand(1, 10000);
                 <div class="slides-container">
 	                <?php $counter = 0; ?>
 					<?php foreach ($slides as $index => $slide): ?>
-						<?php if (!empty($slide['url'])): ?>
-                            <a href="<?= $slide['url']; ?>" <?php if ($slide['url_open']): ?>target="_blank"<?php endif; ?> rel="nofollow noopener noreferrer">
-						<?php endif; ?>
-                        <div class="slide">
-                            <div class="slide-content">
-								<?php if ($slide['image']): ?>
-                                    <div class="image">
-                                        <?php require JModuleHelper::getLayoutPath('mod_seoclick_slider', 'slide_image');?>
-                                    </div>
-								<?php endif; ?>
-								<?php if ($slide['desc_block']): ?>
-                                    <div class="slide-description">
-                                        <div class="container">
-											<?php if (!empty($slide['header'])): ?>
-                                                <div class="content top"><span
-                                                            class="name"><?= $slide['header'] ?></span></div>
-											<?php endif; ?>
-											<?php if (!empty($slide['description'])): ?>
-                                                <div class="content bottom">
-													<?= $slide['description'] ?>
-                                                </div>
-											<?php endif; ?>
+                        <a href="<?= $slide['image_orig']['path']; ?>" data-rel="lightcase:collection<?=$module->id?>">
+                            <div class="slide">
+                                <div class="slide-content">
+									<?php if ($slide['image']): ?>
+                                        <div class="image">
+											<?php require JModuleHelper::getLayoutPath('mod_seoclick_slider', 'slide_image');?>
                                         </div>
-                                    </div>
-								<?php endif; ?>
+									<?php endif; ?>
+									<?php if ($slide['desc_block']): ?>
+                                        <div class="slide-description">
+                                            <div class="container">
+	                                            <?php if (!empty($slide['header'])): ?>
+                                                    <div class="content top"><span
+                                                                class="name"><?= $slide['header'] ?></span></div>
+	                                            <?php endif; ?>
+	                                            <?php if (!empty($slide['description'])): ?>
+                                                    <div class="content bottom">
+			                                            <?= $slide['description'] ?>
+                                                    </div>
+	                                            <?php endif; ?>
+                                            </div>
+                                        </div>
+									<?php endif; ?>
+                                </div>
+                                <div class="zoom-icon g-grid"><i class="fa fa-arrows-alt fa-3x" aria-hidden="true"></i></div>
                             </div>
-                        </div>
-						<?php if (!empty($slide['url'])): ?>
-                            </a>
-						<?php endif; ?>
+                        </a>
 					<?php endforeach ?>
                 </div>
             </div>
@@ -73,6 +72,8 @@ switch ($nav_type)
 if (!$infinite_mode) $extra_arrow_class = 'disabled';
 $document->addScriptDeclaration('
     jQuery(function($) {
+    
+    $("#' . $id . ' a[data-rel^=lightcase]").lightcase();
      
     let slider, arrows_markup = {};
         
@@ -96,7 +97,7 @@ $document->addScriptDeclaration('
                 animation_speed: ' . $animation_speed . '
             },
             lazy_load: ' . $lazy_load . ',
-            debug: ' . $debug . ',
+            debug: '.$debug.',
             responsiveData: ' . $responsive_data . '
         });
     });

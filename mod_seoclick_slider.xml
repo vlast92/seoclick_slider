@@ -13,6 +13,8 @@
     <files>
         <filename module="mod_seoclick_slider">mod_seoclick_slider.php</filename>
         <filename>slide_fields.xml</filename>
+        <filename>responsive_images_sizes.xml</filename>
+        <filename>responsive_images_srcset.xml</filename>
         <folder>tmpl</folder>
         <folder>language</folder>
         <folder>assets</folder>
@@ -36,28 +38,29 @@
                         type="modulelayout"
                         label="MOD_SEOCLICK_SLIDER_LAYOUT_LABEL"
                         description="MOD_SEOCLICK_SLIDER_LAYOUT_DESCRIPTION"/>
+                <field name="note1" type="note" label="MOD_SEOCLICK_SLIDER_POPUP_NOTE"/>
                 <field
                         name="images_width"
                         type="number"
                         label="MOD_SEOCLICK_SLIDER_IMAGES_WIDTH"
-                        min="1"/>
+                        min="1"
+                        showon="resize_method!:none"/>
                 <field
                         name="images_height"
                         type="number"
                         label="MOD_SEOCLICK_SLIDER_IMAGES_HEIGHT"
-                        min="1"/>
+                        min="1"
+                        showon="resize_method!:none"/>
                 <field
                         name="slide_width"
                         type="number"
-                        required="true"
                         label="MOD_SEOCLICK_SLIDER_SLIDE_WIDTH"
-                        default="500"
                         min="1"/>
                 <field name="resize_method" type="list" default="none" label="MOD_SEOCLICK_SLIDER_METHOD_LABEL">
                     <option value="none">MOD_SEOCLICK_SLIDER_METHOD_NONE_LABEL</option>
                     <option value="crop">MOD_SEOCLICK_SLIDER_METHOD_CROP_LABEL</option>
-                    <option value="resize_ratio">MOD_SEOCLICK_SLIDER_METHOD_RESIZE_WITH_RATIO_LABEL</option>
-                    <option value="resize_no_ratio">MOD_SEOCLICK_SLIDER_METHOD_RESIZE_WITH_NO_RATIO_LABEL</option>
+                    <!--<option value="resize_ratio">MOD_SEOCLICK_SLIDER_METHOD_RESIZE_WITH_RATIO_LABEL</option>
+                    <option value="resize_no_ratio">MOD_SEOCLICK_SLIDER_METHOD_RESIZE_WITH_NO_RATIO_LABEL</option>-->
                 </field>
                 <field
                         name="images_space"
@@ -190,6 +193,51 @@
                         type="number"
                         min="1"
                         label="MOD_SEOCLICK_SLIDER_SLIDES_VIEWED"/>
+            </fieldset>
+            <fieldset name="image_adaptive">
+                <field
+                        name="responsive_images"
+                        type="radio"
+                        default="0"
+                        label="MOD_SEOCLICK_SLIDER_ADAPTIVE_IMAGES_LABEL"
+                        class="btn-group btn-group-yesno">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field
+                        name="responsive_images_srcset"
+                        type="subform"
+                        formsource="modules/mod_seoclick_slider/responsive_images_srcset.xml"
+                        min="1"
+                        max="999999"
+                        multiple="true"
+                        layout="joomla.form.field.subform.repeatable"
+                        groupByFieldset="false"
+                        label="MOD_SEOCLICK_SLIDER_RESPONSIVE_IMAGES_SRCSET_LABEL"
+                        showon="responsive_images:1"
+                />
+                <field
+                        name="responsive_images_size_active"
+                        type="radio"
+                        default="0"
+                        label="MOD_SEOCLICK_SLIDER_ADAPTIVE_IMAGES_SIZE_ACTIVE_LABEL"
+                        class="btn-group btn-group-yesno"
+                        showon="responsive_images:1">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field
+                        name="responsive_images_sizes"
+                        type="subform"
+                        formsource="modules/mod_seoclick_slider/responsive_images_sizes.xml"
+                        min="1"
+                        max="999999"
+                        multiple="true"
+                        layout="joomla.form.field.subform.repeatable"
+                        groupByFieldset="false"
+                        label="MOD_SEOCLICK_SLIDER_RESPONSIVE_IMAGES_SIZE_LABEL"
+                        showon="responsive_images:1[AND]responsive_images_size_active:1"
+                />
             </fieldset>
             <fieldset
                     name="advanced">
