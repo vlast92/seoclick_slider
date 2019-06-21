@@ -8,21 +8,19 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
     var slider = new SliderConstructor({
         id: params.id,
-        viewed: params.viewed,
-        spacerMinWidth: params.spacerMinWidth,
-        imageWidth: params.imageWidth,
-        imageHeight: params.imageHeight,
-        slideWidth: params.slideWidth,
+        viewed: parseInt(params.viewed, 10),
+        spacerMinWidth: parseInt(params.spacerMinWidth, 10),
+        imageWidth: parseInt(params.imageWidth, 10),
+        imageHeight: parseInt(params.imageHeight, 10),
+        slideWidth: parseInt(params.slideWidth, 10),
         arrowNav: params.arrowNav,
         dotNav: params.dotNav,
         arrowsMarkup: params.arrowsMarkup,
         desc_block: params.desc_block,
         infiniteMode: params.infiniteMode,
         autoScroll: params.autoScroll,
-        animation_speed: params.animation_speed,
         lazy_load: params.lazy_load,
         responsiveData: params.responsiveData,
-        phone: params.phone,
         debug: params.debug
     });
 
@@ -42,17 +40,17 @@ var SeoClickSlider = function SeoClickSlider(params) {
         this.slides = {
             object: null,
             count: null,
-            viewed: +arg.viewed,
-            imageWidth: parseInt(arg.imageWidth, 10),
-            imageHeight: parseInt(arg.imageHeight, 10),
+            viewed: arg.viewed,
+            imageWidth: arg.imageWidth,
+            imageHeight: arg.imageHeight,
             imageRatio: null,
-            maxWidth: parseInt(arg.slideWidth, 10),
+            maxWidth: arg.slideWidth,
             maxHeight: null
         };
         this.spacers = {
             count: null,
             width: null,
-            min_width: parseInt(arg.spacerMinWidth, 10)
+            min_width: arg.spacerMinWidth
         };
         this.responsiveData = {
             desktop: arg.responsiveData.desktop,
@@ -727,6 +725,16 @@ var SeoClickSlider = function SeoClickSlider(params) {
         var _this6 = this;
 
         if (this.options.debug) console.log("Call addViewportListeners");
+
+        this.responsiveData.desktop.width = parseInt(this.responsiveData.desktop.width, 10);
+        this.responsiveData.laptop.width = parseInt(this.responsiveData.laptop.width, 10);
+        this.responsiveData.tablet.width = parseInt(this.responsiveData.tablet.width, 10);
+        this.responsiveData.phone.width = parseInt(this.responsiveData.phone.width, 10);
+
+        this.responsiveData.desktop.viewed = parseInt(this.responsiveData.desktop.viewed, 10);
+        this.responsiveData.laptop.viewed = parseInt(this.responsiveData.laptop.viewed, 10);
+        this.responsiveData.tablet.viewed = parseInt(this.responsiveData.tablet.viewed, 10);
+        this.responsiveData.phone.viewed = parseInt(this.responsiveData.phone.viewed, 10);
 
         var desktop = window.matchMedia("(min-width: " + this.responsiveData.desktop.width + "px)"),
             laptop = window.matchMedia("(max-width: " + this.responsiveData.laptop.width + "px) and (min-width: " + (this.responsiveData.tablet.width + 1) + "px)"),
