@@ -96,7 +96,8 @@ $moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
 foreach ($slides as $key => $slide)
 {
 	if (empty($slide['image'])) continue;
-	$image_info                = getimagesize(JPATH_BASE . '/' . $slide['image']);
+	$slide['image'] = '/' . $slide['image'];
+	$image_info                = getimagesize(JPATH_BASE . $slide['image']);
 	$orig_image_width          = $image_info[0];
 	$orig_image_height         = $image_info[1];
 	$slides[$key]['image_orig']['path']   = $slide['image'];
@@ -145,7 +146,7 @@ foreach ($slides as $key => $slide)
 		$slides[$key]['responsive_images']['sizes'] = $responsive_images_sizes;
 	}
 
-	$slides[$key]['image'] .= '?v=' . filemtime(JPATH_BASE . '/' . $slides[$key]['image']);
+	$slides[$key]['image'] .= '?v=' . filemtime(JPATH_BASE . $slides[$key]['image']);
 }
 
 require JModuleHelper::getLayoutPath('mod_seoclick_slider', $params->get('layout', 'default'));

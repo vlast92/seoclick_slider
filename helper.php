@@ -14,13 +14,13 @@ class ModSeoclickSliderHelper
 	{
 		$thumbnail_path = self::returnPathForResizedImages($image, $newWidth, $newHeight);
 
-		if (file_exists(JPATH_BASE . '/' . $thumbnail_path))
+		if (file_exists(JPATH_BASE . $thumbnail_path))
 		{
 			if (!$image_info = getimagesize(JPATH_BASE . '/' . $thumbnail_path)) throw new \Exception("Error while reading image info;");
 			if ($image_info[0] == $newWidth && $image_info[1] == $newHeight) return $thumbnail_path;
 		}
 
-		if (!is_file($image) && !is_readable($image)) throw new \Exception(jText::sprintf("MOD_SEOCLICK_SLIDER_FILE_READ_ERROR", $image));
+		if (!is_file(JPATH_BASE . $image) && !is_readable(JPATH_BASE . $image)) throw new \Exception(jText::sprintf("MOD_SEOCLICK_SLIDER_FILE_READ_ERROR", $image));
 
 		if (isset($mimeType))
 		{
@@ -41,10 +41,10 @@ class ModSeoclickSliderHelper
 			case 'jpg':
 			case 'jpe':
 			case 'jpeg':
-				if (!$image_original = imagecreatefromjpeg($image)) throw new \Exception("Error while creating jpeg image;");
+				if (!$image_original = imagecreatefromjpeg(JPATH_BASE . $image)) throw new \Exception("Error while creating jpeg image;");
 				break;
 			case 'png':
-				if (!$image_original = imagecreatefrompng($image)) throw new \Exception("Error while creating png image;");
+				if (!$image_original = imagecreatefrompng(JPATH_BASE . $image)) throw new \Exception("Error while creating png image;");
 				break;
 			case 'gif':
 				if (!$image_original = imagecreatefromgif($image)) throw new \Exception("Error while creating gif image;");
@@ -110,16 +110,16 @@ class ModSeoclickSliderHelper
 			case 'jpg':
 			case 'jpe':
 			case 'jpeg':
-				if (!imagejpeg($image_thumbnail, $thumbnail_path, 100)) throw new \Exception("Error while saving image;");
+				if (!imagejpeg($image_thumbnail, JPATH_BASE . $thumbnail_path, 100)) throw new \Exception("Error while saving image;");
 				break;
 			case 'png':
-				if (!imagepng($image_thumbnail, $thumbnail_path)) throw new \Exception("Error while saving image;");
+				if (!imagepng($image_thumbnail, JPATH_BASE . $thumbnail_path)) throw new \Exception("Error while saving image;");
 				break;
 			case 'gif':
-				if (!imagegif($image_thumbnail, $thumbnail_path)) throw new \Exception("Error while saving image;");
+				if (!imagegif($image_thumbnail, JPATH_BASE . $thumbnail_path)) throw new \Exception("Error while saving image;");
 				break;
 			case 'wbmp':
-				if (!imagewbmp($image_thumbnail, $thumbnail_path)) throw new \Exception("Error while saving image;");
+				if (!imagewbmp($image_thumbnail, JPATH_BASE . $thumbnail_path)) throw new \Exception("Error while saving image;");
 				break;
 		}
 		// Очищаем память
@@ -136,7 +136,7 @@ class ModSeoclickSliderHelper
 
 		if (file_exists(JPATH_BASE . '/' . $resize_image_path))
 		{
-			if (!$image_info = getimagesize(JPATH_BASE . '/' . $resize_image_path)) throw new \Exception("Error while reading image info;");
+			if (!$image_info = getimagesize(JPATH_BASE . $resize_image_path)) throw new \Exception("Error while reading image info;");
 			if ($image_info[0] == $newWidth && $image_info[1] == $newHeight) return $resize_image_path;
 		}
 
@@ -178,7 +178,7 @@ class ModSeoclickSliderHelper
 			}*/
 		}
 
-		if (!$imgString = file_get_contents(JPATH_BASE . '/' . $image)) throw new \Exception("Error while reading image;");
+		if (!$imgString = file_get_contents(JPATH_BASE . $image)) throw new \Exception("Error while reading image;");
 		if (!$imageFromString = imagecreatefromstring($imgString)) throw new \Exception("Error while creating image from string;");
 		if (!$tmp = imagecreatetruecolor($newWidth, $newHeight)) throw new \Exception("Error while creating image;");
 
@@ -205,13 +205,13 @@ class ModSeoclickSliderHelper
 		{
 			case "image/jpeg":
 			case "image/jpg":
-				if (!imagejpeg($tmp, JPATH_BASE . '/' . $resize_image_path, 90)) throw new \Exception("Error while saving image;");
+				if (!imagejpeg($tmp, JPATH_BASE . $resize_image_path, 90)) throw new \Exception("Error while saving image;");
 				break;
 			case "image/png":
-				if (!imagepng($tmp, JPATH_BASE . '/' . $resize_image_path, 0)) throw new \Exception("Error while saving image;");
+				if (!imagepng($tmp, JPATH_BASE . $resize_image_path, 0)) throw new \Exception("Error while saving image;");
 				break;
 			case "image/gif":
-				if (!imagegif($tmp, JPATH_BASE . '/' . $resize_image_path)) throw new \Exception("Error while saving image;");
+				if (!imagegif($tmp, JPATH_BASE . $resize_image_path)) throw new \Exception("Error while saving image;");
 				break;
 			default:
 				throw new \Exception(" Only jpg, jpeg, png and gif files can be resized ");
@@ -229,9 +229,9 @@ class ModSeoclickSliderHelper
 		array_push($resized_image_path, 'resized/' . $width . 'x' . $height);
 		$resized_image_path = implode('/', $resized_image_path);
 
-		if (!file_exists($resized_image_path))
+		if (!file_exists(JPATH_BASE . $resized_image_path))
 		{
-			mkdir($resized_image_path, 0777, true);
+			mkdir(JPATH_BASE . $resized_image_path, 0777, true);
 		}
 
 		$resized_image_path .= '/' . $filename;
@@ -271,7 +271,7 @@ class ModSeoclickSliderHelper
 					$responsive_images[$key]['path'] = ModSeoclickSliderHelper::crop($image['image_orig']['path'], $image_info['mime'], $orig_image_width,
 						$orig_image_height, $responsiveImageWidth, $responsiveImageHeight);
 			}
-			$responsive_images[$key]['path'] .= '?v=' . filemtime(JPATH_BASE . '/' . $responsive_images[$key]['srcset']['path']);
+			$responsive_images[$key]['path'] .= '?v=' . filemtime(JPATH_BASE . $responsive_images[$key]['srcset']['path']);
 			$responsive_images[$key]['width'] = $responsiveImageWidth;
 		}
 
