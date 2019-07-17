@@ -49,6 +49,7 @@ $buttonColor: #ffce23;
   position: relative;
   @include displayFlex(wrap, column);
   @include flexProperities(space-between, stretch);
+  padding: 0 2rem;
 
   &:hover .arrow-nav > div{
     opacity: 1;
