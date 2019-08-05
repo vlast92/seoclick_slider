@@ -146,7 +146,7 @@ foreach ($slides as $key => $slide)
 		$slides[$key]['responsive_images']['sizes'] = $responsive_images_sizes;
 	}
 
-	$slides[$key]['image'] .= '?v=' . filemtime(JPATH_BASE . $slides[$key]['image']);
+	$slides[$key]['image'] .= '?v=' . filemtime(JPATH_BASE . '/' . $slides[$key]['image']);
 }
 
 require JModuleHelper::getLayoutPath('mod_seoclick_slider', $params->get('layout', 'default'));
