@@ -8,8 +8,8 @@ let SeoClickSlider = function (params) {
         id: params.id,
         viewed: parseInt(params.viewed, 10),
         spacerMinWidth: parseInt(params.spacerMinWidth, 10),
-        imageWidth: parseInt(params.imageWidth, 10),
-        imageHeight: parseInt(params.imageHeight, 10),
+        imageContainerWidth: parseInt(params.imageWidth, 10),
+        imageContainerHeight: parseInt(params.imageHeight, 10),
         slideWidth: parseInt(params.slideWidth, 10),
         arrowNav: params.arrowNav,
         dotNav: params.dotNav,
@@ -39,8 +39,8 @@ let SeoClickSlider = function (params) {
             object: null,
             count: null,
             viewed: arg.viewed,
-            imageWidth: arg.imageWidth,
-            imageHeight: arg.imageHeight,
+            imageContainerWidth: arg.imageContainerWidth,
+            imageContainerHeight: arg.imageContainerHeight,
             imageRatio: null,
             maxWidth: arg.slideWidth,
             maxHeight: null
@@ -78,21 +78,16 @@ let SeoClickSlider = function (params) {
 
         if(this.options.debug) console.log("Call setSlidesData");
 
-        this.slides.object = $(this.id).find(".slide");
-        //Кол. слайдов
-        this.slides.count = this.slides.object.length;
-
         //Размер изображений
-        if (this.slides.object.find('.image img').length && (!this.slides.imageWidth || !this.slides.imageHeight)) {
+        if (this.slides.object.find('.image img').length && !this.slides.imageContainerWidth) {
 
-            if(this.options.debug) console.log(`setSlidesData call getImagesSizes()`);
+            if(this.options.debug) console.log(`setSlidesData call setImageContainerData()`);
 
-            this.getImagesSizes();
-            return 0
+            this.setImageContainerData();
         }
 
-        this.slides.object.find('.image img').outerWidth(this.slides.imageWidth);
-        this.slides.object.find('.image img').outerHeight(this.slides.imageHeight);
+        this.slides.object.find('.image').outerWidth(this.slides.imageContainerWidth);
+        this.slides.object.find('.image').outerHeight(this.slides.imageContainerHeight);
 
         if (this.slides.maxWidth === null) {
             this.slides.maxWidth = this.slides.object.outerWidth();
@@ -134,9 +129,9 @@ let SeoClickSlider = function (params) {
 
                 this.spacers.width = this.spacers.min_width;
                 this.slides.maxWidth = this.slides.maxWidth - (this.spacers.min_width / this.slides.viewed * (this.slides.viewed - 1));
-                if(this.slides.imageWidth > this.slides.maxWidth){
-                    this.slides.imageWidth = this.slides.maxWidth;
-                    this.slides.imageHeight = this.slides.imageWidth / this.slides.imageRatio;
+                if(this.slides.imageContainerWidth > this.slides.maxWidth){
+                    this.slides.imageContainerWidth = this.slides.maxWidth;
+                    this.slides.imageContainerHeight = this.slides.imageContainerWidth / this.slides.imageRatio;
                 }
 
                 if(this.options.debug) console.log(`calculateSlidesSpacers call setSlidesData()`);
@@ -153,7 +148,6 @@ let SeoClickSlider = function (params) {
         if(this.options.debug) console.log("Call setContainerData");
 
         this.containerWidth = this.slides.maxWidth * this.slides.count + this.spacers.count * this.spacers.width;
-        this.container = $(this.id).find(".slides-container");
         this.container.width(this.containerWidth);
         $.each(this.slides.object, (index, slide) => {
             if (index !== this.slides.count - 1) {
@@ -178,10 +172,6 @@ let SeoClickSlider = function (params) {
     SliderConstructor.prototype._initListeners = function () {
 
         if(this.options.debug) console.log("Call _initListeners");
-
-        if(this.options.debug) console.log(`_initListeners call addViewportListeners()`);
-
-        this.addViewportListeners();
 
         if (this.options.lazy_load && 'IntersectionObserver' in window &&
             'IntersectionObserverEntry' in window &&
@@ -562,44 +552,38 @@ let SeoClickSlider = function (params) {
 
         if(this.options.debug) console.log("Call initializeSlider");
 
+        this.slides.object = $(this.id).find(".slide");
+        this.container = $(this.id).find(".slides-container");
+        //Кол. слайдов
+        this.slides.count = this.slides.object.length;
+
         //Данные слайдов
         if(this.options.debug) console.log("initializeSlider call setSlidesData()");
         this.setSlidesData();
 
-        if (this.slides.object.find('.image img').length && (!this.slides.imageWidth || !this.slides.imageHeight)) return 0;
+        if(this.options.debug) console.log(`initializeSlider call addViewportListeners()`);
+        //Определяет количество отображаемых слайдов
+        this.addViewportListeners();
 
-        this.slides.imageRatio = this.slides.imageWidth / this.slides.imageHeight;
+        //Если не задана ширина слайда
+        if(!this.slides.maxWidth){
+            this.slides.maxWidth = this.calculateSlideWidth();
+            this.slides.imageContainerWidth = this.slides.maxWidth;
+            this.slides.imageContainerHeight = this.slides.imageContainerWidth / this.slides.imageRatio;
+            this.setSlidesData();
+        }
+        if(this.slides.maxWidth && this.slides.imageContainerWidth > this.slides.maxWidth) this.slides.imageContainerWidth = this.slides.maxWidth;
 
-        //Данные области отображения
-        if(this.options.debug) console.log("initializeSlider call setViewData()");
-        this.setViewData();
-        //Расчитываем промежутки мехду слайдами
-        if(this.options.debug) console.log("initializeSlider call calculateSlidesSpacers()");
-        this.calculateSlidesSpacers();
+        $(this.id).data("initSlideWidth", this.slides.maxWidth);
+        $(this.id).data("initImageContainerWidth", this.slides.imageContainerWidth);
+
         //Данные контейнера слайдов
         if(this.options.debug) console.log("initializeSlider call setContainerData()");
         this.setContainerData();
-        //Данные смещение контейнера
-        if(this.options.debug) console.log("initializeSlider call setTranslateData()");
-        this.setTranslateData();
-
-        if(!this.slides.maxWidth){
-            this.slides.maxWidth = this.calculateSlideWidth();
-            this.slides.imageWidth = this.slides.maxWidth;
-            this.slides.imageHeight = this.slides.imageWidth / this.slides.imageRatio;
-        }
-        $(this.id).data("viewed", this.slides.viewed);
-        if(this.slides.maxWidth && this.slides.imageWidth > this.slides.maxWidth) this.slides.imageWidth = this.slides.maxWidth;
-        $(this.id).data("initSlideWidth", this.slides.maxWidth);
-        $(this.id).data("initImageWidth", this.slides.imageWidth);
-        $(this.id).data("initImageHeight", this.slides.imageHeight);
 
         //Вешаем обработчики
         if(this.options.debug) console.log("initializeSlider call _initListeners()");
         this._initListeners();
-        //Обновление навигации
-        if(this.options.debug) console.log("initializeSlider call updateNav()");
-        this.updateNav();
     };
     //Изменение количества отображаемых слайдов
     SliderConstructor.prototype.updateViewData = function (viewed) {
@@ -609,21 +593,23 @@ let SeoClickSlider = function (params) {
         this.slides.viewed = parseInt(viewed, 10);
 
         if(this.options.debug) console.log("updateViewData call setViewData()");
+        //Данные области отображения
         this.setViewData();
-        //Расчитываем промежутки мехду слайдами
         if(this.options.debug) console.log("updateViewData call calculateSlidesSpacers()");
+        //Расчитываем промежутки мехду слайдами
         this.calculateSlidesSpacers();
         if(this.options.debug) console.log("updateViewData call setTranslateData()");
+        //Данные смещение контейнера
         this.setTranslateData();
     };
     //Изменение размера слайдов
-    SliderConstructor.prototype.updateSlidesSize = function (maxSlideWidth, maxImageWidth, maxImageHeight) {
+    SliderConstructor.prototype.updateSlidesSize = function (maxSlideWidth, maxImageConatinerWidth, maxImageContainerHeight) {
 
-        if(this.options.debug) console.log(`Call updateSlidesSize(${maxSlideWidth},${maxImageWidth},${maxImageHeight})`);
+        if(this.options.debug) console.log(`Call updateSlidesSize(${maxSlideWidth},${maxImageConatinerWidth},${maxImageContainerHeight})`);
 
         this.slides.maxWidth = maxSlideWidth;
-        this.slides.imageWidth = maxImageWidth;
-        this.slides.imageHeight = maxImageHeight;
+        this.slides.imageContainerWidth = maxImageConatinerWidth;
+        this.slides.imageContainerHeight = maxImageContainerHeight;
 
         //Данные слайдов
         if(this.options.debug) console.log(`updateSlidesSize call setSlidesData()`);
@@ -657,28 +643,28 @@ let SeoClickSlider = function (params) {
         this.addNav();
     };
     //Получает размер изображений
-    SliderConstructor.prototype.getImagesSizes = function(){
+    SliderConstructor.prototype.setImageContainerData = function(){
 
-        if(this.options.debug) console.log("Call getImagesSizes");
+        if(this.options.debug) console.log("Call setImageContainerData");
 
-        let slider = this;
+        let maxWidth = 0, maxHeight = 0, minRatio = 9999;
 
-        let img = new Image();
-        img.addEventListener("load", function () {
+        $.each(this.slides.object, (index, slide) => {
 
-            slider.slides.imageWidth = this.naturalWidth;
-            slider.slides.imageHeight = this.naturalHeight;
-            window.setTimeout(()=>$(slider.slides.object[0]).addClass('active'), 1000);
+            let slide_image = $(slide).find('.image img'),
+                image_width = slide_image.attr('width'),
+                image_height = slide_image.attr('height'),
+                image_ratio = image_width / image_height;
 
-            if(slider.options.debug) console.log(`getImagesSizes img.lod call initializeSlider()`);
-
-            slider.initializeSlider();
+            if(image_width > maxWidth) maxWidth = image_width;
+            if(image_height > maxHeight) maxHeight = image_height;
+            if(minRatio > image_ratio) minRatio = image_ratio;
         });
-        if (this.options.lazy_load){
-            img.src = this.slides.object.find('.image img').data('src');
-        }else{
-            img.src = this.slides.object.find('.image img').attr('src');
-        }
+        this.slides.imageContainerWidth = maxWidth;
+        this.slides.imageContainerHeight = maxHeight;
+        this.slides.imageRatio = minRatio;
+
+        window.setTimeout(()=>$(this.slides.object[0]).addClass('active'), 1000);
     };
     //Вычисляем высоту слайдов
     SliderConstructor.prototype.calculateSlideHeight = function () {
@@ -698,10 +684,10 @@ let SeoClickSlider = function (params) {
 
         if(this.options.debug) console.log("Call sliderResizer");
 
-        let calcSlideWidth, calcImageWidth, calcImageHeight,
+        let calcSlideWidth, calcImageContainerWidth, calcImageContainerHeight,
             initSlideWidth = $(this.id).data("initSlideWidth"),
-            initImageWidth = $(this.id).data("initImageWidth"),
-            initImageToSlideWidthRatio = initSlideWidth / initImageWidth;
+            initImageContainerWidth = $(this.id).data("initImageContainerWidth"),
+            initImageToSlideWidthRatio = initSlideWidth / initImageContainerWidth;
 
         calcSlideWidth = this.calculateSlideWidth();
         if(initSlideWidth && calcSlideWidth > initSlideWidth) calcSlideWidth = initSlideWidth;
@@ -709,13 +695,13 @@ let SeoClickSlider = function (params) {
         let slidesWidthDifference = initSlideWidth - calcSlideWidth;
 
         if (slidesWidthDifference < this.spacers.width && slidesWidthDifference > 0 && this.spacers.width > this.spacers.min_width) {
-            if(this.options.debug) console.log(`sliderResizer call updateSlidesSize(${this.slides.maxWidth},${this.slides.imageWidth},${this.slides.imageHeight})`);
-            this.updateSlidesSize(this.slides.maxWidth, this.slides.imageWidth, this.slides.imageHeight);
+            if(this.options.debug) console.log(`sliderResizer call updateSlidesSize(${this.slides.maxWidth},${this.slides.imageContainerWidth},${this.slides.imageContainerHeight})`);
+            this.updateSlidesSize(this.slides.maxWidth, this.slides.imageContainerWidth, this.slides.imageContainerHeight);
         } else {
-            calcImageWidth = calcSlideWidth / initImageToSlideWidthRatio;
-            calcImageHeight = calcImageWidth / this.slides.imageRatio;
-            if(this.options.debug) console.log(`sliderResizer call updateSlidesSize(${calcSlideWidth},${calcImageWidth},${calcImageHeight})`);
-            this.updateSlidesSize(calcSlideWidth, calcImageWidth, calcImageHeight);
+            calcImageContainerWidth = calcSlideWidth / initImageToSlideWidthRatio;
+            calcImageContainerHeight = calcImageContainerWidth / this.slides.imageRatio;
+            if(this.options.debug) console.log(`sliderResizer call updateSlidesSize(${calcSlideWidth},${calcImageContainerWidth},${calcImageContainerHeight})`);
+            this.updateSlidesSize(calcSlideWidth, calcImageContainerWidth, calcImageContainerHeight);
         }
     };
     //Изменение количества слайдов в строке в зависимости от ширины экрана
@@ -750,9 +736,9 @@ let SeoClickSlider = function (params) {
                 if (e.matches) {
 
                     if(this.options.debug) console.log("addViewportListeners: desktop");
-                    if(this.options.debug) console.log(`addViewportListeners call updateViewData(${$(this.id).data("viewed")})`);
+                    if(this.options.debug) console.log(`addViewportListeners call updateViewData(${this.responsiveData.desktop.viewed})`);
 
-                    this.updateViewData($(this.id).data("viewed"));
+                    this.updateViewData(this.responsiveData.desktop.viewed);
                 }
             },
             checkLaptopQuery = (e) => {
@@ -807,9 +793,9 @@ let SeoClickSlider = function (params) {
         } else if (desktop.matches) {
 
             if(this.options.debug) console.log("addViewportListeners: desktop");
-            if(this.options.debug) console.log(`addViewportListeners call updateViewData(${$(this.id).data("viewed")})`);
+            if(this.options.debug) console.log(`addViewportListeners call updateViewData(${this.responsiveData.desktop.viewed})`);
 
-            this.updateViewData($(this.id).data("viewed"));
+            this.updateViewData(this.responsiveData.desktop.viewed);
         }
 
         phone.addListener(checkPhoneQuery);

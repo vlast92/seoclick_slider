@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 //TODO сейчас высоту слайдов расчитывает по первому изображению в слайде. При использовании иходного изображения с разными размерами происходит их растяжка с нарушением пропорций. Попробовать исправить.
 //TODO попробовать сделать оптимизацию вызовов функций
@@ -10,8 +10,8 @@ var SeoClickSlider = function SeoClickSlider(params) {
         id: params.id,
         viewed: parseInt(params.viewed, 10),
         spacerMinWidth: parseInt(params.spacerMinWidth, 10),
-        imageWidth: parseInt(params.imageWidth, 10),
-        imageHeight: parseInt(params.imageHeight, 10),
+        imageContainerWidth: parseInt(params.imageWidth, 10),
+        imageContainerHeight: parseInt(params.imageHeight, 10),
         slideWidth: parseInt(params.slideWidth, 10),
         arrowNav: params.arrowNav,
         dotNav: params.dotNav,
@@ -41,8 +41,8 @@ var SeoClickSlider = function SeoClickSlider(params) {
             object: null,
             count: null,
             viewed: arg.viewed,
-            imageWidth: arg.imageWidth,
-            imageHeight: arg.imageHeight,
+            imageContainerWidth: arg.imageContainerWidth,
+            imageContainerHeight: arg.imageContainerHeight,
             imageRatio: null,
             maxWidth: arg.slideWidth,
             maxHeight: null
@@ -80,21 +80,16 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
         if (this.options.debug) console.log("Call setSlidesData");
 
-        this.slides.object = $(this.id).find(".slide");
-        //Кол. слайдов
-        this.slides.count = this.slides.object.length;
-
         //Размер изображений
-        if (this.slides.object.find('.image img').length && (!this.slides.imageWidth || !this.slides.imageHeight)) {
+        if (this.slides.object.find('.image img').length && !this.slides.imageContainerWidth) {
 
-            if (this.options.debug) console.log("setSlidesData call getImagesSizes()");
+            if (this.options.debug) console.log('setSlidesData call setImageContainerData()');
 
-            this.getImagesSizes();
-            return 0;
+            this.setImageContainerData();
         }
 
-        this.slides.object.find('.image img').outerWidth(this.slides.imageWidth);
-        this.slides.object.find('.image img').outerHeight(this.slides.imageHeight);
+        this.slides.object.find('.image').outerWidth(this.slides.imageContainerWidth);
+        this.slides.object.find('.image').outerHeight(this.slides.imageContainerHeight);
 
         if (this.slides.maxWidth === null) {
             this.slides.maxWidth = this.slides.object.outerWidth();
@@ -104,7 +99,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
         this.slides.maxHeight = this.slides.object.outerHeight();
 
-        if (this.options.debug) console.log("setSlidesData call calculateSlideHeight()");
+        if (this.options.debug) console.log('setSlidesData call calculateSlideHeight()');
 
         this.calculateSlideHeight();
     };
@@ -136,12 +131,12 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
                 this.spacers.width = this.spacers.min_width;
                 this.slides.maxWidth = this.slides.maxWidth - this.spacers.min_width / this.slides.viewed * (this.slides.viewed - 1);
-                if (this.slides.imageWidth > this.slides.maxWidth) {
-                    this.slides.imageWidth = this.slides.maxWidth;
-                    this.slides.imageHeight = this.slides.imageWidth / this.slides.imageRatio;
+                if (this.slides.imageContainerWidth > this.slides.maxWidth) {
+                    this.slides.imageContainerWidth = this.slides.maxWidth;
+                    this.slides.imageContainerHeight = this.slides.imageContainerWidth / this.slides.imageRatio;
                 }
 
-                if (this.options.debug) console.log("calculateSlidesSpacers call setSlidesData()");
+                if (this.options.debug) console.log('calculateSlidesSpacers call setSlidesData()');
 
                 this.setSlidesData();
             }
@@ -156,7 +151,6 @@ var SeoClickSlider = function SeoClickSlider(params) {
         if (this.options.debug) console.log("Call setContainerData");
 
         this.containerWidth = this.slides.maxWidth * this.slides.count + this.spacers.count * this.spacers.width;
-        this.container = $(this.id).find(".slides-container");
         this.container.width(this.containerWidth);
         $.each(this.slides.object, function (index, slide) {
             if (index !== _this.slides.count - 1) {
@@ -183,13 +177,9 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
         if (this.options.debug) console.log("Call _initListeners");
 
-        if (this.options.debug) console.log("_initListeners call addViewportListeners()");
-
-        this.addViewportListeners();
-
         if (this.options.lazy_load && 'IntersectionObserver' in window && 'IntersectionObserverEntry' in window && 'intersectionRatio' in window.IntersectionObserverEntry.prototype) {
 
-            if (this.options.debug) console.log("_initListeners call addIntersectionObserver()");
+            if (this.options.debug) console.log('_initListeners call addIntersectionObserver()');
 
             this.addIntersectionObserver();
         } else if (this.options.lazy_load) {
@@ -200,12 +190,12 @@ var SeoClickSlider = function SeoClickSlider(params) {
             });
         }
 
-        if (this.options.debug) console.log("_initListeners call sliderResizer()");
+        if (this.options.debug) console.log('_initListeners call sliderResizer()');
 
         this.sliderResizer();
         $(window).on('load resize', function () {
 
-            if (_this2.options.debug) console.log("_initListeners window load or resize call sliderResizer()");
+            if (_this2.options.debug) console.log('_initListeners window load or resize call sliderResizer()');
             _this2.sliderResizer();
         });
     };
@@ -218,7 +208,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
             if (self.state !== null) return 0;
 
-            if (self.options.debug) console.log("Call moveSlidesLeft()");
+            if (self.options.debug) console.log('Call moveSlidesLeft()');
 
             self.state = 'animated';
 
@@ -245,7 +235,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
                         var translate = $(slide).data("translate_value");
                         if (translate === x) {
 
-                            if (self.options.debug) console.log("moveSlidesLeft call activateSlideDesc(" + $(slide).data("number") + ")");
+                            if (self.options.debug) console.log('moveSlidesLeft call activateSlideDesc(' + $(slide).data("number") + ')');
 
                             activateSlideDesc($(slide).data("number"));
                             return false;
@@ -253,7 +243,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
                     });
                 }
 
-                if (self.options.debug) console.log("moveSlidesLeft call translate(" + x + ")");
+                if (self.options.debug) console.log('moveSlidesLeft call translate(' + x + ')');
 
                 self.translate = x;
             } else if (self.options.infiniteMode) {
@@ -268,7 +258,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
                         var translate = $(slide).data("translate_value");
                         if (translate === self.translateData.min) {
 
-                            if (self.options.debug) console.log("moveSlidesLeft call activateSlideDesc(" + $(slide).data("number") + ")");
+                            if (self.options.debug) console.log('moveSlidesLeft call activateSlideDesc(' + $(slide).data("number") + ')');
 
                             activateSlideDesc($(slide).data("number"));
                             return false;
@@ -276,7 +266,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
                     });
                 }
 
-                if (self.options.debug) console.log("moveSlidesLeft call translate(" + self.translateData.min + ")");
+                if (self.options.debug) console.log('moveSlidesLeft call translate(' + self.translateData.min + ')');
 
                 self.translate = self.translateData.min;
             }
@@ -286,7 +276,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
             if (self.state !== null) return 0;
 
-            if (self.options.debug) console.log("Call moveSlidesRight");
+            if (self.options.debug) console.log('Call moveSlidesRight');
 
             self.state = 'animated';
 
@@ -313,7 +303,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
                         var translate = $(slide).data("translate_value");
                         if (translate === x) {
 
-                            if (self.options.debug) console.log("moveSlidesRight call activateSlideDesc(" + $(slide).data("number") + ")");
+                            if (self.options.debug) console.log('moveSlidesRight call activateSlideDesc(' + $(slide).data("number") + ')');
 
                             activateSlideDesc($(slide).data("number"));
                             return false;
@@ -321,7 +311,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
                     });
                 }
 
-                if (self.options.debug) console.log("moveSlidesRight call translate(" + x + ")");
+                if (self.options.debug) console.log('moveSlidesRight call translate(' + x + ')');
 
                 self.translate = x;
             } else if (self.options.infiniteMode) {
@@ -336,7 +326,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
                         var translate = $(slide).data("translate_value");
                         if (translate === self.translateData.max) {
 
-                            if (self.options.debug) console.log("moveSlidesRight call activateSlideDesc(" + $(slide).data("number") + ")");
+                            if (self.options.debug) console.log('moveSlidesRight call activateSlideDesc(' + $(slide).data("number") + ')');
 
                             activateSlideDesc($(slide).data("number"));
                             return false;
@@ -344,7 +334,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
                     });
                 }
 
-                if (self.options.debug) console.log("moveSlidesRight call translate(" + self.translateData.max + ")");
+                if (self.options.debug) console.log('moveSlidesRight call translate(' + self.translateData.max + ')');
 
                 self.translate = self.translateData.max;
             }
@@ -353,7 +343,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
         function addArrowNav() {
             "use strict";
 
-            if (self.options.debug) console.log("Call addArrowNav()");
+            if (self.options.debug) console.log('Call addArrowNav()');
 
             var extraClass = '',
                 markup = void 0;
@@ -361,9 +351,9 @@ var SeoClickSlider = function SeoClickSlider(params) {
             if (!self.options.infiniteMode) extraClass = 'disabled';
 
             if (!self.options.arrowsMarkup) {
-                markup = "<div class=\"arrow-nav\">\n                            <div class=\"slider-prev " + extraClass + "\">\n                                <i class=\"fa fa-angle-left fa-4x\" aria-hidden=\"true\"></i>\n                            </div>\n                            <div class=\"slider-next\">\n                                <i class=\"fa fa-angle-right fa-4x\" aria-hidden=\"true\"></i>\n                            </div>\n                          </div>";
+                markup = '<div class="arrow-nav">\n                            <div class="slider-prev ' + extraClass + '">\n                                <i class="fa fa-angle-left fa-4x" aria-hidden="true"></i>\n                            </div>\n                            <div class="slider-next">\n                                <i class="fa fa-angle-right fa-4x" aria-hidden="true"></i>\n                            </div>\n                          </div>';
             } else {
-                markup = "<div class=\"arrow-nav\">\n                            <div class=\"slider-prev " + extraClass + "\">\n                                " + self.options.arrowsMarkup.left + "\n                            </div>\n                            <div class=\"slider-next\">\n                                " + self.options.arrowsMarkup.right + "\n                            </div>\n                          </div>";
+                markup = '<div class="arrow-nav">\n                            <div class="slider-prev ' + extraClass + '">\n                                ' + self.options.arrowsMarkup.left + '\n                            </div>\n                            <div class="slider-next">\n                                ' + self.options.arrowsMarkup.right + '\n                            </div>\n                          </div>';
             }
 
             $(self.id).append(markup);
@@ -371,12 +361,12 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
                 if ($(this).hasClass("slider-next")) {
 
-                    if (self.options.debug) console.log("arrowNav call moveSlidesLeft");
+                    if (self.options.debug) console.log('arrowNav call moveSlidesLeft');
 
                     moveSlidesLeft();
                 } else {
 
-                    if (self.options.debug) console.log("arrowNav call moveSlidesRight");
+                    if (self.options.debug) console.log('arrowNav call moveSlidesRight');
 
                     moveSlidesRight();
                 }
@@ -386,7 +376,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
         function addDotNav() {
             "use strict";
 
-            if (self.options.debug) console.log("Call addDotNav()");
+            if (self.options.debug) console.log('Call addDotNav()');
 
             var translate_value = self.translateData.min;
             $(self.id).append(dotnav_container);
@@ -416,7 +406,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
                     if (self.options.desc_block) activateSlideDesc($(this).data("desc_number"));
 
-                    if (self.options.debug) console.log("dotNav call translate(" + $(this).data("translate_value") + ")");
+                    if (self.options.debug) console.log('dotNav call translate(' + $(this).data("translate_value") + ')');
 
                     self.translate = $(this).data("translate_value");
                 });
@@ -429,7 +419,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
         function addSlidesDescData() {
             "use strict";
 
-            if (self.options.debug) console.log("Call addSlidesDescData()");
+            if (self.options.debug) console.log('Call addSlidesDescData()');
 
             var translate_value = self.translateData.min;
             $.each(self.slides.object, function (index, slide) {
@@ -444,7 +434,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
         function activateSlideDesc(number) {
             "use strict";
 
-            if (self.options.debug) console.log("Call activateSlideDesc(" + number + ")");
+            if (self.options.debug) console.log('Call activateSlideDesc(' + number + ')');
 
             var descClass = '.slide-' + number;
             $(self.id).find(".slide-description.active").removeClass("active");
@@ -462,19 +452,19 @@ var SeoClickSlider = function SeoClickSlider(params) {
         if (this.slides.count === this.slides.viewed) return 0;
 
         if (this.options.arrowNav) {
-            if (this.options.debug) console.log("addNav call addArrowNav()");
+            if (this.options.debug) console.log('addNav call addArrowNav()');
 
             addArrowNav();
         }
         if (this.options.dotNav) {
 
-            if (this.options.debug) console.log("addNav call addDotNav()");
+            if (this.options.debug) console.log('addNav call addDotNav()');
 
             addDotNav();
         }
         if (this.options.desc_block) {
 
-            if (this.options.debug) console.log("addNav call addSlidesDescData()");
+            if (this.options.debug) console.log('addNav call addSlidesDescData()');
 
             addSlidesDescData();
         }
@@ -488,7 +478,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
                 if (!isPaused) _this3.options.autoScroll.counter++;
                 if (_this3.options.autoScroll.counter === _this3.options.autoScroll.interval) {
 
-                    if (_this3.options.debug) console.log("addNav window.setInterval call moveSlidesLeft()");
+                    if (_this3.options.debug) console.log('addNav window.setInterval call moveSlidesLeft()');
 
                     moveSlidesLeft();
                     _this3.options.autoScroll.counter = null;
@@ -505,13 +495,13 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
         mc.on("swipeleft", function () {
 
-            if (_this3.options.debug) console.log("addNav swipeleft call moveSlidesLeft()");
+            if (_this3.options.debug) console.log('addNav swipeleft call moveSlidesLeft()');
 
             moveSlidesLeft();
         });
         mc.on("swiperight", function () {
 
-            if (_this3.options.debug) console.log("addNav swiperight call moveSlidesRight()");
+            if (_this3.options.debug) console.log('addNav swiperight call moveSlidesRight()');
 
             moveSlidesRight();
         });
@@ -522,7 +512,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
         set: function set(value) {
             var _this4 = this;
 
-            if (this.options.debug) console.log("Call translate(" + value + ")");
+            if (this.options.debug) console.log('Call translate(' + value + ')');
 
             var set_active_slide = function set_active_slide() {
 
@@ -559,86 +549,82 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
         if (this.options.debug) console.log("Call initializeSlider");
 
+        this.slides.object = $(this.id).find(".slide");
+        this.container = $(this.id).find(".slides-container");
+        //Кол. слайдов
+        this.slides.count = this.slides.object.length;
+
         //Данные слайдов
         if (this.options.debug) console.log("initializeSlider call setSlidesData()");
         this.setSlidesData();
 
-        if (this.slides.object.find('.image img').length && (!this.slides.imageWidth || !this.slides.imageHeight)) return 0;
+        if (this.options.debug) console.log('initializeSlider call addViewportListeners()');
+        //Определяет количество отображаемых слайдов
+        this.addViewportListeners();
 
-        this.slides.imageRatio = this.slides.imageWidth / this.slides.imageHeight;
+        //Если не задана ширина слайда
+        if (!this.slides.maxWidth) {
+            this.slides.maxWidth = this.calculateSlideWidth();
+            this.slides.imageContainerWidth = this.slides.maxWidth;
+            this.slides.imageContainerHeight = this.slides.imageContainerWidth / this.slides.imageRatio;
+            this.setSlidesData();
+        }
+        if (this.slides.maxWidth && this.slides.imageContainerWidth > this.slides.maxWidth) this.slides.imageContainerWidth = this.slides.maxWidth;
 
-        //Данные области отображения
-        if (this.options.debug) console.log("initializeSlider call setViewData()");
-        this.setViewData();
-        //Расчитываем промежутки мехду слайдами
-        if (this.options.debug) console.log("initializeSlider call calculateSlidesSpacers()");
-        this.calculateSlidesSpacers();
+        $(this.id).data("initSlideWidth", this.slides.maxWidth);
+        $(this.id).data("initImageContainerWidth", this.slides.imageContainerWidth);
+
         //Данные контейнера слайдов
         if (this.options.debug) console.log("initializeSlider call setContainerData()");
         this.setContainerData();
-        //Данные смещение контейнера
-        if (this.options.debug) console.log("initializeSlider call setTranslateData()");
-        this.setTranslateData();
-
-        if (!this.slides.maxWidth) {
-            this.slides.maxWidth = this.calculateSlideWidth();
-            this.slides.imageWidth = this.slides.maxWidth;
-            this.slides.imageHeight = this.slides.imageWidth / this.slides.imageRatio;
-        }
-        $(this.id).data("viewed", this.slides.viewed);
-        if (this.slides.maxWidth && this.slides.imageWidth > this.slides.maxWidth) this.slides.imageWidth = this.slides.maxWidth;
-        $(this.id).data("initSlideWidth", this.slides.maxWidth);
-        $(this.id).data("initImageWidth", this.slides.imageWidth);
-        $(this.id).data("initImageHeight", this.slides.imageHeight);
 
         //Вешаем обработчики
         if (this.options.debug) console.log("initializeSlider call _initListeners()");
         this._initListeners();
-        //Обновление навигации
-        if (this.options.debug) console.log("initializeSlider call updateNav()");
-        this.updateNav();
     };
     //Изменение количества отображаемых слайдов
     SliderConstructor.prototype.updateViewData = function (viewed) {
 
-        if (this.options.debug) console.log("Call updateViewData(" + viewed + ")");
+        if (this.options.debug) console.log('Call updateViewData(' + viewed + ')');
 
         this.slides.viewed = parseInt(viewed, 10);
 
         if (this.options.debug) console.log("updateViewData call setViewData()");
+        //Данные области отображения
         this.setViewData();
-        //Расчитываем промежутки мехду слайдами
         if (this.options.debug) console.log("updateViewData call calculateSlidesSpacers()");
+        //Расчитываем промежутки мехду слайдами
         this.calculateSlidesSpacers();
         if (this.options.debug) console.log("updateViewData call setTranslateData()");
+        //Данные смещение контейнера
         this.setTranslateData();
     };
     //Изменение размера слайдов
-    SliderConstructor.prototype.updateSlidesSize = function (maxSlideWidth, maxImageWidth, maxImageHeight) {
+    SliderConstructor.prototype.updateSlidesSize = function (maxSlideWidth, maxImageConatinerWidth, maxImageContainerHeight) {
 
-        if (this.options.debug) console.log("Call updateSlidesSize(" + maxSlideWidth + "," + maxImageWidth + "," + maxImageHeight + ")");
+        if (this.options.debug) console.log('Call updateSlidesSize(' + maxSlideWidth + ',' + maxImageConatinerWidth + ',' + maxImageContainerHeight + ')');
 
         this.slides.maxWidth = maxSlideWidth;
-        this.slides.imageWidth = maxImageWidth;
-        this.slides.imageHeight = maxImageHeight;
+        this.slides.imageContainerWidth = maxImageConatinerWidth;
+        this.slides.imageContainerHeight = maxImageContainerHeight;
 
         //Данные слайдов
-        if (this.options.debug) console.log("updateSlidesSize call setSlidesData()");
+        if (this.options.debug) console.log('updateSlidesSize call setSlidesData()');
         this.setSlidesData();
         //Данные области отображения
-        if (this.options.debug) console.log("updateSlidesSize call setViewData()");
+        if (this.options.debug) console.log('updateSlidesSize call setViewData()');
         this.setViewData();
         //Расчитываем промежутки мехду слайдами
-        if (this.options.debug) console.log("updateSlidesSize call calculateSlidesSpacers()");
+        if (this.options.debug) console.log('updateSlidesSize call calculateSlidesSpacers()');
         this.calculateSlidesSpacers();
         //Данные контейнера
-        if (this.options.debug) console.log("updateSlidesSize call setContainerData()");
+        if (this.options.debug) console.log('updateSlidesSize call setContainerData()');
         this.setContainerData();
         //Данные смещение контейнера
-        if (this.options.debug) console.log("updateSlidesSize call setTranslateData()");
+        if (this.options.debug) console.log('updateSlidesSize call setTranslateData()');
         this.setTranslateData();
         //Обновление навигации
-        if (this.options.debug) console.log("updateSlidesSize call updateNav()");
+        if (this.options.debug) console.log('updateSlidesSize call updateNav()');
         this.updateNav();
     };
     //Обновление навигации
@@ -649,39 +635,42 @@ var SeoClickSlider = function SeoClickSlider(params) {
         if (this.options.arrowNav) $(this.id).find('.arrow-nav').remove();
         if (this.options.dotNav) $(this.id).find('.dot-nav').remove();
 
-        if (this.options.debug) console.log("updateNav call addNav()");
+        if (this.options.debug) console.log('updateNav call addNav()');
 
         this.addNav();
     };
     //Получает размер изображений
-    SliderConstructor.prototype.getImagesSizes = function () {
+    SliderConstructor.prototype.setImageContainerData = function () {
+        var _this5 = this;
 
-        if (this.options.debug) console.log("Call getImagesSizes");
+        if (this.options.debug) console.log("Call setImageContainerData");
 
-        var slider = this;
+        var maxWidth = 0,
+            maxHeight = 0,
+            minRatio = 9999;
 
-        var img = new Image();
-        img.addEventListener("load", function () {
+        $.each(this.slides.object, function (index, slide) {
 
-            slider.slides.imageWidth = this.naturalWidth;
-            slider.slides.imageHeight = this.naturalHeight;
-            window.setTimeout(function () {
-                return $(slider.slides.object[0]).addClass('active');
-            }, 1000);
+            var slide_image = $(slide).find('.image img'),
+                image_width = slide_image.attr('width'),
+                image_height = slide_image.attr('height'),
+                image_ratio = image_width / image_height;
 
-            if (slider.options.debug) console.log("getImagesSizes img.lod call initializeSlider()");
-
-            slider.initializeSlider();
+            if (image_width > maxWidth) maxWidth = image_width;
+            if (image_height > maxHeight) maxHeight = image_height;
+            if (minRatio > image_ratio) minRatio = image_ratio;
         });
-        if (this.options.lazy_load) {
-            img.src = this.slides.object.find('.image img').data('src');
-        } else {
-            img.src = this.slides.object.find('.image img').attr('src');
-        }
+        this.slides.imageContainerWidth = maxWidth;
+        this.slides.imageContainerHeight = maxHeight;
+        this.slides.imageRatio = minRatio;
+
+        window.setTimeout(function () {
+            return $(_this5.slides.object[0]).addClass('active');
+        }, 1000);
     };
     //Вычисляем высоту слайдов
     SliderConstructor.prototype.calculateSlideHeight = function () {
-        var _this5 = this;
+        var _this6 = this;
 
         if (this.options.debug) console.log("Call calculateSlideHeight");
 
@@ -689,7 +678,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
             var height = $(slide).outerHeight(true);
 
-            if (height > _this5.slides.maxHeight) _this5.slides.maxHeight = height;
+            if (height > _this6.slides.maxHeight) _this6.slides.maxHeight = height;
         });
         this.slides.object.outerHeight(this.slides.maxHeight);
     };
@@ -699,11 +688,11 @@ var SeoClickSlider = function SeoClickSlider(params) {
         if (this.options.debug) console.log("Call sliderResizer");
 
         var calcSlideWidth = void 0,
-            calcImageWidth = void 0,
-            calcImageHeight = void 0,
+            calcImageContainerWidth = void 0,
+            calcImageContainerHeight = void 0,
             initSlideWidth = $(this.id).data("initSlideWidth"),
-            initImageWidth = $(this.id).data("initImageWidth"),
-            initImageToSlideWidthRatio = initSlideWidth / initImageWidth;
+            initImageContainerWidth = $(this.id).data("initImageContainerWidth"),
+            initImageToSlideWidthRatio = initSlideWidth / initImageContainerWidth;
 
         calcSlideWidth = this.calculateSlideWidth();
         if (initSlideWidth && calcSlideWidth > initSlideWidth) calcSlideWidth = initSlideWidth;
@@ -711,18 +700,18 @@ var SeoClickSlider = function SeoClickSlider(params) {
         var slidesWidthDifference = initSlideWidth - calcSlideWidth;
 
         if (slidesWidthDifference < this.spacers.width && slidesWidthDifference > 0 && this.spacers.width > this.spacers.min_width) {
-            if (this.options.debug) console.log("sliderResizer call updateSlidesSize(" + this.slides.maxWidth + "," + this.slides.imageWidth + "," + this.slides.imageHeight + ")");
-            this.updateSlidesSize(this.slides.maxWidth, this.slides.imageWidth, this.slides.imageHeight);
+            if (this.options.debug) console.log('sliderResizer call updateSlidesSize(' + this.slides.maxWidth + ',' + this.slides.imageContainerWidth + ',' + this.slides.imageContainerHeight + ')');
+            this.updateSlidesSize(this.slides.maxWidth, this.slides.imageContainerWidth, this.slides.imageContainerHeight);
         } else {
-            calcImageWidth = calcSlideWidth / initImageToSlideWidthRatio;
-            calcImageHeight = calcImageWidth / this.slides.imageRatio;
-            if (this.options.debug) console.log("sliderResizer call updateSlidesSize(" + calcSlideWidth + "," + calcImageWidth + "," + calcImageHeight + ")");
-            this.updateSlidesSize(calcSlideWidth, calcImageWidth, calcImageHeight);
+            calcImageContainerWidth = calcSlideWidth / initImageToSlideWidthRatio;
+            calcImageContainerHeight = calcImageContainerWidth / this.slides.imageRatio;
+            if (this.options.debug) console.log('sliderResizer call updateSlidesSize(' + calcSlideWidth + ',' + calcImageContainerWidth + ',' + calcImageContainerHeight + ')');
+            this.updateSlidesSize(calcSlideWidth, calcImageContainerWidth, calcImageContainerHeight);
         }
     };
     //Изменение количества слайдов в строке в зависимости от ширины экрана
     SliderConstructor.prototype.addViewportListeners = function () {
-        var _this6 = this;
+        var _this7 = this;
 
         if (this.options.debug) console.log("Call addViewportListeners");
 
@@ -737,74 +726,74 @@ var SeoClickSlider = function SeoClickSlider(params) {
         this.responsiveData.phone.viewed = parseInt(this.responsiveData.phone.viewed, 10);
 
         var desktop = window.matchMedia("(min-width: " + this.responsiveData.desktop.width + "px)"),
-            laptop = window.matchMedia("(max-width: " + this.responsiveData.laptop.width + "px) and (min-width: " + (this.responsiveData.tablet.width + 1) + "px)"),
-            tablet = window.matchMedia("(max-width: " + this.responsiveData.tablet.width + "px) and (min-width: " + (this.responsiveData.phone.width + 1) + "px)"),
-            phone = window.matchMedia("(max-width: " + this.responsiveData.phone.width + "px)"),
+            laptop = window.matchMedia('(max-width: ' + this.responsiveData.laptop.width + 'px) and (min-width: ' + (this.responsiveData.tablet.width + 1) + 'px)'),
+            tablet = window.matchMedia('(max-width: ' + this.responsiveData.tablet.width + 'px) and (min-width: ' + (this.responsiveData.phone.width + 1) + 'px)'),
+            phone = window.matchMedia('(max-width: ' + this.responsiveData.phone.width + 'px)'),
             checkDesktopQuery = function checkDesktopQuery(e) {
 
             if (e.matches) {
 
-                if (_this6.options.debug) console.log("addViewportListeners: desktop");
-                if (_this6.options.debug) console.log("addViewportListeners call updateViewData(" + $(_this6.id).data("viewed") + ")");
+                if (_this7.options.debug) console.log("addViewportListeners: desktop");
+                if (_this7.options.debug) console.log('addViewportListeners call updateViewData(' + _this7.responsiveData.desktop.viewed + ')');
 
-                _this6.updateViewData($(_this6.id).data("viewed"));
+                _this7.updateViewData(_this7.responsiveData.desktop.viewed);
             }
         },
             checkLaptopQuery = function checkLaptopQuery(e) {
 
-            if (e.matches && _this6.slides.viewed !== _this6.responsiveData.laptop.viewed) {
+            if (e.matches && _this7.slides.viewed !== _this7.responsiveData.laptop.viewed) {
 
-                if (_this6.options.debug) console.log("addViewportListeners: laptop");
-                if (_this6.options.debug) console.log("addViewportListeners call updateViewData(" + _this6.responsiveData.laptop.viewed + ")");
+                if (_this7.options.debug) console.log("addViewportListeners: laptop");
+                if (_this7.options.debug) console.log('addViewportListeners call updateViewData(' + _this7.responsiveData.laptop.viewed + ')');
 
-                _this6.updateViewData(_this6.responsiveData.laptop.viewed);
+                _this7.updateViewData(_this7.responsiveData.laptop.viewed);
             }
         },
             checkTabletQuery = function checkTabletQuery(e) {
 
-            if (e.matches && _this6.slides.viewed !== _this6.responsiveData.tablet.viewed) {
+            if (e.matches && _this7.slides.viewed !== _this7.responsiveData.tablet.viewed) {
 
-                if (_this6.options.debug) console.log("addViewportListeners: tablet");
-                if (_this6.options.debug) console.log("addViewportListeners call updateViewData(" + _this6.responsiveData.tablet.viewed + ")");
+                if (_this7.options.debug) console.log("addViewportListeners: tablet");
+                if (_this7.options.debug) console.log('addViewportListeners call updateViewData(' + _this7.responsiveData.tablet.viewed + ')');
 
-                _this6.updateViewData(_this6.responsiveData.tablet.viewed);
+                _this7.updateViewData(_this7.responsiveData.tablet.viewed);
             }
         },
             checkPhoneQuery = function checkPhoneQuery(e) {
 
-            if (e.matches && _this6.slides.viewed !== _this6.responsiveData.phone.viewed) {
+            if (e.matches && _this7.slides.viewed !== _this7.responsiveData.phone.viewed) {
 
-                if (_this6.options.debug) console.log("addViewportListeners: phone");
-                if (_this6.options.debug) console.log("addViewportListeners call updateViewData(" + _this6.responsiveData.phone.viewed + ")");
+                if (_this7.options.debug) console.log("addViewportListeners: phone");
+                if (_this7.options.debug) console.log('addViewportListeners call updateViewData(' + _this7.responsiveData.phone.viewed + ')');
 
-                _this6.updateViewData(_this6.responsiveData.phone.viewed);
+                _this7.updateViewData(_this7.responsiveData.phone.viewed);
             }
         };
 
         if (phone.matches && this.slides.viewed > this.responsiveData.phone.viewed) {
 
             if (this.options.debug) console.log("addViewportListeners: phone");
-            if (this.options.debug) console.log("addViewportListeners call updateViewData(" + this.responsiveData.phone.viewed + ")");
+            if (this.options.debug) console.log('addViewportListeners call updateViewData(' + this.responsiveData.phone.viewed + ')');
 
             this.updateViewData(this.responsiveData.phone.viewed);
         } else if (tablet.matches && this.slides.viewed > this.responsiveData.tablet.viewed) {
 
             if (this.options.debug) console.log("addViewportListeners: tablet");
-            if (this.options.debug) console.log("addViewportListeners call updateViewData(" + this.responsiveData.tablet.viewed + ")");
+            if (this.options.debug) console.log('addViewportListeners call updateViewData(' + this.responsiveData.tablet.viewed + ')');
 
             this.updateViewData(this.responsiveData.tablet.viewed);
         } else if (laptop.matches && this.slides.viewed > this.responsiveData.laptop.viewed) {
 
             if (this.options.debug) console.log("addViewportListeners: laptop");
-            if (this.options.debug) console.log("addViewportListeners call updateViewData(" + this.responsiveData.laptop.viewed + ")");
+            if (this.options.debug) console.log('addViewportListeners call updateViewData(' + this.responsiveData.laptop.viewed + ')');
 
             this.updateViewData(this.responsiveData.laptop.viewed);
         } else if (desktop.matches) {
 
             if (this.options.debug) console.log("addViewportListeners: desktop");
-            if (this.options.debug) console.log("addViewportListeners call updateViewData(" + $(this.id).data("viewed") + ")");
+            if (this.options.debug) console.log('addViewportListeners call updateViewData(' + this.responsiveData.desktop.viewed + ')');
 
-            this.updateViewData($(this.id).data("viewed"));
+            this.updateViewData(this.responsiveData.desktop.viewed);
         }
 
         phone.addListener(checkPhoneQuery);
@@ -814,7 +803,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
     };
     //Добавление IntersectionObserver для ленивой загрузки
     SliderConstructor.prototype.addIntersectionObserver = function () {
-        var _this7 = this;
+        var _this8 = this;
 
         if (this.options.debug) console.log("Call addIntersectionObserver");
 
@@ -826,12 +815,12 @@ var SeoClickSlider = function SeoClickSlider(params) {
                 var isIntersecting = entry.isIntersecting;
 
                 if (isIntersecting) {
-                    _this7.lazyloadImage(entry.target);
+                    _this8.lazyloadImage(entry.target);
                     if (lazy_flag) {
                         $(entry.target).load(function () {
-                            _this7.slides.maxHeight = _this7.slides.object.find('img').outerHeight(true);
-                            if (_this7.options.debug) console.log("addIntersectionObserver image_observer_callback call sliderResizer");
-                            _this7.sliderResizer();
+                            _this8.slides.maxHeight = _this8.slides.object.find('img').outerHeight(true);
+                            if (_this8.options.debug) console.log('addIntersectionObserver image_observer_callback call sliderResizer');
+                            _this8.sliderResizer();
                         });
                         lazy_flag = false;
                     }
@@ -845,11 +834,11 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
                 var isIntersecting = entry.isIntersecting;
                 if (isIntersecting) {
-                    var images = $(_this7.id).find('.slide img');
+                    var images = $(_this8.id).find('.slide img');
                     $.each(images, function (index, image) {
 
                         var image_observer = new IntersectionObserver(image_observer_callback, {
-                            root: $(_this7.id).get(0),
+                            root: $(_this8.id).get(0),
                             rootMargin: '200px'
                         });
                         image_observer.observe(image);

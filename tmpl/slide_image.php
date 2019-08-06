@@ -24,4 +24,4 @@ defined('_JEXEC') or die; ?>
     <?php endif;?>
 <?php endif; ?>
 	<?php if ($lazy_load): ?>data-<?php endif; ?>src="<?= $slide['image'] ?>"
-    alt="slide_<?= $counter++ ?>"/>
+    alt="slide_<?= $counter++ ?>" width="<?=$images_width? $images_width : $slide['image_orig']['width']?>" height="<?=$images_height? $images_height : $slide['image_orig']['height']?>"/>

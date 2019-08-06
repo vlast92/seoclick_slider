@@ -104,13 +104,15 @@ foreach ($slides as $key => $slide)
 	$slides[$key]['image_orig']['width']  = $orig_image_width;
 	$slides[$key]['image_orig']['height'] = $orig_image_height;
 
-	if(!$images_width || !$images_height){
-		$images_width = $orig_image_width;
-		$images_height = $orig_image_height;
-	}
-	$image_info['image_ratio'] = $images_width / $images_height;
+	$image_info['image_ratio'] = $orig_image_width / $orig_image_height;
 	if ($resize_method !== 'none')
 	{
+		if( !$images_width || !$images_height){
+			$images_width = $orig_image_width;
+			$images_height = $orig_image_height;
+			$image_info['image_ratio'] = $images_width / $images_height;
+		}
+
 		try
 		{
 			switch ($resize_method)
@@ -138,9 +140,13 @@ foreach ($slides as $key => $slide)
 			echo "Error while resizing image: ", $e->getMessage(), "<br/>";
 		}
 	}
-	if ($responsive_images) $slides[$key]['responsive_images']['srcset'] =
-		ModSeoclickSliderHelper::addResponsiveImages($slides[$key], $image_info, $responsive_images_srcset, $resize_method);
-	$slides[$key]['responsive_images']['srcset']['default']['width'] = $images_width;
+	if ($responsive_images)
+	{
+		$slides[$key]['responsive_images']['srcset'] =
+			ModSeoclickSliderHelper::addResponsiveImages($slides[$key], $image_info, $responsive_images_srcset, $resize_method);
+		$slides[$key]['responsive_images']['srcset']['default']['width'] = $orig_image_width;
+	}
+
 
 	if($responsive_images_sizes){
 		$slides[$key]['responsive_images']['sizes'] = $responsive_images_sizes;
