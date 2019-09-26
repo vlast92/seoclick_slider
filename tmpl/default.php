@@ -18,9 +18,10 @@ $id = 'seoclick_slider_' . $module->id . '_' . rand(1, 10000);
 	                <?php $counter = 0; ?>
 					<?php foreach ($slides as $index => $slide): ?>
 						<?php if (!empty($slide['url'])): ?>
-                            <a href="<?= $slide['url']; ?>" <?php if ($slide['url_open']): ?>target="_blank"<?php endif; ?> rel="nofollow noopener noreferrer">
+                            <a href="<?= $slide['url']; ?>" class="slide" <?php if ($slide['url_open']): ?>target="_blank"<?php endif; ?> rel="nofollow noopener noreferrer">
+                        <?php else: ?>
+                            <div class="slide">
 						<?php endif; ?>
-                        <div class="slide">
                             <div class="slide-content">
 								<?php if ($slide['image']): ?>
                                     <div class="image">
@@ -43,9 +44,10 @@ $id = 'seoclick_slider_' . $module->id . '_' . rand(1, 10000);
                                     </div>
 								<?php endif; ?>
                             </div>
-                        </div>
 						<?php if (!empty($slide['url'])): ?>
                             </a>
+                        <?php else: ?>
+                            </div>
 						<?php endif; ?>
 					<?php endforeach ?>
                 </div>
@@ -80,7 +82,8 @@ $document->addScriptDeclaration('
         arrows_markup.right = "<i class=\"fa fa-angle-right fa-4x\" aria-hidden=\"true\"></i>";
                           
         slider = new SeoClickSlider({
-            id: "#' . $id . '",
+            sliderSelector: "#' . $id . '",
+            sliderItemSelector: ".slide",
             viewed: ' . $slides_viewed . ',
             spacerMinWidth: ' . $images_space . ',
             imageWidth: ' . $images_width . ',

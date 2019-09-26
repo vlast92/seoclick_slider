@@ -5,7 +5,8 @@ let SeoClickSlider = function (params) {
     let $ = jQuery;
 
     let slider = new SliderConstructor({
-        id: params.id,
+        sliderSelector: params.sliderSelector,
+        sliderItemSelector: params.sliderItemSelector,
         viewed: parseInt(params.viewed, 10),
         spacerMinWidth: parseInt(params.spacerMinWidth, 10),
         imageContainerWidth: parseInt(params.imageWidth, 10),
@@ -23,7 +24,8 @@ let SeoClickSlider = function (params) {
     });
 
     function SliderConstructor(arg) {
-        this.id = arg.id;
+        this.sliderSelector = arg.sliderSelector;
+        this.sliderItemSelector = arg.sliderItemSelector;
         this.state = null;
         this.container = null;
         this.containerWidth = null;
@@ -74,6 +76,23 @@ let SeoClickSlider = function (params) {
         };
     }
 
+    SliderConstructor.prototype.addSliderMarkup = function(){
+
+        let slider = $(this.sliderSelector);
+
+        if(slider.children().first().hasClass('slides-wrap')) return true;
+
+        if(!slider.hasClass("seoclick-slider")) slider.addClass("seoclick-slider");
+        slider.append("<div class='slides-wrap'><div class='slider-view'><div class='slides-container'></div></div></div>");
+        slider.find(this.sliderItemSelector).appendTo(slider.find(".slides-container"));
+
+        let slideImage = slider.find(this.sliderItemSelector + " img");
+
+        if(!slideImage.parent().hasClass('image'))
+        {
+            slideImage.wrap("<div class='image'></div>");
+        }
+    };
     SliderConstructor.prototype.setSlidesData = function () {
 
         if(this.options.debug) console.log("Call setSlidesData");
@@ -105,7 +124,7 @@ let SeoClickSlider = function (params) {
 
         if(this.options.debug) console.log("Call setViewData");
 
-        let sliderView = $(this.id).find(".slider-view");
+        let sliderView = $(this.sliderSelector).find(".slider-view");
 
         sliderView.css("width", '');
 
@@ -123,15 +142,15 @@ let SeoClickSlider = function (params) {
         if(this.options.debug) console.log("Call calculateSlidesSpacers");
 
         if (this.slides.viewed !== 1) {
-            this.spacers.width = (this.viewWidth - this.slides.maxWidth * this.slides.viewed) / (this.slides.viewed - 1);
+            this.spacers.width = Math.round((this.viewWidth - this.slides.maxWidth * this.slides.viewed) / (this.slides.viewed - 1));
             this.spacers.count = this.slides.count - 1;
             if (this.spacers.width < this.spacers.min_width){
 
                 this.spacers.width = this.spacers.min_width;
-                this.slides.maxWidth = this.slides.maxWidth - (this.spacers.min_width / this.slides.viewed * (this.slides.viewed - 1));
+                this.slides.maxWidth = Math.round(this.slides.maxWidth - (this.spacers.min_width / this.slides.viewed * (this.slides.viewed - 1)));
                 if(this.slides.imageContainerWidth > this.slides.maxWidth){
                     this.slides.imageContainerWidth = this.slides.maxWidth;
-                    this.slides.imageContainerHeight = this.slides.imageContainerWidth / this.slides.imageRatio;
+                    this.slides.imageContainerHeight = Math.round(this.slides.imageContainerWidth / this.slides.imageRatio);
                 }
 
                 if(this.options.debug) console.log(`calculateSlidesSpacers call setSlidesData()`);
@@ -151,7 +170,10 @@ let SeoClickSlider = function (params) {
         this.container.width(this.containerWidth);
         $.each(this.slides.object, (index, slide) => {
             if (index !== this.slides.count - 1) {
-                $(slide).css("margin-right", this.spacers.width);
+                $(slide).css({
+                    marginLeft : 0,
+                    marginRight : this.spacers.width
+                });
             }
         });
     };
@@ -163,11 +185,11 @@ let SeoClickSlider = function (params) {
         this.translateData.value = this.translateData.min;
         this.container.css("transform", "translateX(" + this.translateData.value + "px)");
         if (this.slides.viewed === 1) {
-            this.translateData.step = this.viewWidth;
+            this.translateData.step = Math.round(this.viewWidth);
         } else {
-            this.translateData.step = this.viewWidth + this.spacers.width;
+            this.translateData.step = Math.round(this.viewWidth + this.spacers.width);
         }
-        this.translateData.max = (Math.ceil(this.slides.count / this.slides.viewed) - 1) * this.translateData.step;
+        this.translateData.max = Math.round((Math.ceil(this.slides.count / this.slides.viewed) - 1) * this.translateData.step);
     };
     SliderConstructor.prototype._initListeners = function () {
 
@@ -181,7 +203,7 @@ let SeoClickSlider = function (params) {
 
             this.addIntersectionObserver();
         } else if (this.options.lazy_load) {
-            let images = $(this.id).find('.slide img');
+            let images = $(this.sliderSelector).find('.slide img');
 
             $.each(images, (index, image) => {
                 this.lazyloadImage(image);
@@ -210,15 +232,15 @@ let SeoClickSlider = function (params) {
             self.state = 'animated';
 
             let x = self.translateData.value + self.translateData.step,
-                dotnav_container = $(self.id).find(".dot-nav");
+                dotnav_container = $(self.sliderSelector).find(".dot-nav");
 
             if (x <= self.translateData.max) {
                 if (self.options.arrowNav && !self.options.infiniteMode) {
                     if (x === self.translateData.max) {
-                        $(self.id).find('.slider-next').addClass("disabled");
+                        $(self.sliderSelector).find('.slider-next').addClass("disabled");
                     } else {
-                        $(self.id).find('.slider-next').removeClass("disabled");
-                        $(self.id).find('.slider-prev').removeClass("disabled");
+                        $(self.sliderSelector).find('.slider-next').removeClass("disabled");
+                        $(self.sliderSelector).find('.slider-prev').removeClass("disabled");
                     }
                 }
                 if (self.options.dotNav) {
@@ -264,6 +286,8 @@ let SeoClickSlider = function (params) {
                 if(self.options.debug) console.log(`moveSlidesLeft call translate(${self.translateData.min})`);
 
                 self.translate = self.translateData.min;
+            }else{
+                self.state = null;
             }
         }
 
@@ -276,15 +300,15 @@ let SeoClickSlider = function (params) {
             self.state = 'animated';
 
             let x = self.translateData.value - self.translateData.step,
-                dotnav_container = $(self.id).find(".dot-nav");
+                dotnav_container = $(self.sliderSelector).find(".dot-nav");
 
             if (x >= self.translateData.min) {
                 if (self.options.arrowNav && !self.options.infiniteMode) {
                     if (x === self.translateData.min) {
-                        $(self.id).find('.slider-prev').addClass("disabled");
+                        $(self.sliderSelector).find('.slider-prev').addClass("disabled");
                     } else {
-                        $(self.id).find('.slider-next').removeClass("disabled");
-                        $(self.id).find('.slider-prev').removeClass("disabled");
+                        $(self.sliderSelector).find('.slider-next').removeClass("disabled");
+                        $(self.sliderSelector).find('.slider-prev').removeClass("disabled");
                     }
                 }
                 if (self.options.dotNav) {
@@ -330,6 +354,8 @@ let SeoClickSlider = function (params) {
                 if(self.options.debug) console.log(`moveSlidesRight call translate(${self.translateData.max})`);
 
                 self.translate = self.translateData.max;
+            }else{
+                self.state = null;
             }
         }
 
@@ -363,8 +389,8 @@ let SeoClickSlider = function (params) {
             }
 
 
-            $(self.id).append(markup);
-            $(self.id).find(".arrow-nav > div").click(function () {
+            $(self.sliderSelector).append(markup);
+            $(self.sliderSelector).find(".arrow-nav > div").click(function () {
 
                 if ($(this).hasClass("slider-next")) {
 
@@ -386,7 +412,7 @@ let SeoClickSlider = function (params) {
             if(self.options.debug) console.log(`Call addDotNav()`);
 
             let translate_value = self.translateData.min;
-            $(self.id).append(dotnav_container);
+            $(self.sliderSelector).append(dotnav_container);
 
             $.each(self.slides.object, function (index) {
 
@@ -444,16 +470,15 @@ let SeoClickSlider = function (params) {
             if(self.options.debug) console.log(`Call activateSlideDesc(${number})`);
 
             let descClass = '.slide-' + number;
-            $(self.id).find(".slide-description.active").removeClass("active");
+            $(self.sliderSelector).find(".slide-description.active").removeClass("active");
             $(descClass).parent().css('min-height', $(descClass).outerHeight(true));
             window.setTimeout(function () {
                 $(descClass).addClass('active');
             }, 250);
         }
 
-        let id = this.id.slice(1),
-            self = this,
-            mc = new Hammer(document.getElementById(id)),
+        let self = this,
+            mc = new Hammer(document.querySelector(this.sliderSelector)),
             dotnav_container = $("<div class='dot-nav'></div>");
 
         if(this.slides.count === this.slides.viewed) return 0;
@@ -492,8 +517,8 @@ let SeoClickSlider = function (params) {
                 }
             }, 1000);
 
-            $(this.id).mouseenter(() => isPaused = true);
-            $(this.id).mouseleave(() => isPaused = false);
+            $(this.sliderSelector).mouseenter(() => isPaused = true);
+            $(this.sliderSelector).mouseleave(() => isPaused = false);
         }
 
         mc.on("swipeleft", ()=>{
@@ -519,7 +544,7 @@ let SeoClickSlider = function (params) {
 
             let set_active_slide = ()=>{
 
-                $(this.id).find(".slide.active").removeClass("active");
+                $(this.sliderSelector).find(".slide.active").removeClass("active");
 
                 $.each($(this.slides.object), function(index, slide){
 
@@ -534,7 +559,7 @@ let SeoClickSlider = function (params) {
             this.translateData.value = value;
 
             anime({
-                targets: this.id + " .slides-container",
+                targets: this.sliderSelector + " .slides-container",
                 translateX: -value,
                 easing: "easeInOutQuart",
                 duration: this.options.autoScroll.animation_speed,
@@ -552,8 +577,9 @@ let SeoClickSlider = function (params) {
 
         if(this.options.debug) console.log("Call initializeSlider");
 
-        this.slides.object = $(this.id).find(".slide");
-        this.container = $(this.id).find(".slides-container");
+        this.addSliderMarkup();
+        this.slides.object = $(this.sliderSelector).find(this.sliderItemSelector);
+        this.container = $(this.sliderSelector).find(".slides-container");
         //Кол. слайдов
         this.slides.count = this.slides.object.length;
 
@@ -574,8 +600,8 @@ let SeoClickSlider = function (params) {
         }
         if(this.slides.maxWidth && this.slides.imageContainerWidth > this.slides.maxWidth) this.slides.imageContainerWidth = this.slides.maxWidth;
 
-        $(this.id).data("initSlideWidth", this.slides.maxWidth);
-        $(this.id).data("initImageContainerWidth", this.slides.imageContainerWidth);
+        $(this.sliderSelector).data("initSlideWidth", this.slides.maxWidth);
+        $(this.sliderSelector).data("initImageContainerWidth", this.slides.imageContainerWidth);
 
         //Данные контейнера слайдов
         if(this.options.debug) console.log("initializeSlider call setContainerData()");
@@ -635,8 +661,8 @@ let SeoClickSlider = function (params) {
 
         if(this.options.debug) console.log("Call updateNav");
 
-        if (this.options.arrowNav) $(this.id).find('.arrow-nav').remove();
-        if (this.options.dotNav) $(this.id).find('.dot-nav').remove();
+        if (this.options.arrowNav) $(this.sliderSelector).find('.arrow-nav').remove();
+        if (this.options.dotNav) $(this.sliderSelector).find('.dot-nav').remove();
 
         if(this.options.debug) console.log(`updateNav call addNav()`);
 
@@ -685,8 +711,8 @@ let SeoClickSlider = function (params) {
         if(this.options.debug) console.log("Call sliderResizer");
 
         let calcSlideWidth, calcImageContainerWidth, calcImageContainerHeight,
-            initSlideWidth = $(this.id).data("initSlideWidth"),
-            initImageContainerWidth = $(this.id).data("initImageContainerWidth"),
+            initSlideWidth = $(this.sliderSelector).data("initSlideWidth"),
+            initImageContainerWidth = $(this.sliderSelector).data("initImageContainerWidth"),
             initImageToSlideWidthRatio = initSlideWidth / initImageContainerWidth;
 
         calcSlideWidth = this.calculateSlideWidth();
@@ -698,8 +724,8 @@ let SeoClickSlider = function (params) {
             if(this.options.debug) console.log(`sliderResizer call updateSlidesSize(${this.slides.maxWidth},${this.slides.imageContainerWidth},${this.slides.imageContainerHeight})`);
             this.updateSlidesSize(this.slides.maxWidth, this.slides.imageContainerWidth, this.slides.imageContainerHeight);
         } else {
-            calcImageContainerWidth = calcSlideWidth / initImageToSlideWidthRatio;
-            calcImageContainerHeight = calcImageContainerWidth / this.slides.imageRatio;
+            calcImageContainerWidth = Math.round(calcSlideWidth / initImageToSlideWidthRatio);
+            calcImageContainerHeight = Math.round(calcImageContainerWidth / this.slides.imageRatio);
             if(this.options.debug) console.log(`sliderResizer call updateSlidesSize(${calcSlideWidth},${calcImageContainerWidth},${calcImageContainerHeight})`);
             this.updateSlidesSize(calcSlideWidth, calcImageContainerWidth, calcImageContainerHeight);
         }
@@ -835,11 +861,11 @@ let SeoClickSlider = function (params) {
 
                     let isIntersecting = entry.isIntersecting;
                     if (isIntersecting) {
-                        let images = $(this.id).find('.slide img');
+                        let images = $(this.sliderSelector).find('.slide img');
                         $.each(images, (index, image) => {
 
                             let image_observer = new IntersectionObserver(image_observer_callback, {
-                                root: $(this.id).get(0),
+                                root: $(this.sliderSelector).get(0),
                                 rootMargin: '200px'
                             });
                             image_observer.observe(image);
@@ -851,7 +877,7 @@ let SeoClickSlider = function (params) {
                 rootMargin: '200px'
             });
 
-        slider_observer.observe(document.getElementById(this.id.slice(1)));
+        slider_observer.observe(document.querySelector(this.sliderSelector));
     };
     //Ленивая загрузка изображения
     SliderConstructor.prototype.lazyloadImage = function(image){
@@ -863,10 +889,22 @@ let SeoClickSlider = function (params) {
     //Функция подсчета ширины слайда
     SliderConstructor.prototype.calculateSlideWidth = function(){
 
-        let sliderWidth = $(this.id).width();
+        let sliderWidth = $(this.sliderSelector).width();
 
-        return sliderWidth / this.slides.viewed - (this.spacers.min_width / this.slides.viewed * (this.slides.viewed - 1));
+        return Math.round(sliderWidth / this.slides.viewed - (this.spacers.min_width / this.slides.viewed * (this.slides.viewed - 1)));
     };
     /***************************Инициализация слайдера***************************************/
     slider.initializeSlider();
+
+    return {
+        resize : ()=>{
+            console.log('SeoClick slider resize call');
+            slider.sliderResizer();
+        },
+        setViewItems : (viewed)=>{
+            console.log('SeoClick slider setViewItems call');
+            slider.updateViewData(viewed);
+            slider.sliderResizer();
+        }
+    };
 };

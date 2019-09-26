@@ -9,50 +9,56 @@
  */
 
 defined('_JEXEC') or die;
-$id = 'seoclick_slider_' . $module->id . '_' . rand(1,10000);
+$id = 'seoclick_slider_' . $module->id . '_' . rand(1, 10000);
 ?>
     <div id="<?= $id ?>" class="seoclick-slider">
         <div class="slides-wrap">
             <div class="slider-view" <? if (!$show_neighbor_slides): ?>style="overflow: hidden"<? endif; ?>>
                 <div class="slides-container">
 					<?php $counter = 0; ?>
-					<?php foreach ($slides as $index => $slide): ?>
-						<?php if (!empty($slide['url'])): ?>
-                            <a href="<?= $slide['url']; ?>" <?php if ($slide['url_open']): ?>target="_blank"<?php endif; ?> rel="nofollow noopener noreferrer">
-						<?php endif; ?>
+					<?php foreach ($slides
+
+					as $index => $slide): ?>
+					<?php if (!empty($slide['url'])): ?>
+                    <a href="<?= $slide['url']; ?>" class="slide"
+					   <?php if ($slide['url_open']): ?>target="_blank"<?php endif; ?>
+                       rel="nofollow noopener noreferrer">
+						<?php else: ?>
                         <div class="slide">
+							<?php endif; ?>
                             <div class="slide-content">
 								<?php if ($slide['image']): ?>
                                     <div class="image">
-										<?php require JModuleHelper::getLayoutPath('mod_seoclick_slider', 'slide_image');?>
+										<?php require JModuleHelper::getLayoutPath('mod_seoclick_slider', 'slide_image'); ?>
                                     </div>
 								<?php endif; ?>
                             </div>
-                        </div>
-						<?php if (!empty($slide['url'])): ?>
-                            </a>
-						<?php endif; ?>
-					<?php endforeach ?>
+							<?php if (!empty($slide['url'])): ?>
+                    </a>
+					<?php else: ?>
                 </div>
+				<?php endif; ?>
+				<?php endforeach ?>
             </div>
         </div>
-        <div class="slides-description">
-            <div class="container">
-	            <?php $counter = 0; ?>
-	            <?php foreach ($slides as $slide): ?>
-		            <?php if ($slide['desc_block']): ?>
-                        <div class="<?php if ($counter == 0) echo 'active' ?> slide-description slide-<?= $counter++ ?>">
-                            <div class="heading"><?= jText::_("MOD_SEOCLICK_SLIDER_DESCBLOCK_HEAD_LABEL"); ?></div>
-                            <div class="content top"><span class="name"><?= $slide['header'] ?></span></div>
-                            <div class="heading"><?= jText::_("MOD_SEOCLICK_SLIDER_DESCBLOCK_DESCRIPTION_LABEL"); ?></div>
-                            <div class="content bottom">
-					            <?= $slide['description'] ?>
-                            </div>
+    </div>
+    <div class="slides-description">
+        <div class="container">
+			<?php $counter = 0; ?>
+			<?php foreach ($slides as $slide): ?>
+				<?php if ($slide['desc_block']): ?>
+                    <div class="<?php if ($counter == 0) echo 'active' ?> slide-description slide-<?= $counter++ ?>">
+                        <div class="heading"><?= jText::_("MOD_SEOCLICK_SLIDER_DESCBLOCK_HEAD_LABEL"); ?></div>
+                        <div class="content top"><span class="name"><?= $slide['header'] ?></span></div>
+                        <div class="heading"><?= jText::_("MOD_SEOCLICK_SLIDER_DESCBLOCK_DESCRIPTION_LABEL"); ?></div>
+                        <div class="content bottom">
+							<?= $slide['description'] ?>
                         </div>
-		            <?php endif; ?>
-	            <?php endforeach; ?>
-            </div>
+                    </div>
+				<?php endif; ?>
+			<?php endforeach; ?>
         </div>
+    </div>
     </div>
 <?php
 switch ($nav_type)
@@ -82,7 +88,8 @@ $document->addScriptDeclaration('
         arrows_markup.right = "<i class=\"fa fa-angle-right fa-4x\" aria-hidden=\"true\"></i>";
                           
         slider = new SeoClickSlider({
-            id: "#' . $id . '",
+            sliderSelector: "#' . $id . '",
+            sliderItemSelector: ".slide",
             viewed: 1,
             spacerMinWidth: ' . $images_space . ',
             imageWidth: ' . $images_width . ',
@@ -98,7 +105,7 @@ $document->addScriptDeclaration('
                 animation_speed: ' . $animation_speed . '
             },
             lazy_load: ' . $lazy_load . ',
-            debug: '.$debug.',
+            debug: ' . $debug . ',
             responsiveData: ' . $responsive_data . '
         });
     });
