@@ -98,11 +98,16 @@ let SeoClickSlider = function (params) {
         if(this.options.debug) console.log("Call setSlidesData");
 
         //Размер изображений
-        if (this.slides.object.find('.image img').length && !this.slides.imageContainerWidth) {
+        if (this.slides.object.find('.image img').length){
 
-            if(this.options.debug) console.log(`setSlidesData call setImageContainerData()`);
+            if(!this.slides.imageContainerWidth || !this.slides.imageContainerHeight)
+            {
+                if(this.options.debug) console.log(`setSlidesData call setImageContainerData()`);
 
-            this.setImageContainerData();
+                this.setImageContainerData();
+            }else{
+                this.slides.imageRatio = this.slides.imageContainerWidth / this.slides.imageContainerHeight;
+            }
         }
 
         this.slides.object.find('.image').outerWidth(this.slides.imageContainerWidth);
