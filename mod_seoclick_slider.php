@@ -35,7 +35,7 @@ $document->addStyleSheet($module_path . '/assets/css/seoclick_slider_styles.min.
 $document->addStyleSheet("https://use.fontawesome.com/releases/v5.6.1/css/all.css");
 
 $slides        = json_decode(json_encode($params->get("slides")), true);
-$nav_type      = $params->get('nav_type');
+$nav_type      = $params->get('nav_type', '3');
 $resize_method = $params->get('resize_method');
 if ($resize_method !== 'none')
 {
@@ -49,9 +49,8 @@ else
 }
 
 $images_space         = $params->get('images_space', '0');
-$slide_width          = $params->get('slide_width', $images_width);
+$slide_width          = $params->get('slide_width', 0);
 $infinite_mode        = $params->get('infinite_mode');
-$show_neighbor_slides = $params->get('neighbor_slides');
 $auto_scroll          = $params->get('auto_scroll');
 $auto_scroll_interval = $params->get('auto_scroll_interval', '2');
 $animation_speed      = $params->get('animation_speed', '800');

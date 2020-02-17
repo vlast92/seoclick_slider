@@ -1,7 +1,5 @@
 "use strict";
 
-//TODO сейчас высоту слайдов расчитывает по первому изображению в слайде. При использовании иходного изображения с разными размерами происходит их растяжка с нарушением пропорций. Попробовать исправить.
-//TODO попробовать сделать оптимизацию вызовов функций
 var SeoClickSlider = function SeoClickSlider(params) {
 
     var $ = jQuery;
@@ -45,7 +43,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
             viewed: arg.viewed,
             imageContainerWidth: arg.imageContainerWidth,
             imageContainerHeight: arg.imageContainerHeight,
-            imageRatio: null,
+            imageRatio: 1,
             maxWidth: arg.slideWidth,
             maxHeight: null
         };
@@ -104,14 +102,15 @@ var SeoClickSlider = function SeoClickSlider(params) {
             if (!this.slides.imageContainerWidth || !this.slides.imageContainerHeight) {
                 if (this.options.debug) console.log("setSlidesData call setImageContainerData()");
 
-                this.setImageContainerData();
+                this.setImageData();
             } else {
+
                 this.slides.imageRatio = this.slides.imageContainerWidth / this.slides.imageContainerHeight;
             }
-        }
 
-        this.slides.object.find('.image').outerWidth(this.slides.imageContainerWidth);
-        this.slides.object.find('.image').outerHeight(this.slides.imageContainerHeight);
+            this.slides.object.find('.image').css('max-width', this.slides.imageContainerWidth);
+            this.slides.object.find('.image').css('max-height', this.slides.imageContainerHeight);
+        }
 
         if (this.slides.maxWidth === null) {
             this.slides.maxWidth = this.slides.object.outerWidth();
@@ -151,8 +150,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
             this.spacers.count = this.slides.count - 1;
             if (this.spacers.width < this.spacers.min_width) {
 
-                this.spacers.width = this.spacers.min_width;
-                this.slides.maxWidth = Math.round(this.slides.maxWidth - this.spacers.min_width / this.slides.viewed * (this.slides.viewed - 1));
+                this.slides.maxWidth = this.calculateSlideWidth();
                 if (this.slides.imageContainerWidth > this.slides.maxWidth) {
                     this.slides.imageContainerWidth = this.slides.maxWidth;
                     this.slides.imageContainerHeight = Math.round(this.slides.imageContainerWidth / this.slides.imageRatio);
@@ -161,6 +159,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
                 if (this.options.debug) console.log("calculateSlidesSpacers call setSlidesData()");
 
                 this.setSlidesData();
+                this.calculateSlidesSpacers();
             }
         } else {
             this.spacers.width = 0;
@@ -231,7 +230,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
         function moveSlidesLeft() {
 
-            if (self.state !== null) return 0;
+            if (self.state !== null) return false;
 
             if (self.options.debug) console.log("Call moveSlidesLeft()");
 
@@ -244,6 +243,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
                 if (self.options.arrowNav && !self.options.infiniteMode) {
                     if (x === self.translateData.max) {
                         $(self.sliderSelector).find('.slider-next').addClass("disabled");
+                        $(self.sliderSelector).find('.slider-prev').removeClass("disabled");
                     } else {
                         $(self.sliderSelector).find('.slider-next').removeClass("disabled");
                         $(self.sliderSelector).find('.slider-prev').removeClass("disabled");
@@ -271,6 +271,8 @@ var SeoClickSlider = function SeoClickSlider(params) {
                 if (self.options.debug) console.log("moveSlidesLeft call translate(" + x + ")");
 
                 self.translate = x;
+
+                return 'left';
             } else if (self.options.infiniteMode) {
                 if (self.options.dotNav) {
                     dotnav_container.find(".active").removeClass("active");
@@ -294,14 +296,18 @@ var SeoClickSlider = function SeoClickSlider(params) {
                 if (self.options.debug) console.log("moveSlidesLeft call translate(" + self.translateData.min + ")");
 
                 self.translate = self.translateData.min;
+
+                return 'start';
             } else {
                 self.state = null;
+
+                return 'stop';
             }
         }
 
         function moveSlidesRight() {
 
-            if (self.state !== null) return 0;
+            if (self.state !== null) return false;
 
             if (self.options.debug) console.log("Call moveSlidesRight");
 
@@ -314,6 +320,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
                 if (self.options.arrowNav && !self.options.infiniteMode) {
                     if (x === self.translateData.min) {
                         $(self.sliderSelector).find('.slider-prev').addClass("disabled");
+                        $(self.sliderSelector).find('.slider-next').removeClass("disabled");
                     } else {
                         $(self.sliderSelector).find('.slider-next').removeClass("disabled");
                         $(self.sliderSelector).find('.slider-prev').removeClass("disabled");
@@ -341,6 +348,8 @@ var SeoClickSlider = function SeoClickSlider(params) {
                 if (self.options.debug) console.log("moveSlidesRight call translate(" + x + ")");
 
                 self.translate = x;
+
+                return 'right';
             } else if (self.options.infiniteMode) {
                 if (self.options.dotNav) {
                     dotnav_container.find(".active").removeClass("active");
@@ -364,8 +373,12 @@ var SeoClickSlider = function SeoClickSlider(params) {
                 if (self.options.debug) console.log("moveSlidesRight call translate(" + self.translateData.max + ")");
 
                 self.translate = self.translateData.max;
+
+                return 'end';
             } else {
                 self.state = null;
+
+                return 'stop';
             }
         }
 
@@ -412,7 +425,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
             $.each(self.slides.object, function (index) {
 
-                if (translate_value > self.translateData.max) return 1;
+                if (translate_value > self.translateData.max) return false;
 
                 var dot_element = $("<span class='slideControl'></span>");
 
@@ -433,6 +446,17 @@ var SeoClickSlider = function SeoClickSlider(params) {
                     dotnav_container.find(".slideControl").removeClass("active");
                     $(this).addClass("active");
 
+                    if ($(this).hasClass('first')) {
+                        $(self.sliderSelector).find('.slider-prev').addClass("disabled");
+                        $(self.sliderSelector).find('.slider-next').removeClass("disabled");
+                    } else if ($(this).hasClass('last')) {
+                        $(self.sliderSelector).find('.slider-next').addClass("disabled");
+                        $(self.sliderSelector).find('.slider-prev').removeClass("disabled");
+                    } else {
+                        $(self.sliderSelector).find('.slider-next').removeClass("disabled");
+                        $(self.sliderSelector).find('.slider-prev').removeClass("disabled");
+                    }
+
                     if (self.options.desc_block) activateSlideDesc($(this).data("desc_number"));
 
                     if (self.options.debug) console.log("dotNav call translate(" + $(this).data("translate_value") + ")");
@@ -442,6 +466,12 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
                 dotnav_container.append(dot_element);
                 translate_value += self.translateData.step;
+
+                if (!self.options.infiniteMode && index === 0) {
+                    dot_element.addClass("first");
+                } else if (!self.options.infiniteMode && translate_value > self.translateData.max) {
+                    dot_element.addClass("last");
+                }
             });
         }
 
@@ -500,7 +530,9 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
             if (this.options.autoScroll.handle) window.clearInterval(this.options.autoScroll.handle);
 
-            var isPaused = false;
+            var isPaused = false,
+                response = void 0,
+                moveLeft = true;
 
             this.options.autoScroll.handle = window.setInterval(function () {
                 if (!isPaused) _this3.options.autoScroll.counter++;
@@ -508,7 +540,18 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
                     if (_this3.options.debug) console.log("addNav window.setInterval call moveSlidesLeft()");
 
-                    moveSlidesLeft();
+                    if (moveLeft) {
+                        response = moveSlidesLeft();
+                        if (response === 'stop') moveSlidesRight();
+                    } else {
+                        response = moveSlidesRight();
+                        if (response === 'stop') moveSlidesLeft();
+                    }
+
+                    if (response === 'stop') {
+                        moveLeft = !moveLeft;
+                    }
+
                     _this3.options.autoScroll.counter = null;
                 }
             }, 1000);
@@ -577,6 +620,9 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
         if (this.options.debug) console.log("Call initializeSlider");
 
+        $(this.sliderSelector).removeAttr('style');
+        $(this.sliderSelector).data("initMaxSlideWidth", this.slides.maxWidth);
+
         this.addSliderMarkup();
         this.slides.object = $(this.sliderSelector).find(this.sliderItemSelector);
         this.container = $(this.sliderSelector).find(".slides-container");
@@ -586,6 +632,10 @@ var SeoClickSlider = function SeoClickSlider(params) {
         //Данные слайдов
         if (this.options.debug) console.log("initializeSlider call setSlidesData()");
         this.setSlidesData();
+
+        $(this.sliderSelector).data("initImageContainerWidth", this.slides.imageContainerWidth);
+        $(this.sliderSelector).data("initImageContainerHeight", this.slides.imageContainerHeight);
+        $(this.sliderSelector).data("initImageContainerRatio", this.slides.imageRatio);
 
         if (this.options.debug) console.log("initializeSlider call addViewportListeners()");
         //Определяет количество отображаемых слайдов
@@ -599,9 +649,6 @@ var SeoClickSlider = function SeoClickSlider(params) {
             this.setSlidesData();
         }
         if (this.slides.maxWidth && this.slides.imageContainerWidth > this.slides.maxWidth) this.slides.imageContainerWidth = this.slides.maxWidth;
-
-        $(this.sliderSelector).data("initSlideWidth", this.slides.maxWidth);
-        $(this.sliderSelector).data("initImageContainerWidth", this.slides.imageContainerWidth);
 
         //Данные контейнера слайдов
         if (this.options.debug) console.log("initializeSlider call setContainerData()");
@@ -669,10 +716,10 @@ var SeoClickSlider = function SeoClickSlider(params) {
         this.addNav();
     };
     //Получает размер изображений
-    SliderConstructor.prototype.setImageContainerData = function () {
+    SliderConstructor.prototype.setImageData = function () {
         var _this5 = this;
 
-        if (this.options.debug) console.log("Call setImageContainerData");
+        if (this.options.debug) console.log("Call setImageData");
 
         var maxWidth = 0,
             maxHeight = 0,
@@ -688,6 +735,11 @@ var SeoClickSlider = function SeoClickSlider(params) {
             if (image_width > maxWidth) maxWidth = image_width;
             if (image_height > maxHeight) maxHeight = image_height;
             if (minRatio > image_ratio) minRatio = image_ratio;
+
+            slide_image.css({
+                maxWidth: image_width + 'px',
+                maxHeight: image_height + 'px'
+            });
         });
         this.slides.imageContainerWidth = maxWidth;
         this.slides.imageContainerHeight = maxHeight;
@@ -719,24 +771,26 @@ var SeoClickSlider = function SeoClickSlider(params) {
         var calcSlideWidth = void 0,
             calcImageContainerWidth = void 0,
             calcImageContainerHeight = void 0,
-            initSlideWidth = $(this.sliderSelector).data("initSlideWidth"),
             initImageContainerWidth = $(this.sliderSelector).data("initImageContainerWidth"),
-            initImageToSlideWidthRatio = initSlideWidth / initImageContainerWidth;
+            initImageContainerHeight = $(this.sliderSelector).data("initImageContainerHeight"),
+            initImageContainerRatio = $(this.sliderSelector).data("initImageContainerRatio");
 
         calcSlideWidth = this.calculateSlideWidth();
-        if (initSlideWidth && calcSlideWidth > initSlideWidth) calcSlideWidth = initSlideWidth;
 
-        var slidesWidthDifference = initSlideWidth - calcSlideWidth;
-
-        if (slidesWidthDifference < this.spacers.width && slidesWidthDifference > 0 && this.spacers.width > this.spacers.min_width) {
-            if (this.options.debug) console.log("sliderResizer call updateSlidesSize(" + this.slides.maxWidth + "," + this.slides.imageContainerWidth + "," + this.slides.imageContainerHeight + ")");
-            this.updateSlidesSize(this.slides.maxWidth, this.slides.imageContainerWidth, this.slides.imageContainerHeight);
+        if (initImageContainerWidth && initImageContainerHeight) {
+            calcImageContainerWidth = initImageContainerWidth;
+            calcImageContainerHeight = initImageContainerHeight;
         } else {
-            calcImageContainerWidth = Math.round(calcSlideWidth / initImageToSlideWidthRatio);
-            calcImageContainerHeight = Math.round(calcImageContainerWidth / this.slides.imageRatio);
-            if (this.options.debug) console.log("sliderResizer call updateSlidesSize(" + calcSlideWidth + "," + calcImageContainerWidth + "," + calcImageContainerHeight + ")");
-            this.updateSlidesSize(calcSlideWidth, calcImageContainerWidth, calcImageContainerHeight);
+            calcImageContainerWidth = this.slides.imageContainerWidth;
+            calcImageContainerHeight = this.slides.imageContainerHeight;
         }
+
+        if (calcSlideWidth < calcImageContainerWidth) {
+            calcImageContainerWidth = calcSlideWidth;
+            calcImageContainerHeight = calcImageContainerWidth / initImageContainerRatio;
+        }
+
+        this.updateSlidesSize(calcSlideWidth, calcImageContainerWidth, calcImageContainerHeight);
     };
     //Изменение количества слайдов в строке в зависимости от ширины экрана
     SliderConstructor.prototype.addViewportListeners = function () {
@@ -891,9 +945,15 @@ var SeoClickSlider = function SeoClickSlider(params) {
     //Функция подсчета ширины слайда
     SliderConstructor.prototype.calculateSlideWidth = function () {
 
-        var sliderWidth = $(this.sliderSelector).width();
+        var sliderWidth = $(this.sliderSelector).width(),
+            initMaxSlideWidth = $(this.sliderSelector).data("initMaxSlideWidth"),
+            slideWidth = void 0;
 
-        return Math.round(sliderWidth / this.slides.viewed - this.spacers.min_width / this.slides.viewed * (this.slides.viewed - 1));
+        slideWidth = Math.floor(sliderWidth / this.slides.viewed - this.spacers.min_width + Math.floor(this.spacers.min_width / this.slides.viewed));
+
+        if (initMaxSlideWidth && slideWidth > initMaxSlideWidth) return initMaxSlideWidth;
+
+        return slideWidth;
     };
     /***************************Инициализация слайдера***************************************/
     slider.initializeSlider();

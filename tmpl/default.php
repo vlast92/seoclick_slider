@@ -11,49 +11,43 @@
 defined('_JEXEC') or die;
 $id = 'seoclick_slider_' . $module->id . '_' . rand(1, 10000);
 ?>
-    <div id="<?= $id ?>" class="seoclick-slider">
-        <div class="slides-wrap">
-            <div class="slider-view" <? if (!$show_neighbor_slides): ?>style="overflow: hidden"<? endif; ?>>
-                <div class="slides-container">
-	                <?php $counter = 0; ?>
-					<?php foreach ($slides as $index => $slide): ?>
-						<?php if (!empty($slide['url'])): ?>
-                            <a href="<?= $slide['url']; ?>" class="slide" <?php if ($slide['url_open']): ?>target="_blank"<?php endif; ?> rel="nofollow noopener noreferrer">
-                        <?php else: ?>
-                            <div class="slide">
-						<?php endif; ?>
-                            <div class="slide-content">
-								<?php if ($slide['image']): ?>
-                                    <div class="image">
-                                        <?php require JModuleHelper::getLayoutPath('mod_seoclick_slider', 'slide_image');?>
-                                    </div>
-								<?php endif; ?>
-								<?php if ($slide['desc_block']): ?>
-                                    <div class="slide-description">
-                                        <div class="container">
-											<?php if (!empty($slide['header'])): ?>
-                                                <div class="content top"><span
-                                                            class="name"><?= $slide['header'] ?></span></div>
-											<?php endif; ?>
-											<?php if (!empty($slide['description'])): ?>
-                                                <div class="content bottom">
-													<?= $slide['description'] ?>
-                                                </div>
-											<?php endif; ?>
-                                        </div>
-                                    </div>
-								<?php endif; ?>
-                            </div>
-						<?php if (!empty($slide['url'])): ?>
-                            </a>
-                        <?php else: ?>
-                            </div>
-						<?php endif; ?>
-					<?php endforeach ?>
+<div id="<?= $id ?>" class="seoclick-slider" style="height: 0;overflow: hidden;">
+    <?php $counter = 0; ?>
+    <?php foreach ($slides as $index => $slide): ?>
+        <?php if (!empty($slide['url'])): ?>
+            <a href="<?= $slide['url']; ?>" class="slide" <?php if ($slide['url_open']): ?>target="_blank"<?php endif; ?> rel="nofollow noopener noreferrer">
+        <?php else: ?>
+            <div class="slide">
+        <?php endif; ?>
+        <div class="slide-content">
+            <?php if ($slide['image']): ?>
+                <div class="image">
+                    <?php require JModuleHelper::getLayoutPath('mod_seoclick_slider', 'slide_image'); ?>
                 </div>
-            </div>
+            <?php endif; ?>
+            <?php if ($slide['desc_block']): ?>
+                <div class="slide-description">
+                    <div class="container">
+                        <?php if (!empty($slide['header'])): ?>
+                            <div class="content top"><span
+                                        class="name"><?= $slide['header'] ?></span></div>
+                        <?php endif; ?>
+                        <?php if (!empty($slide['description'])): ?>
+                            <div class="content bottom">
+                                <?= $slide['description'] ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
-    </div>
+        <?php if (!empty($slide['url'])): ?>
+            </a>
+        <?php else: ?>
+            </div>
+        <?php endif; ?>
+    <?php endforeach ?>
+</div>
 <?php
 switch ($nav_type)
 {
@@ -72,13 +66,12 @@ switch ($nav_type)
 	default:
 		$nav = 'arrowNav: true, dotNav: true';
 }
-if (!$infinite_mode) $extra_arrow_class = 'disabled';
 $document->addScriptDeclaration('
     jQuery(function($) {
      
     let slider, arrows_markup = {};
         
-        arrows_markup.left = "<i class=\"fa fa-angle-left fa-4x ' . $extra_arrow_class . '\" aria-hidden=\"true\"></i>";
+        arrows_markup.left = "<i class=\"fa fa-angle-left fa-4x\" aria-hidden=\"true\"></i>";
         arrows_markup.right = "<i class=\"fa fa-angle-right fa-4x\" aria-hidden=\"true\"></i>";
                           
         slider = new SeoClickSlider({
