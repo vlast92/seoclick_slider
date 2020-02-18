@@ -29,6 +29,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
         this.state = null;
         this.container = null;
         this.containerWidth = null;
+        this.viewObject = null;
         this.viewWidth = null;
         this.viewHeight = null;
         this.translateData = {
@@ -128,18 +129,16 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
         if (this.options.debug) console.log("Call setViewData");
 
-        var sliderView = $(this.sliderSelector).find(".slider-view");
-
-        sliderView.css("width", '');
+        this.viewObject.css("width", '');
 
         if (this.slides.viewed === 1) {
             this.viewWidth = this.slides.maxWidth;
         } else {
-            this.viewWidth = sliderView.width();
+            this.viewWidth = this.viewObject.width();
         }
 
         this.viewHeight = this.slides.maxHeight;
-        sliderView.width(this.viewWidth).outerHeight(this.viewHeight);
+        this.viewObject.width(this.viewWidth).outerHeight(this.viewHeight);
     };
     SliderConstructor.prototype.calculateSlidesSpacers = function () {
 
@@ -207,7 +206,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
             this.addIntersectionObserver();
         } else if (this.options.lazy_load) {
-            var images = $(this.sliderSelector).find('.slide img');
+            var images = $(this.sliderSelector).find(this.sliderItemSelector + " img");
 
             $.each(images, function (index, image) {
                 _this2.lazyloadImage(image);
@@ -580,24 +579,11 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
     //Устанавливает параметр translate
     Object.defineProperty(SliderConstructor.prototype, "translate", {
+
         set: function set(value) {
             var _this4 = this;
 
             if (this.options.debug) console.log("Call translate(" + value + ")");
-
-            var set_active_slide = function set_active_slide() {
-
-                $(_this4.sliderSelector).find(".slide.active").removeClass("active");
-
-                $.each($(_this4.slides.object), function (index, slide) {
-
-                    if (slide.getBoundingClientRect().x === 0) {
-                        $(slide).addClass('active');
-
-                        return false;
-                    }
-                });
-            };
 
             this.translateData.value = value;
 
@@ -608,7 +594,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
                 duration: this.options.autoScroll.animation_speed,
                 complete: function complete() {
                     _this4.state = null;
-                    set_active_slide();
+                    _this4.setActiveSlides();
                     _this4.options.autoScroll.counter = 0;
                 }
             });
@@ -625,6 +611,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
         this.addSliderMarkup();
         this.slides.object = $(this.sliderSelector).find(this.sliderItemSelector);
+        this.viewObject = $(this.sliderSelector).find(".slider-view");
         this.container = $(this.sliderSelector).find(".slides-container");
         //Кол. слайдов
         this.slides.count = this.slides.object.length;
@@ -657,6 +644,8 @@ var SeoClickSlider = function SeoClickSlider(params) {
         //Вешаем обработчики
         if (this.options.debug) console.log("initializeSlider call _initListeners()");
         this._initListeners();
+        //Установка активных слайдов
+        this.setActiveSlides();
     };
     //Изменение количества отображаемых слайдов
     SliderConstructor.prototype.updateViewData = function (viewed) {
@@ -717,7 +706,6 @@ var SeoClickSlider = function SeoClickSlider(params) {
     };
     //Получает размер изображений
     SliderConstructor.prototype.setImageData = function () {
-        var _this5 = this;
 
         if (this.options.debug) console.log("Call setImageData");
 
@@ -744,14 +732,10 @@ var SeoClickSlider = function SeoClickSlider(params) {
         this.slides.imageContainerWidth = maxWidth;
         this.slides.imageContainerHeight = maxHeight;
         this.slides.imageRatio = minRatio;
-
-        window.setTimeout(function () {
-            return $(_this5.slides.object[0]).addClass('active');
-        }, 1000);
     };
     //Вычисляем высоту слайдов
     SliderConstructor.prototype.calculateSlideHeight = function () {
-        var _this6 = this;
+        var _this5 = this;
 
         if (this.options.debug) console.log("Call calculateSlideHeight");
 
@@ -759,7 +743,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
             var height = $(slide).outerHeight(true);
 
-            if (height > _this6.slides.maxHeight) _this6.slides.maxHeight = height;
+            if (height > _this5.slides.maxHeight) _this5.slides.maxHeight = height;
         });
         this.slides.object.outerHeight(this.slides.maxHeight);
     };
@@ -794,7 +778,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
     };
     //Изменение количества слайдов в строке в зависимости от ширины экрана
     SliderConstructor.prototype.addViewportListeners = function () {
-        var _this7 = this;
+        var _this6 = this;
 
         if (this.options.debug) console.log("Call addViewportListeners");
 
@@ -816,40 +800,40 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
             if (e.matches) {
 
-                if (_this7.options.debug) console.log("addViewportListeners: desktop");
-                if (_this7.options.debug) console.log("addViewportListeners call updateViewData(" + _this7.responsiveData.desktop.viewed + ")");
+                if (_this6.options.debug) console.log("addViewportListeners: desktop");
+                if (_this6.options.debug) console.log("addViewportListeners call updateViewData(" + _this6.responsiveData.desktop.viewed + ")");
 
-                _this7.updateViewData(_this7.responsiveData.desktop.viewed);
+                _this6.updateViewData(_this6.responsiveData.desktop.viewed);
             }
         },
             checkLaptopQuery = function checkLaptopQuery(e) {
 
-            if (e.matches && _this7.slides.viewed !== _this7.responsiveData.laptop.viewed) {
+            if (e.matches && _this6.slides.viewed !== _this6.responsiveData.laptop.viewed) {
 
-                if (_this7.options.debug) console.log("addViewportListeners: laptop");
-                if (_this7.options.debug) console.log("addViewportListeners call updateViewData(" + _this7.responsiveData.laptop.viewed + ")");
+                if (_this6.options.debug) console.log("addViewportListeners: laptop");
+                if (_this6.options.debug) console.log("addViewportListeners call updateViewData(" + _this6.responsiveData.laptop.viewed + ")");
 
-                _this7.updateViewData(_this7.responsiveData.laptop.viewed);
+                _this6.updateViewData(_this6.responsiveData.laptop.viewed);
             }
         },
             checkTabletQuery = function checkTabletQuery(e) {
 
-            if (e.matches && _this7.slides.viewed !== _this7.responsiveData.tablet.viewed) {
+            if (e.matches && _this6.slides.viewed !== _this6.responsiveData.tablet.viewed) {
 
-                if (_this7.options.debug) console.log("addViewportListeners: tablet");
-                if (_this7.options.debug) console.log("addViewportListeners call updateViewData(" + _this7.responsiveData.tablet.viewed + ")");
+                if (_this6.options.debug) console.log("addViewportListeners: tablet");
+                if (_this6.options.debug) console.log("addViewportListeners call updateViewData(" + _this6.responsiveData.tablet.viewed + ")");
 
-                _this7.updateViewData(_this7.responsiveData.tablet.viewed);
+                _this6.updateViewData(_this6.responsiveData.tablet.viewed);
             }
         },
             checkPhoneQuery = function checkPhoneQuery(e) {
 
-            if (e.matches && _this7.slides.viewed !== _this7.responsiveData.phone.viewed) {
+            if (e.matches && _this6.slides.viewed !== _this6.responsiveData.phone.viewed) {
 
-                if (_this7.options.debug) console.log("addViewportListeners: phone");
-                if (_this7.options.debug) console.log("addViewportListeners call updateViewData(" + _this7.responsiveData.phone.viewed + ")");
+                if (_this6.options.debug) console.log("addViewportListeners: phone");
+                if (_this6.options.debug) console.log("addViewportListeners call updateViewData(" + _this6.responsiveData.phone.viewed + ")");
 
-                _this7.updateViewData(_this7.responsiveData.phone.viewed);
+                _this6.updateViewData(_this6.responsiveData.phone.viewed);
             }
         };
 
@@ -886,7 +870,7 @@ var SeoClickSlider = function SeoClickSlider(params) {
     };
     //Добавление IntersectionObserver для ленивой загрузки
     SliderConstructor.prototype.addIntersectionObserver = function () {
-        var _this8 = this;
+        var _this7 = this;
 
         if (this.options.debug) console.log("Call addIntersectionObserver");
 
@@ -898,12 +882,12 @@ var SeoClickSlider = function SeoClickSlider(params) {
                 var isIntersecting = entry.isIntersecting;
 
                 if (isIntersecting) {
-                    _this8.lazyloadImage(entry.target);
+                    _this7.lazyloadImage(entry.target);
                     if (lazy_flag) {
                         $(entry.target).load(function () {
-                            _this8.slides.maxHeight = _this8.slides.object.find('img').outerHeight(true);
-                            if (_this8.options.debug) console.log("addIntersectionObserver image_observer_callback call sliderResizer");
-                            _this8.sliderResizer();
+                            _this7.slides.maxHeight = _this7.slides.object.find('img').outerHeight(true);
+                            if (_this7.options.debug) console.log("addIntersectionObserver image_observer_callback call sliderResizer");
+                            _this7.sliderResizer();
                         });
                         lazy_flag = false;
                     }
@@ -917,11 +901,11 @@ var SeoClickSlider = function SeoClickSlider(params) {
 
                 var isIntersecting = entry.isIntersecting;
                 if (isIntersecting) {
-                    var images = $(_this8.sliderSelector).find('.slide img');
+                    var images = $(_this7.sliderSelector).find(_this7.sliderItemSelector + " img");
                     $.each(images, function (index, image) {
 
                         var image_observer = new IntersectionObserver(image_observer_callback, {
-                            root: $(_this8.sliderSelector).get(0),
+                            root: $(_this7.sliderSelector).get(0),
                             rootMargin: '200px'
                         });
                         image_observer.observe(image);
@@ -954,6 +938,28 @@ var SeoClickSlider = function SeoClickSlider(params) {
         if (initMaxSlideWidth && slideWidth > initMaxSlideWidth) return initMaxSlideWidth;
 
         return slideWidth;
+    };
+    //Вешает на видимые слайды класс active
+    //TODO В шаблоне popup при инициализации слайдера слайды имеют одинаковые координаты(из-за тега <a>),
+    // из-за чего всем присваивается класс active
+    SliderConstructor.prototype.setActiveSlides = function () {
+
+        var sliderViewCoords = this.viewObject[0].getBoundingClientRect().x,
+            minSlideCoords = sliderViewCoords,
+            maxSlideCoords = sliderViewCoords + this.viewWidth;
+
+        $(this.sliderSelector).find(this.sliderItemSelector + ".active").removeClass("active");
+
+        $.each($(this.slides.object), function (index, slide) {
+
+            var slideCoords = slide.getBoundingClientRect().x;
+
+            console.log('slideCoords ' + slideCoords);
+
+            if (slideCoords >= minSlideCoords && slideCoords < maxSlideCoords) {
+                $(slide).addClass('active');
+            }
+        });
     };
     /***************************Инициализация слайдера***************************************/
     slider.initializeSlider();

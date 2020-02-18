@@ -27,6 +27,7 @@ let SeoClickSlider = function (params) {
         this.state = null;
         this.container = null;
         this.containerWidth = null;
+        this.viewObject = null;
         this.viewWidth = null;
         this.viewHeight = null;
         this.translateData = {
@@ -126,18 +127,16 @@ let SeoClickSlider = function (params) {
 
         if (this.options.debug) console.log("Call setViewData");
 
-        let sliderView = $(this.sliderSelector).find(".slider-view");
-
-        sliderView.css("width", '');
+        this.viewObject.css("width", '');
 
         if (this.slides.viewed === 1) {
             this.viewWidth = this.slides.maxWidth;
         } else {
-            this.viewWidth = sliderView.width();
+            this.viewWidth = this.viewObject.width();
         }
 
         this.viewHeight = this.slides.maxHeight;
-        sliderView.width(this.viewWidth).outerHeight(this.viewHeight);
+        this.viewObject.width(this.viewWidth).outerHeight(this.viewHeight);
     };
     SliderConstructor.prototype.calculateSlidesSpacers = function () {
 
@@ -205,7 +204,7 @@ let SeoClickSlider = function (params) {
 
             this.addIntersectionObserver();
         } else if (this.options.lazy_load) {
-            let images = $(this.sliderSelector).find('.slide img');
+            let images = $(this.sliderSelector).find(`${this.sliderItemSelector} img`);
 
             $.each(images, (index, image) => {
                 this.lazyloadImage(image);
@@ -582,23 +581,10 @@ let SeoClickSlider = function (params) {
 
     //Устанавливает параметр translate
     Object.defineProperty(SliderConstructor.prototype, "translate", {
+
         set: function (value) {
 
             if (this.options.debug) console.log(`Call translate(${value})`);
-
-            let set_active_slide = () => {
-
-                $(this.sliderSelector).find(".slide.active").removeClass("active");
-
-                $.each($(this.slides.object), function (index, slide) {
-
-                    if (slide.getBoundingClientRect().x === 0) {
-                        $(slide).addClass('active');
-
-                        return false;
-                    }
-                });
-            };
 
             this.translateData.value = value;
 
@@ -609,7 +595,7 @@ let SeoClickSlider = function (params) {
                 duration: this.options.autoScroll.animation_speed,
                 complete: () => {
                     this.state = null;
-                    set_active_slide();
+                    this.setActiveSlides();
                     this.options.autoScroll.counter = 0;
                 }
             });
@@ -626,6 +612,7 @@ let SeoClickSlider = function (params) {
 
         this.addSliderMarkup();
         this.slides.object = $(this.sliderSelector).find(this.sliderItemSelector);
+        this.viewObject = $(this.sliderSelector).find(".slider-view");
         this.container = $(this.sliderSelector).find(".slides-container");
         //Кол. слайдов
         this.slides.count = this.slides.object.length;
@@ -658,6 +645,8 @@ let SeoClickSlider = function (params) {
         //Вешаем обработчики
         if (this.options.debug) console.log("initializeSlider call _initListeners()");
         this._initListeners();
+        //Установка активных слайдов
+        this.setActiveSlides();
     };
     //Изменение количества отображаемых слайдов
     SliderConstructor.prototype.updateViewData = function (viewed) {
@@ -742,8 +731,6 @@ let SeoClickSlider = function (params) {
         this.slides.imageContainerWidth = maxWidth;
         this.slides.imageContainerHeight = maxHeight;
         this.slides.imageRatio = minRatio;
-
-        window.setTimeout(() => $(this.slides.object[0]).addClass('active'), 1000);
     };
     //Вычисляем высоту слайдов
     SliderConstructor.prototype.calculateSlideHeight = function () {
@@ -916,7 +903,7 @@ let SeoClickSlider = function (params) {
 
                     let isIntersecting = entry.isIntersecting;
                     if (isIntersecting) {
-                        let images = $(this.sliderSelector).find('.slide img');
+                        let images = $(this.sliderSelector).find(`${this.sliderItemSelector} img`);
                         $.each(images, (index, image) => {
 
                             let image_observer = new IntersectionObserver(image_observer_callback, {
@@ -953,6 +940,28 @@ let SeoClickSlider = function (params) {
         if (initMaxSlideWidth && slideWidth > initMaxSlideWidth) return initMaxSlideWidth;
 
         return slideWidth;
+    };
+    //Вешает на видимые слайды класс active
+    //TODO В шаблоне popup при инициализации слайдера слайды имеют одинаковые координаты(из-за тега <a>),
+    // из-за чего всем присваивается класс active
+    SliderConstructor.prototype.setActiveSlides = function(){
+
+        let sliderViewCoords = this.viewObject[0].getBoundingClientRect().x,
+            minSlideCoords = sliderViewCoords,
+            maxSlideCoords = sliderViewCoords + this.viewWidth;
+
+        $(this.sliderSelector).find(`${this.sliderItemSelector}.active`).removeClass("active");
+
+        $.each($(this.slides.object), (index, slide) => {
+
+            let slideCoords = slide.getBoundingClientRect().x;
+
+            console.log('slideCoords ' + slideCoords);
+
+            if (slideCoords >= minSlideCoords && slideCoords < maxSlideCoords) {
+                $(slide).addClass('active');
+            }
+        });
     };
     /***************************Инициализация слайдера***************************************/
     slider.initializeSlider();

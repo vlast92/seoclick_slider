@@ -62,6 +62,7 @@ $buttonColor: #ffce23;
       flex-basis: 100%;
       position: relative;
       margin: 0 auto;
+      overflow: hidden;
 
       .slides-container {
         @include displayFlex;

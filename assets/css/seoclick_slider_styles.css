@@ -27,7 +27,8 @@
     .seoclick-slider .slides-wrap .slider-view {
       flex-basis: 100%;
       position: relative;
-      margin: 0 auto; }
+      margin: 0 auto;
+      overflow: hidden; }
       .seoclick-slider .slides-wrap .slider-view .slides-container {
         display: -webkit-box;
         display: -moz-box;
