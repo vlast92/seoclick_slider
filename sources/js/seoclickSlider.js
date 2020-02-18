@@ -956,8 +956,6 @@ let SeoClickSlider = function (params) {
 
             let slideCoords = slide.getBoundingClientRect().x;
 
-            console.log('slideCoords ' + slideCoords);
-
             if (slideCoords >= minSlideCoords && slideCoords < maxSlideCoords) {
                 $(slide).addClass('active');
             }
