@@ -7,7 +7,7 @@
     <authorUrl>https://seoclick.by</authorUrl>
     <copyright>A copyright</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-    <version>1.2.1</version>
+    <version>1.2.2</version>
     <description>MOD_SEOCLICK_SLIDER_XML_DESCRIPTION</description>
 
     <files>
@@ -33,6 +33,15 @@
     <config>
         <fields name="params">
             <fieldset name="basic">
+                <field
+                        name="enable_fontawesome"
+                        type="radio"
+                        default="1"
+                        label="MOD_SEOCLICK_SLIDER_FONTAWESOME_ACTIVATION_LABEL"
+                        class="btn-group btn-group-yesno">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
                 <field
                         name="layout"
                         type="modulelayout"
