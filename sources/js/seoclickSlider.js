@@ -608,6 +608,7 @@ let SeoClickSlider = function (params) {
         if (this.options.debug) console.log("Call initializeSlider");
 
         $(this.sliderSelector).removeAttr('style');
+        $(this.sliderSelector).css("width", "100%");
         $(this.sliderSelector).data("initMaxSlideWidth", this.slides.maxWidth);
 
         this.addSliderMarkup();
