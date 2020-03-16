@@ -143,7 +143,7 @@ let SeoClickSlider = function (params) {
         if (this.options.debug) console.log("Call calculateSlidesSpacers");
 
         if (this.slides.viewed !== 1) {
-            this.spacers.width = Math.round((this.viewWidth - this.slides.maxWidth * this.slides.viewed) / (this.slides.viewed - 1));
+            this.spacers.width = Math.abs(Math.round((this.viewWidth - this.slides.maxWidth * this.slides.viewed) / (this.slides.viewed - 1)));
             this.spacers.count = this.slides.count - 1;
             if (this.spacers.width < this.spacers.min_width) {
 
