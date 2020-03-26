@@ -34,7 +34,7 @@ $id = 'seoclick_slider_' . $module->id . '_' . rand(1, 10000);
                         <?php endif; ?>
                         <?php if (!empty($slide['description'])): ?>
                             <div class="content bottom">
-                                <?= $slide['description'] ?>
+                                <?= nl2br($slide['description']) ?>
                             </div>
                         <?php endif; ?>
                     </div>
