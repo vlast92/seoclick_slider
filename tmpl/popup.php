@@ -33,7 +33,7 @@ $document->addStyleSheet($module_path . '/assets/css/lightcase.css');
 							    <?php endif; ?>
 							    <?php if (!empty($slide['description'])): ?>
                                     <div class="content bottom">
-									    <?= $slide['description'] ?>
+									    <?= nl2br($slide['description']) ?>
                                     </div>
 							    <?php endif; ?>
                             </div>
