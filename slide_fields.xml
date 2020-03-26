@@ -40,6 +40,7 @@
                 type="textarea"
                 label="MOD_SEOCLICK_SLIDER_DESCRIPTION"
                 rows="10"
+                filter="raw"
                 showon="desc_block:1"/>
     </fieldset>
 </form>
