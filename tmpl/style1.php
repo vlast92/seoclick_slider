@@ -45,7 +45,7 @@ $id = 'seoclick_slider_' . $module->id . '_' . rand(1, 10000);
                         <div class="content top"><span class="name"><?= $slide['header'] ?></span></div>
                         <div class="heading"><?= jText::_("MOD_SEOCLICK_SLIDER_DESCBLOCK_DESCRIPTION_LABEL"); ?></div>
                         <div class="content bottom">
-							<?= $slide['description'] ?>
+							<?= nl2br($slide['description']) ?>
                         </div>
                     </div>
 				<?php endif; ?>
