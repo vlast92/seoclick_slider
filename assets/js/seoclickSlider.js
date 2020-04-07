@@ -216,10 +216,24 @@ var SeoClickSlider = function SeoClickSlider(params) {
         if (this.options.debug) console.log("_initListeners call sliderResizer()");
 
         this.sliderResizer();
-        $(window).on('load resize', function () {
+        $(window).on('load', function () {
 
-            if (_this2.options.debug) console.log("_initListeners window load or resize call sliderResizer()");
+            if (_this2.options.debug) console.log("_initListeners window load call sliderResizer()");
             _this2.sliderResizer();
+        });
+
+        var lastWindowWidth = $(window).width();
+
+        $(window).resize(function () {
+
+            if (_this2.options.debug) console.log("_initListeners resize call sliderResizer()");
+
+            var currentWindowWidth = $(window).width();
+
+            if (currentWindowWidth !== lastWindowWidth) {
+                lastWindowWidth = currentWindowWidth;
+                _this2.sliderResizer();
+            }
         });
     };
     SliderConstructor.prototype.addNav = function () {
